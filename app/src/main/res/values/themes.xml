@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.CookstaApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item> <!-- Weiß als Primärfarbe -->
+        <item name="colorOnPrimary">@color/black</item> <!-- Schwarzer Text auf weißem Hintergrund -->
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/green</item> <!-- Grün als Sekundärfarbe -->
+        <item name="colorOnSecondary">@color/white</item> <!-- Weißer Text/Icon auf grünem Hintergrund -->
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/white</item>
+
+        <!-- Optional: Weitere Anpassungen für Navigationsleiste und Hintergrund -->
+        <item name="android:navigationBarColor">@color/white</item> <!-- Weiß für die Navigationsleiste -->
+    </style>
+</resources>
