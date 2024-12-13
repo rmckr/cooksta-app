@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="backgroundTint">?attr/colorBackgroundFloating</item>
         <item name="itemIconTint">@color/bottom_nav_color</item>
         <item name="itemTextColor">@color/bottom_nav_color</item>
     </style>

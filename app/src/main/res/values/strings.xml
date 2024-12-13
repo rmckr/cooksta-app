@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">cooksta-app</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Start</string>
     <string name="title_search">Suche</string>
-    <string name="title_add">Hinzufügen</string>
-    <string name="title_shoppingList">Einkaufswagen</string>
+    <string name="title_add">Neu</string>
+    <string name="title_shoppingList">Einkaufsliste</string>
     <string name="title_profile">Profil</string>
     <string name="text_shoppingListTitle">Einkaufsliste</string>
     <string name="text_shoppingList">Deine Einkaufsliste will gefüttert werden!</string>
-    <string name="text_shoppingListInfo">Wenn du deiner Einkaufstliste Zutaten hinzufügst, wirst du sie hier sehen. Viel Spaß beim Einkaufen</string>
+    <string name="text_shoppingListInfo">Wenn du deiner Einkaufstliste Rezepte hinzufügst, wirst du sie hier sehen.\nViel Spaß beim Einkaufen!</string>
 </resources>
