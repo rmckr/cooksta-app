@@ -32,10 +32,8 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-//        binding.composeView.setContent {
-//            ProfileImage()
-//        }
+        
+//        binding.profileImageView.setContent({ ProfileImage() })
         return root
     }
 
@@ -49,7 +47,7 @@ class ProfileFragment : Fragment() {
 fun ProfileImage() {
     val borderWidth = 4.dp
     Image(
-        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+        painter = painterResource(id = R.drawable.ic_profile),
         contentDescription = "Profile Image",
         contentScale = ContentScale.Crop,
         modifier = Modifier

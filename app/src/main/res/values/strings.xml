@@ -8,4 +8,6 @@
     <string name="text_shoppingListTitle">Einkaufsliste</string>
     <string name="text_shoppingList">Deine Einkaufsliste will gefüttert werden!</string>
     <string name="text_shoppingListInfo">Wenn du deiner Einkaufstliste Rezepte hinzufügst, wirst du sie hier sehen.\nViel Spaß beim Einkaufen!</string>
+    <string name="recipe">Rezepte</string>
+    <string name="ingredients">Alle Zutaten</string>
 </resources>
