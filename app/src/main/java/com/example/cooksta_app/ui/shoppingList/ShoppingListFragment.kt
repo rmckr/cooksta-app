@@ -6,90 +6,86 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
-import com.example.cooksta_app.databinding.FragmentIngredientsBinding
-import com.example.cooksta_app.databinding.FragmentRecipeBinding
-import com.example.cooksta_app.databinding.FragmentShoppingListEmptyBinding
-import com.example.cooksta_app.databinding.FragmentShoppingListFullBinding
+import com.example.cooksta_app.databinding.FragmentShoppingListBinding
+import com.example.cooksta_app.ui.recyclerView.RecyclerViewFragment
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlin.math.abs
 
 class ShoppingListFragment : Fragment() {
 
-    private var _emptyBinding: FragmentShoppingListEmptyBinding? = null
-    private var _fullBinding: FragmentShoppingListFullBinding? = null
-
-    private val emptyBinding get() = _emptyBinding!!
-    private val fullBinding get() = _fullBinding!!
-
-    private val recipes = mutableListOf<Recipe>()
-    private val ingredients = mutableListOf<Ingredient>()
+    private var _binding: FragmentShoppingListBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var viewModel: ShoppingListViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        fillShoppingListWithIngredientsAndRecipes() // Füllt die Einkaufsliste mit Rezepten und Zutaten
+        _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
 
-        // Überprüfe, ob entweder Rezepte oder Zutaten vorhanden sind
-        return if (recipes.isEmpty() && ingredients.isEmpty()) {
-            // Leeres Layout verwenden, wenn keine Rezepte oder Zutaten vorhanden sind
-            _emptyBinding = FragmentShoppingListEmptyBinding.inflate(inflater, container, false)
-            emptyBinding.root
+        handleVisibility()
+        setupToolbar()
+        setupViewPager()
+
+        return binding.root
+    }
+
+    private fun handleVisibility() {
+        if (viewModel.recipes.isEmpty() && viewModel.ingredients.isEmpty()) {
+            binding.emptyLayout.visibility = View.VISIBLE
+            binding.viewPager.visibility = View.GONE
+            binding.floatingActionButton.visibility = View.GONE
+            binding.appBarLayout.setExpanded(true, true)
         } else {
-            // Volles Layout verwenden, wenn Rezepte oder Zutaten vorhanden sind
-            _fullBinding = FragmentShoppingListFullBinding.inflate(inflater, container, false)
-            setupShoppingListUI() // UI für gefüllte Liste initialisieren
-            fullBinding.root
+            binding.emptyLayout.visibility = View.GONE
+            binding.viewPager.visibility = View.VISIBLE
+            binding.floatingActionButton.visibility = View.VISIBLE
         }
     }
 
-    private fun fillShoppingListWithIngredientsAndRecipes() {
-        // Beispielweise: Füllen der Einkaufslisten mit Rezepten und Zutaten
-        recipes.addAll(
-            listOf(
-                Recipe("Spaghetti Bolognese"),
-                Recipe("Pizza Margherita"),
-                Recipe("Caesar Salad")
-            )
-        )
+    private fun setupToolbar() {
+        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val isCollapsed = abs(verticalOffset) == appBarLayout.totalScrollRange
+            if (isCollapsed) {
+                binding.floatingActionButton.show()
+            } else {
+                binding.floatingActionButton.hide()
+            }
+        }
 
-        ingredients.addAll(
-            listOf(
-                Ingredient("Tomaten", "3 Stück"),
-                Ingredient("Käse", "200 g"),
-                Ingredient("Olivenöl", "50 ml")
-            )
-        )
+        binding.floatingActionButton.setOnClickListener {
+            handleDelete()
+        }
+
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.deleteShoppingList -> {
+                    handleDelete()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
-    private fun setupShoppingListUI() {
-        // Adapter für den ViewPager2
-        val fragmentList = mutableListOf<Fragment>()
+    private fun handleDelete() {
+        viewModel.recipes.clear()
+        viewModel.ingredients.clear()
+        handleVisibility()
+    }
 
-        // Hinzufügen der Rezepte und Zutaten, wenn Daten vorhanden sind
-        if (recipes.isNotEmpty()) {
-            fragmentList.add(RecipeFragment()) // Fragment für Rezepte
-        }
-        if (ingredients.isNotEmpty()) {
-            fragmentList.add(IngredientsFragment()) // Fragment für Zutaten
-        }
+    private fun setupViewPager() {
+        val adapter = ShoppingListPagerAdapter(this, listOf(RecipeListFragment(), IngredientsListFragment()))
+        binding.viewPager.adapter = adapter
 
-        // Wenn beide Fragmente leer sind, gehe zurück und zeige leeres Layout
-        if (fragmentList.isEmpty()) {
-            return
-        }
-
-        val adapter = ShoppingListPagerAdapter(this, fragmentList)
-        fullBinding.viewPager.adapter = adapter
-
-        // TabLayout mit ViewPager2 verknüpfen
-        TabLayoutMediator(fullBinding.tabLayout2, fullBinding.viewPager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout2, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> getString(R.string.recipe)      // Tab-Titel für Rezepte
-                1 -> getString(R.string.ingredients) // Tab-Titel für Zutaten
+                0 -> getString(R.string.recipe)
+                1 -> getString(R.string.ingredients)
                 else -> ""
             }
         }.attach()
@@ -97,20 +93,7 @@ class ShoppingListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _emptyBinding = null
-        _fullBinding = null
-    }
-}
-
-class ShoppingListPagerAdapter(
-    fragment: Fragment,
-    private val fragments: List<Fragment>
-) : FragmentStateAdapter(fragment) {
-
-    override fun getItemCount(): Int = fragments.size
-
-    override fun createFragment(position: Int): Fragment {
-        return fragments[position]
+        _binding = null
     }
 }
 
@@ -118,104 +101,69 @@ data class Recipe(
     val name: String
 )
 
+data class Ingredient(
+    val name: String,
+    val amount: String
+)
+
+class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<Fragment>) : FragmentStateAdapter(fragment) {
+    override fun getItemCount() = fragments.size
+
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
+    }
+}
+
+class RecipeListFragment: RecyclerViewFragment<RecipesAdapter>() {
+    override fun provideAdapter(): RecipesAdapter {
+        val viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
+        return RecipesAdapter(viewModel.recipes)
+    }
+}
+
+class IngredientsListFragment: RecyclerViewFragment<IngredientsAdapter>() {
+    override fun provideAdapter(): IngredientsAdapter {
+        val viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
+        return IngredientsAdapter(viewModel.ingredients)
+    }
+}
+
 class RecipesAdapter(private val recipes: List<Recipe>) : RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
 
-    // ViewHolder für das Rezept
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val recipeName: TextView = itemView.findViewById(R.id.recipeName)
+        val recipeView: TextView = itemView.findViewById(R.id.recipeName)
     }
 
-    // Erstelle ViewHolder
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe, parent, false)
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecipeViewHolder {
+        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_recipe, viewGroup, false)
         return RecipeViewHolder(view)
     }
 
-    // Binde Daten an ViewHolder
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipes[position]
-        holder.recipeName.text = recipe.name
+        holder.recipeView.text = recipe.name
     }
 
-    // Rückgabewert für die Anzahl der Rezepte (Anzahl der Elemente in der Liste)
     override fun getItemCount(): Int = recipes.size
 }
 
-class RecipeFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // ViewBinding verwenden (oder findViewById, falls kein ViewBinding)
-        val binding = FragmentRecipeBinding.inflate(inflater, container, false)
-
-        // Erstelle eine Liste von Test-Rezepten
-        val recipesList = listOf(
-            Recipe("Spaghetti Bolognese"),
-            Recipe("Pizza Margherita"),
-            Recipe("Caesar Salad")
-        )
-
-        // Setze den Adapter für die RecyclerView
-        val adapter = RecipesAdapter(recipesList)
-        binding.recipeRecyclerView.adapter = adapter
-
-        return binding.root
-    }
-}
-
-
 class IngredientsAdapter(private val ingredients: List<Ingredient>) : RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
 
-    // ViewHolder für die Zutat
     class IngredientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ingredientName: TextView = itemView.findViewById(R.id.ingredientName)
         val ingredientAmount: TextView = itemView.findViewById(R.id.ingredientAmount)
     }
 
-    // Erstelle ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.ingredient, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_ingredient, parent, false)
         return IngredientViewHolder(view)
     }
 
-    // Binde Daten an ViewHolder
     override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
         val ingredient = ingredients[position]
         holder.ingredientName.text = ingredient.name
         holder.ingredientAmount.text = ingredient.amount
     }
 
-    // Rückgabewert für Anzahl der Elemente
     override fun getItemCount(): Int = ingredients.size
-}
-
-data class Ingredient(
-    val name: String,
-    val amount: String
-)
-
-class IngredientsFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentIngredientsBinding.inflate(inflater, container, false)
-
-        // Erstelle eine Liste von Test-Zutaten
-        val ingredientsList = listOf(
-            Ingredient("Tomaten", "3 Stück"),
-            Ingredient("Käse", "200 g"),
-            Ingredient("Olivenöl", "50 ml")
-        )
-
-        // Setze den Adapter
-        val adapter = IngredientsAdapter(ingredientsList)
-        binding.ingredientRecyclerView.adapter = adapter
-        return binding.root
-    }
 }

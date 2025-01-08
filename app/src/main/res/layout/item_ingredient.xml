@@ -3,28 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/ingredientName"
+            style="@style/TextAppearance.Material3.TitleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Zutat"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:text="Zutat" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/ingredientAmount"
+            style="@style/TextAppearance.Material3.BodyMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Menge"
-            android:textSize="20sp" />
+            android:text="Menge" />
     </LinearLayout>
 
     <com.google.android.material.checkbox.MaterialCheckBox

@@ -1,24 +1,19 @@
 package com.example.cooksta_app.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import coil.load
+import com.example.cooksta_app.BuildConfig
+import com.example.cooksta_app.EditProfileActivity
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
+import com.example.cooksta_app.network.RetrofitClient
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
@@ -31,32 +26,40 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        
-//        binding.profileImageView.setContent({ ProfileImage() })
-        return root
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.editProfile -> {
+                    val intent = Intent(requireContext(), EditProfileActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        val userId = "67783a1643964ac750c1c18c" // Replace with actual user ID logic
+        val imageUrl = "${BuildConfig.API_BASE_URL}/users/${userId}/avatar"
+
+        binding.profileImage.load(imageUrl)
+        lifecycleScope.launch {
+            try {
+                val user = RetrofitClient.apiService.getUserInfo(userId)
+                binding.username.text = user.username
+                binding.biography.text = user.biography
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-}
-
-@Composable
-fun ProfileImage() {
-    val borderWidth = 4.dp
-    Image(
-        painter = painterResource(id = R.drawable.ic_profile),
-        contentDescription = "Profile Image",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(150.dp)
-            .border(
-                BorderStroke(borderWidth, androidx.compose.ui.graphics.Color.Green),
-                CircleShape
-            )
-            .padding(borderWidth)
-            .clip(CircleShape)
-    )
 }
