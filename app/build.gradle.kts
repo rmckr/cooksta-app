@@ -18,7 +18,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"http://localhost:9000/api\"")
+        }
         release {
+            buildConfigField("String", "API_BASE_URL", "\"https://cooksta.app/api\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -35,13 +39,12 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
@@ -51,6 +54,10 @@ dependencies {
     implementation(libs.androidx.foundation.android)
     implementation(libs.androidx.ui.android)
     implementation(libs.androidx.runtime.android)
+    implementation(libs.coil)
+    implementation(libs.converter.gson)
+    implementation(libs.retrofit)
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
