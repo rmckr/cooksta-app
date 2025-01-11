@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
-<!--        <item name="backgroundTint">?attr/colorBackgroundFloating</item>-->
-<!--        <item name="itemIconTint">@color/bottom_nav_color</item>-->
-<!--        <item name="itemTextColor">@color/bottom_nav_color</item>-->
+    <style name="ActionModeStyle" parent="Widget.Material3.ActionMode">
+        <item name="actionModeCloseDrawable">@drawable/ic_close</item>
     </style>
 </resources>
