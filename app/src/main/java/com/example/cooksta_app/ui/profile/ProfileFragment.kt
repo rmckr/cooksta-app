@@ -1,16 +1,21 @@
 package com.example.cooksta_app.ui.profile
 
-import android.content.Intent
+import android.app.Dialog
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import coil.load
 import com.example.cooksta_app.BuildConfig
-import com.example.cooksta_app.EditProfileActivity
 import com.example.cooksta_app.R
+import com.example.cooksta_app.databinding.FragmentEditProfileBinding
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.launch
@@ -32,15 +37,10 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.editProfile -> {
-                    val intent = Intent(requireContext(), EditProfileActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                else -> false
-            }
+        binding.editButton.setOnClickListener {
+//            val editProfileFragment = EditProfileFragment()
+//            editProfileFragment.show(parentFragmentManager, "EditProfileFragment")
+            findNavController().navigate(R.id.action_to_edit_profile)
         }
 
         val userId = "67783a1643964ac750c1c18c" // Replace with actual user ID logic
@@ -61,5 +61,48 @@ class ProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+class EditProfileFragment : DialogFragment() {
+
+    private var _binding: FragmentEditProfileBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+        _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+
+//        setStyle(STYLE_NO_FRAME, 0)
+        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.saveProfile -> {
+                    // TODO: Save profile data
+                    findNavController().navigateUp()
+                    true
+                }
+                else -> false
+            }
+        }
+        binding.saveProfileButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.apply {
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            setBackgroundDrawable(null)
+            setWindowAnimations(android.R.style.Animation_Translucent)
+            attributes = attributes.apply { dimAmount = 0f }
+        }
     }
 }
