@@ -24,7 +24,7 @@
         android:id="@+id/navigation_shopping_list"
         android:name="com.example.cooksta_app.ui.shoppingList.ShoppingListFragment"
         android:label="@string/title_shoppingList"
-        tools:layout="@layout/fragment_shopping_list_empty" />
+        tools:layout="@layout/fragment_shopping_list" />
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.cooksta_app.ui.profile.ProfileFragment"
