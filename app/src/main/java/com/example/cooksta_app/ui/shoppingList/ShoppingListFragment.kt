@@ -43,6 +43,7 @@ class ShoppingListFragment : Fragment() {
         return binding.root
     }
 
+    // TODO: Extract strings to XML
     private fun setupDeleteDialog() {
         deleteDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Bist du sicher?")

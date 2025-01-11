@@ -85,16 +85,23 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
     }
 
     fun deleteSelectedItems() {
-        val selectedIdHashes = tracker?.selection?.toList()?.sortedDescending() ?: return
+        val selectedRecipeIds = tracker?.selection?.toList() ?: return
         tracker!!.clearSelection()
-        selectedIdHashes.forEach { idHash ->
-            viewModel.removeRecipe(idHash)
+        selectedRecipeIds.forEach { id ->
+            viewModel.removeRecipe(id)
         }
     }
 
     override fun onSetPortions(id: String, portions: Int) {
-        Log.d("RecipeListFragment", "onSetPortions: $portions")
         viewModel.setRecipePortions(id, portions)
+    }
+
+    override fun onDecreasePortions(id: String) {
+        viewModel.decreaseRecipePortions(id)
+    }
+
+    override fun onIncreasePortions(id: String) {
+        viewModel.increaseRecipePortions(id)
     }
 
     override fun onCreateView(
@@ -121,7 +128,6 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
         tracker?.addObserver(object : SelectionTracker.SelectionObserver<String>() {
             override fun onSelectionChanged() {
                 super.onSelectionChanged()
-                Log.d("RecipeListFragment", "onSelectionChanged: ${tracker!!.selection}")
                 onSelectionChanged(tracker!!.selection)
             }
         })
@@ -179,10 +185,13 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int, payloads: MutableList<Any>) {
+        val recipe = getItem(position)
         if (payloads.isNotEmpty()) {
-            val payload = payloads[0] as? Int
-            if (payload != null) {
-                holder.updatePortions(payload)
+            payloads.forEach { payload ->
+                when (payload) {
+                    "Selection-Changed" -> holder.updateSelection(tracker?.isSelected(recipe.id) ?: false)
+                    is Payload.UpdatePortions -> holder.updatePortions(recipe.id, payload.portions)
+                }
             }
         } else {
             super.onBindViewHolder(holder, position, payloads)
@@ -191,9 +200,16 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
 
     interface RecipeInteractionListener {
         fun onSetPortions(id: String, portions: Int)
+        fun onDecreasePortions(id: String)
+        fun onIncreasePortions(id: String)
     }
 
     inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val recipeCard = itemView.findViewById<MaterialCardView>(R.id.recipeCard)
+        private val recipeName = itemView.findViewById<MaterialTextView>(R.id.recipeName)
+        private val recipePortions = itemView.findViewById<EditText>(R.id.recipePortions)
+        private val decButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsDecButton)
+        private val incButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsIncButton)
 
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> {
             return object : ItemDetailsLookup.ItemDetails<String>() {
@@ -202,29 +218,21 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
             }
         }
 
-        fun updatePortions(portions: Int) {
-            val recipePortions = itemView.findViewById<EditText>(R.id.recipePortions)
+        fun updatePortions(id: String, portions: Int) {
+            interactionListener.onSetPortions(id, portions)
             recipePortions.setText(String.format(Locale.getDefault(), "%d", portions))
         }
 
-        fun bind(recipe: Recipe, isSelected: Boolean) {
-            val recipeCard = itemView.findViewById<MaterialCardView>(R.id.recipeCard)
-            val recipeName = itemView.findViewById<MaterialTextView>(R.id.recipeName)
-            val recipePortions = itemView.findViewById<EditText>(R.id.recipePortions)
-            val decButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsDecButton)
-            val incButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsIncButton)
-
-            fun setPortions(amount: Int) {
-                val newAmount = amount.coerceAtLeast(1).coerceAtMost(999)
-                interactionListener.onSetPortions(recipe.id, newAmount)
-                recipePortions.setText(String.format(Locale.getDefault(), "%d", newAmount))
-            }
-
+        fun updateSelection(isSelected: Boolean) {
             val defaultColor = ContextCompat.getColor(recipeCard.context, R.color.md_theme_surface)
             val selectedColor = ContextCompat.getColor(recipeCard.context, R.color.md_theme_surfaceVariant)
 
-            recipeCard.setBackgroundColor(if (isSelected) selectedColor else defaultColor)
+            recipeCard.setCardBackgroundColor(if (isSelected) selectedColor else defaultColor)
             recipeCard.isActivated = isSelected
+        }
+
+        fun bind(recipe: Recipe, isSelected: Boolean) {
+            updateSelection(isSelected)
 
             recipeName.text = recipe.name
             recipePortions.setText(String.format(Locale.getDefault(), "%d", recipe.portions))
@@ -248,20 +256,24 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
                 view as EditText
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val inputText = recipePortions.text.toString()
-                    setPortions(inputText.toIntOrNull() ?: 0)
+                    updatePortions(recipe.id, inputText.toIntOrNull() ?: 0)
                     view.isCursorVisible = false
                 }
                 false
             }
             decButton.setOnClickListener {
-                setPortions(recipe.portions - 1)
+                interactionListener.onDecreasePortions(recipe.id)
                 recipePortions.clearFocus()
             }
             incButton.setOnClickListener {
-                setPortions(recipe.portions + 1)
+                interactionListener.onIncreasePortions(recipe.id)
                 recipePortions.clearFocus()
             }
         }
+    }
+
+    sealed class Payload {
+        data class UpdatePortions(val portions: Int) : Payload()
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Recipe>() {
@@ -274,7 +286,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
         }
 
         override fun getChangePayload(oldItem: Recipe, newItem: Recipe): Any? {
-            return if (oldItem.portions != newItem.portions) newItem.portions else null
+            return if (oldItem.portions != newItem.portions) Payload.UpdatePortions(newItem.portions) else null
         }
     }
 }

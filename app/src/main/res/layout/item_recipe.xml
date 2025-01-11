@@ -39,11 +39,14 @@
         <com.google.android.material.card.MaterialCardView
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/transparent">
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/recipePortionsDecButton"
                     style="?attr/materialIconButtonStyle"
@@ -51,6 +54,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="Weniger"
                     app:icon="@drawable/ic_stat_down" />
+
                 <EditText
                     android:id="@+id/recipePortions"
                     android:layout_width="wrap_content"
@@ -63,6 +67,7 @@
                     android:maxLength="3"
                     android:text=""
                     tools:text="1" />
+
                 <Button
                     android:id="@+id/recipePortionsIncButton"
                     style="?attr/materialIconButtonStyle"

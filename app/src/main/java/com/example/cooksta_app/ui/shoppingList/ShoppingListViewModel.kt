@@ -22,10 +22,15 @@ class ShoppingListViewModel : ViewModel() {
 
     }
     fun setRecipePortions(id: String, portions: Int) {
-        val updatedList = _recipes.value?.map {
-            if (it.id == id) it.copy(portions = portions) else it
+        _recipes.value = _recipes.value?.map {
+            if (it.id == id) it.copy(portions = portions.coerceAtLeast(1).coerceAtMost(999)) else it
         } ?: emptyList()
-        _recipes.value = updatedList
+    }
+    fun increaseRecipePortions(id: String) {
+        setRecipePortions(id, _recipes.value?.find { it.id == id }?.portions?.plus(1) ?: 1)
+    }
+    fun decreaseRecipePortions(id: String) {
+        setRecipePortions(id, _recipes.value?.find { it.id == id }?.portions?.minus(1) ?: 1)
     }
 
     val ingredients = mutableListOf<Ingredient>(
