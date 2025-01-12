@@ -1,15 +1,11 @@
 package com.example.cooksta_app.ui.profile
 
-import android.app.Dialog
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
@@ -25,6 +21,10 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
+    private fun handleLogout() {
+        // TODO: Handle logout
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,9 +37,10 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.logoutButton.setOnClickListener {
+            handleLogout()
+        }
         binding.editButton.setOnClickListener {
-//            val editProfileFragment = EditProfileFragment()
-//            editProfileFragment.show(parentFragmentManager, "EditProfileFragment")
             findNavController().navigate(R.id.action_to_edit_profile)
         }
 
@@ -69,6 +70,10 @@ class EditProfileFragment : DialogFragment() {
     private var _binding: FragmentEditProfileBinding? = null
     private val binding get() = _binding!!
 
+    private fun saveProfileData() {
+        // TODO: Save profile data
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,12 +82,11 @@ class EditProfileFragment : DialogFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
 
-//        setStyle(STYLE_NO_FRAME, 0)
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.saveProfile -> {
-                    // TODO: Save profile data
+                    saveProfileData()
                     findNavController().navigateUp()
                     true
                 }
