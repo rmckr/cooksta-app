@@ -1,32 +1,41 @@
 package com.example.cooksta_app.ui.shoppingList
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentShoppingListBinding
+import com.example.cooksta_app.ui.recipeList.RecipeListFragment
 import com.example.cooksta_app.ui.recyclerView.RecyclerViewFragment
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.textview.MaterialTextView
 import kotlin.math.abs
 
 class ShoppingListFragment : Fragment() {
 
     private var _binding: FragmentShoppingListBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var viewModel: ShoppingListViewModel
+    private var deleteDialog: MaterialAlertDialogBuilder? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
 
+        setupDeleteDialog()
         handleVisibility()
         setupToolbar()
         setupViewPager()
@@ -34,8 +43,27 @@ class ShoppingListFragment : Fragment() {
         return binding.root
     }
 
+    // TODO: Extract strings to XML
+    private fun setupDeleteDialog() {
+        deleteDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Bist du sicher?")
+            .setMessage("Die Einkaufsliste löschen bedeutet, dass alle hinugefügten Rezepte gelöscht werden.")
+            .setNegativeButton("Nein") { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton("Ja, löschen") { _, _ ->
+                viewModel.clearRecipes()
+                viewModel.ingredients.clear()
+                handleVisibility()
+            }
+
+        binding.floatingActionButton.setOnClickListener {
+            deleteDialog!!.show()
+        }
+    }
+
     private fun handleVisibility() {
-        if (viewModel.recipes.isEmpty() && viewModel.ingredients.isEmpty()) {
+        if (viewModel.recipes.value?.isEmpty() != false && viewModel.ingredients.isEmpty()) {
             binding.emptyLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
             binding.floatingActionButton.visibility = View.GONE
@@ -57,14 +85,10 @@ class ShoppingListFragment : Fragment() {
             }
         }
 
-        binding.floatingActionButton.setOnClickListener {
-            handleDelete()
-        }
-
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.deleteShoppingList -> {
-                    handleDelete()
+                    deleteDialog?.show()
                     true
                 }
                 else -> false
@@ -72,14 +96,10 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
-    private fun handleDelete() {
-        viewModel.recipes.clear()
-        viewModel.ingredients.clear()
-        handleVisibility()
-    }
-
     private fun setupViewPager() {
-        val adapter = ShoppingListPagerAdapter(this, listOf(RecipeListFragment(), IngredientsListFragment()))
+        val recipeListFragment = RecipeListFragment()
+        val ingredientsListFragment = IngredientsListFragment()
+        val adapter = ShoppingListPagerAdapter(this, listOf(recipeListFragment, ingredientsListFragment))
         binding.viewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout2, binding.viewPager) { tab, position ->
@@ -98,12 +118,15 @@ class ShoppingListFragment : Fragment() {
 }
 
 data class Recipe(
-    val name: String
+    val id: String,
+    val name: String,
+    var portions: Int = 1
 )
 
 data class Ingredient(
     val name: String,
-    val amount: String
+    val amount: String,
+    var isChecked: Boolean = false
 )
 
 class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<Fragment>) : FragmentStateAdapter(fragment) {
@@ -114,44 +137,20 @@ class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<F
     }
 }
 
-class RecipeListFragment: RecyclerViewFragment<RecipesAdapter>() {
-    override fun provideAdapter(): RecipesAdapter {
-        val viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
-        return RecipesAdapter(viewModel.recipes)
-    }
-}
-
-class IngredientsListFragment: RecyclerViewFragment<IngredientsAdapter>() {
+class IngredientsListFragment : RecyclerViewFragment<IngredientsAdapter>() {
     override fun provideAdapter(): IngredientsAdapter {
-        val viewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
         return IngredientsAdapter(viewModel.ingredients)
     }
-}
-
-class RecipesAdapter(private val recipes: List<Recipe>) : RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
-
-    class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val recipeView: TextView = itemView.findViewById(R.id.recipeName)
-    }
-
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_recipe, viewGroup, false)
-        return RecipeViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        val recipe = recipes[position]
-        holder.recipeView.text = recipe.name
-    }
-
-    override fun getItemCount(): Int = recipes.size
 }
 
 class IngredientsAdapter(private val ingredients: List<Ingredient>) : RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
 
     class IngredientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ingredientName: TextView = itemView.findViewById(R.id.ingredientName)
-        val ingredientAmount: TextView = itemView.findViewById(R.id.ingredientAmount)
+        val ingredientCard: MaterialCardView = itemView.findViewById(R.id.ingredientCard)
+        val ingredientName: MaterialTextView = itemView.findViewById(R.id.ingredientName)
+        val ingredientAmount: MaterialTextView = itemView.findViewById(R.id.ingredientAmount)
+        val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkBox)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder {
@@ -161,8 +160,21 @@ class IngredientsAdapter(private val ingredients: List<Ingredient>) : RecyclerVi
 
     override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
         val ingredient = ingredients[position]
+
+        val defaultColor = ContextCompat.getColor(holder.ingredientName.context, R.color.md_theme_onSurface)
+        val checkedColor = ContextCompat.getColor(holder.ingredientName.context, R.color.md_theme_primary)
+
         holder.ingredientName.text = ingredient.name
+        holder.ingredientName.paintFlags = if (ingredient.isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
+        holder.ingredientName.setTextColor(if (ingredient.isChecked) checkedColor else defaultColor)
         holder.ingredientAmount.text = ingredient.amount
+
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            ingredient.isChecked = isChecked
+            holder.ingredientName.paintFlags = if (isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
+            holder.ingredientName.setTextColor(if (isChecked) checkedColor else defaultColor)
+        }
+        holder.ingredientCard.setOnClickListener { holder.checkBox.isChecked = !holder.checkBox.isChecked }
     }
 
     override fun getItemCount(): Int = ingredients.size
