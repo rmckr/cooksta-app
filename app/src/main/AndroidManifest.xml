@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- TODO: remove usesCleartextTraffix in production or set up network configuration -->
+    <!-- TODO: remove usesCleartextTraffic in production or set up network configuration -->
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.CookstaApp"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -27,7 +27,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".EditProfileActivity" />
     </application>
 
 </manifest>
