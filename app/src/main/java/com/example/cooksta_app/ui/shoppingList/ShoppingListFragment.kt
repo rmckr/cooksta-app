@@ -13,7 +13,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentShoppingListBinding
 import com.example.cooksta_app.ui.recipeList.RecipeListFragment
-import com.example.cooksta_app.ui.recyclerView.RecyclerViewFragment
+import com.example.cooksta_app.ui.shared.recyclerView.RecyclerViewFragment
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

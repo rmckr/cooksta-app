@@ -1,7 +1,7 @@
 package com.example.cooksta_app.ui.recipeList
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
+import com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
 import com.example.cooksta_app.ui.shoppingList.Recipe
 import com.example.cooksta_app.ui.shoppingList.ShoppingListViewModel
 import com.google.android.material.button.MaterialButton
@@ -77,6 +79,7 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
             if (actionMode == null) {
                 actionMode = requireActivity().startActionMode(actionModeCallback)
             }
+            // TODO: String resource extrahieren
             actionMode?.title = "$selectedCount Rezept(e) ausgewählt"
         } else {
             actionMode?.finish()
@@ -94,14 +97,6 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
 
     override fun onSetPortions(id: String, portions: Int) {
         viewModel.setRecipePortions(id, portions)
-    }
-
-    override fun onDecreasePortions(id: String) {
-        viewModel.decreaseRecipePortions(id)
-    }
-
-    override fun onIncreasePortions(id: String) {
-        viewModel.increaseRecipePortions(id)
     }
 
     override fun onCreateView(
@@ -200,16 +195,12 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
 
     interface RecipeInteractionListener {
         fun onSetPortions(id: String, portions: Int)
-        fun onDecreasePortions(id: String)
-        fun onIncreasePortions(id: String)
     }
 
     inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val recipeCard = itemView.findViewById<MaterialCardView>(R.id.recipeCard)
         private val recipeName = itemView.findViewById<MaterialTextView>(R.id.recipeName)
-        private val recipePortions = itemView.findViewById<EditText>(R.id.recipePortions)
-        private val decButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsDecButton)
-        private val incButton = itemView.findViewById<MaterialButton>(R.id.recipePortionsIncButton)
+        private val recipePortionsSelector = itemView.findViewById<NumberSelector>(R.id.recipePortionsSelector)
 
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> {
             return object : ItemDetailsLookup.ItemDetails<String>() {
@@ -220,7 +211,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
 
         fun updatePortions(id: String, portions: Int) {
             interactionListener.onSetPortions(id, portions)
-            recipePortions.setText(String.format(Locale.getDefault(), "%d", portions))
+            recipePortionsSelector.setValue(portions)
         }
 
         fun updateSelection(isSelected: Boolean) {
@@ -235,39 +226,16 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
             updateSelection(isSelected)
 
             recipeName.text = recipe.name
-            recipePortions.setText(String.format(Locale.getDefault(), "%d", recipe.portions))
 
-            recipePortions.setOnFocusChangeListener { view, hasFocus ->
-                view as EditText
-                if (hasFocus) {
-                    view.post { view.selectAll() }
-                } else {
-                    view.post {
-                        view.setSelection(0, 0)
-                        view.isCursorVisible = false
-                    }
-                }
+            recipePortionsSelector.setValue(recipe.portions)
+            recipePortionsSelector.setOnValueChangeListener {
+                interactionListener.onSetPortions(recipe.id, it)
             }
-            recipePortions.setOnClickListener { view ->
-                view as EditText
-                view.selectAll()
-            }
-            recipePortions.setOnEditorActionListener { view, actionId, _ ->
-                view as EditText
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    val inputText = recipePortions.text.toString()
-                    updatePortions(recipe.id, inputText.toIntOrNull() ?: 0)
-                    view.isCursorVisible = false
-                }
-                false
-            }
-            decButton.setOnClickListener {
-                interactionListener.onDecreasePortions(recipe.id)
-                recipePortions.clearFocus()
-            }
-            incButton.setOnClickListener {
-                interactionListener.onIncreasePortions(recipe.id)
-                recipePortions.clearFocus()
+
+            recipeCard.setOnClickListener { view ->
+                view.clearFocus()
+                val inputMethodManager = itemView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(itemView.windowToken, 0)
             }
         }
     }

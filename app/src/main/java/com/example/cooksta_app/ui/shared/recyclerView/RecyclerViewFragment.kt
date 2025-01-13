@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.recyclerView
+package com.example.cooksta_app.ui.shared.recyclerView
 
 import android.os.Bundle
 import android.view.LayoutInflater
