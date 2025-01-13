@@ -17,9 +17,9 @@
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/navigation_add"
-        android:name="com.example.cooksta_app.ui.add.AddFragment"
+        android:name="com.example.cooksta_app.ui.add.CreateFragment"
         android:label="@string/title_add"
-        tools:layout="@layout/fragment_add" />
+        tools:layout="@layout/fragment_create" />
     <fragment
         android:id="@+id/navigation_shopping_list"
         android:name="com.example.cooksta_app.ui.shoppingList.ShoppingListFragment"

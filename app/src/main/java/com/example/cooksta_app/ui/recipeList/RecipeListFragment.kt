@@ -170,7 +170,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_recipe, viewGroup, false)
+        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_shopping_list_recipe, viewGroup, false)
         return RecipeViewHolder(view)
     }
 
