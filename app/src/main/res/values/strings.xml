@@ -12,4 +12,13 @@
     <string name="ingredients">Alle Zutaten</string>
     <string name="passwordHint">Passwort</string>
     <string name="usernameHint">Benutzername</string>
+    <string name="asianCategory">Asiatisch</string>
+    <string name="bakeCategory">Backen</string>
+    <string name="dessertCategory">Desserts</string>
+    <string name="beverageCategory">Getränke</string>
+    <string name="mainDishCategory">Hauptgerichte</string>
+    <string name="italianCategory">Italienisch</string>
+    <string name="fastCategory">Schnell</string>
+    <string name="soupCategory">Suppen &amp; Eintöpfe</string>
+    <string name="vegetarianCategory">Vegetarisch</string>
 </resources>

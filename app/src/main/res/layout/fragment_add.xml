@@ -84,7 +84,7 @@
                     android:id="@+id/chip2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Asiatisch"
+                    android:text="@string/asianCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_ramen" />
@@ -94,7 +94,7 @@
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Backen"
+                    android:text="@string/bakeCategory"
                     app:closeIconEnabled="false"
                     app:chipIcon="@drawable/ic_cake" />
 
@@ -102,7 +102,7 @@
                     android:id="@+id/chip6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Desserts"
+                    android:text="@string/dessertCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_icecream" />
@@ -111,7 +111,7 @@
                     android:id="@+id/chip8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Getränke"
+                    android:text="@string/beverageCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_liquor" />
@@ -120,7 +120,7 @@
                     android:id="@+id/chip3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hauptgerichte"
+                    android:text="@string/mainDishCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_lunch" />
@@ -130,7 +130,7 @@
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Italienisch"
+                    android:text="@string/italianCategory"
                     app:closeIconVisible="false"
                     app:chipIcon="@drawable/ic_pizza" />
 
@@ -138,7 +138,7 @@
                     android:id="@+id/chip4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Schnell"
+                    android:text="@string/fastCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_acute" />
@@ -147,7 +147,7 @@
                     android:id="@+id/chip7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Suppen &amp; Eintöpfe"
+                    android:text="@string/soupCategory"
                     app:closeIconEnabled="false"
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     app:chipIcon="@drawable/ic_soup" />
@@ -157,7 +157,7 @@
                     style="@style/Widget.Material3.Chip.Input.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vegetarisch"
+                    android:text="@string/vegetarianCategory"
                     app:chipIcon="@drawable/ic_apple"
                     app:closeIconVisible="false" />
 
