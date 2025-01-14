@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.add
+package com.example.cooksta_app.ui.create
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,6 +1,5 @@
-package com.example.cooksta_app.ui.categoryGrid
+package com.example.cooksta_app.ui.search
 
-import android.R.attr
 import android.graphics.Rect
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -8,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
-import com.example.cooksta_app.ui.shared.recyclerView.RecyclerViewFragment
+import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 
 
 data class CategoryCard(

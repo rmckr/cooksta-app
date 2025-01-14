@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.shared.numberSelector
+package com.example.cooksta_app.ui.shared
 
 import android.content.Context
 import android.util.AttributeSet

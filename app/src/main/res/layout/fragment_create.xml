@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp"
-                tools:context=".ui.add.CreateFragment">
+                tools:context=".ui.create.CreateFragment">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -96,7 +96,7 @@
 
                     <fragment
                         android:id="@+id/ingredientSelectionList"
-                        android:name="com.example.cooksta_app.ui.ingredientSelectionList.IngredientSelectionListFragment"
+                        android:name="com.example.cooksta_app.ui.create.IngredientSelectionListFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
@@ -146,7 +146,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1">
 
-                            <com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
+                            <com.example.cooksta_app.ui.shared.NumberSelector
                                 android:id="@+id/recipePortionsSelector"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />

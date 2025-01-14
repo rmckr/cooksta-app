@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.ingredientSelectionList
+package com.example.cooksta_app.ui.create
 
 import android.os.Bundle
 import android.text.TextWatcher
@@ -20,7 +20,8 @@ import com.google.android.material.textfield.TextInputLayout
 
 data class IngredientSelectionItem(var name: String, var amount: Double?)
 
-class IngredientSelectionListFragment : Fragment(), IngredientSelectionAdapter.IngredientSelectionInteractionListener {
+class IngredientSelectionListFragment : Fragment(),
+    IngredientSelectionAdapter.IngredientSelectionInteractionListener {
 
     private var _binding: FragmentRecyclerViewBinding? = null
     private val binding get() = _binding!!

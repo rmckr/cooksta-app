@@ -1,20 +1,13 @@
-package com.example.cooksta_app.ui.add
+package com.example.cooksta_app.ui.create
 
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
-import com.example.cooksta_app.ui.ingredientSelectionList.IngredientSelectionListFragment
-import com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.MaterialShapeDrawable
 

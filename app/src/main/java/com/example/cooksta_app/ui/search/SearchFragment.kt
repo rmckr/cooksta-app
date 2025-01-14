@@ -27,11 +27,6 @@ class SearchFragment : Fragment() {
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
-//        gridView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-//            val category = categoryNames[position]
-//            Toast.makeText(requireContext(), "Kategorie: $category", Toast.LENGTH_SHORT).show()
-//        }
-
         return binding.root
     }
 

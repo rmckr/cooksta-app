@@ -24,7 +24,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/categoryGridContainer"
-        android:name="com.example.cooksta_app.ui.categoryGrid.CategoryGrid"
+        android:name="com.example.cooksta_app.ui.search.CategoryGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

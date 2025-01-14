@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.recipeList
+package com.example.cooksta_app.ui.shoppingList
 
 import android.content.Context
 import android.os.Bundle
@@ -9,9 +9,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -26,14 +24,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
-import com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
-import com.example.cooksta_app.ui.shoppingList.Recipe
-import com.example.cooksta_app.ui.shoppingList.ShoppingListViewModel
-import com.google.android.material.button.MaterialButton
+import com.example.cooksta_app.ui.shared.NumberSelector
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.textview.MaterialTextView
-import java.util.Locale
 
 class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener {
 
@@ -158,7 +152,9 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
     }
 }
 
-class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<Recipe, RecipesAdapter.RecipeViewHolder>(DiffCallback()) {
+class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<Recipe, RecipesAdapter.RecipeViewHolder>(
+    DiffCallback()
+) {
     var tracker: SelectionTracker<String>? = null
 
     init {
