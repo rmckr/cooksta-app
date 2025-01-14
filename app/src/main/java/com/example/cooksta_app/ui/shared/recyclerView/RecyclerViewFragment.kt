@@ -1,13 +1,17 @@
 package com.example.cooksta_app.ui.shared.recyclerView
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
 
 abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
@@ -17,6 +21,14 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
     abstract fun provideAdapter(): T
 
+    open fun provideLayoutManager(): LayoutManager {
+        return LinearLayoutManager(context)
+    }
+
+    open fun provideDecoration(): ItemDecoration {
+        return DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,11 +36,10 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
     ): View {
         _binding = FragmentRecyclerViewBinding.inflate(inflater, container, false)
 
-        val adapter = provideAdapter()
-        val layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
+        binding.recyclerView.adapter = provideAdapter()
+        binding.recyclerView.layoutManager = provideLayoutManager()
+        binding.recyclerView.addItemDecoration(provideDecoration())
+
         return binding.root
     }
 
