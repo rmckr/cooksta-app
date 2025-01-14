@@ -23,7 +23,7 @@
             app:title="Neues Rezept" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/createScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -345,5 +345,5 @@
                     app:iconGravity="textStart" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
