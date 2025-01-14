@@ -114,6 +114,11 @@ class IngredientSelectionListFragment : Fragment(), IngredientSelectionAdapter.I
         }
         Log.d("Test", "onIngredientDeleted: $selectedIngredients")
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
 
 class IngredientSelectionAdapter(

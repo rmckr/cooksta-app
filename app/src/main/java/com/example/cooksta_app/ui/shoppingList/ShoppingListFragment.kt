@@ -17,6 +17,7 @@ import com.example.cooksta_app.ui.shared.recyclerView.RecyclerViewFragment
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.textview.MaterialTextView
 import kotlin.math.abs
@@ -34,6 +35,9 @@ class ShoppingListFragment : Fragment() {
     ): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+
+        binding.shoppingListAppBarLayout.statusBarForeground =
+            MaterialShapeDrawable.createWithElevationOverlay(context)
 
         setupDeleteDialog()
         handleVisibility()
@@ -67,7 +71,7 @@ class ShoppingListFragment : Fragment() {
             binding.emptyLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
             binding.floatingActionButton.visibility = View.GONE
-            binding.appBarLayout.setExpanded(true, true)
+            binding.shoppingListAppBarLayout.setExpanded(true, true)
         } else {
             binding.emptyLayout.visibility = View.GONE
             binding.viewPager.visibility = View.VISIBLE
@@ -76,7 +80,7 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+        binding.shoppingListAppBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
             val isCollapsed = abs(verticalOffset) == appBarLayout.totalScrollRange
             if (isCollapsed) {
                 binding.floatingActionButton.show()

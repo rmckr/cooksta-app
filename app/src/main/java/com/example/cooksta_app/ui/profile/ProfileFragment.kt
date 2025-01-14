@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -65,7 +64,7 @@ class ProfileFragment : Fragment() {
     }
 }
 
-class EditProfileFragment : DialogFragment() {
+class EditProfileFragment : Fragment() {
 
     private var _binding: FragmentEditProfileBinding? = null
     private val binding get() = _binding!!
@@ -82,31 +81,28 @@ class EditProfileFragment : DialogFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
 
-        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+        fun goBack() {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbar.setNavigationOnClickListener { goBack() }
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.saveProfile -> {
                     saveProfileData()
-                    findNavController().navigateUp()
+                    goBack()
                     true
                 }
                 else -> false
             }
         }
-        binding.saveProfileButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.saveProfileButton.setOnClickListener { goBack() }
 
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.apply {
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            setBackgroundDrawable(null)
-            setWindowAnimations(android.R.style.Animation_Translucent)
-            attributes = attributes.apply { dimAmount = 0f }
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

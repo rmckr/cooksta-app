@@ -1,326 +1,349 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/createAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        tools:context=".ui.add.CreateFragment">
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/createScrollView"
+        app:contentScrim="@color/md_theme_primary">
 
-        <com.google.android.material.textview.MaterialTextView
-            style="@style/TextAppearance.Material3.TitleLarge"
+        <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Neues Rezept" />
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:title="Neues Rezept" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:hint="Titel">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/recipeTitleInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:hint="Beschreibung">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/recipeDescriptionInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:hint="Erläutere hier die einzelnen Schritte">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/recipeStepsInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginVertical="8dp"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Zutaten" />
-
-<!--            TODO: Zutaten-Component -->
-
-            <fragment
-                android:id="@+id/ingredientSelectionList"
-                android:name="com.example.cooksta_app.ui.ingredientSelectionList.IngredientSelectionListFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/addIngredientButton"
-                style="@style/Widget.Material3.Button.TonalButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Neue Zutat"
-                app:icon="@drawable/ic_add" />
-        </LinearLayout>
+    <ScrollView
+        android:id="@+id/createScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp">
+                android:orientation="vertical"
+                android:padding="16dp"
+                tools:context=".ui.add.CreateFragment">
 
-                <com.google.android.material.textview.MaterialTextView
-                    style="@style/TextAppearance.Material3.TitleMedium"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Portionen" />
+                    android:layout_marginBottom="8dp"
+                    android:hint="Titel">
 
-                <com.google.android.material.textview.MaterialTextView
-                    style="@style/TextAppearance.Material3.TitleMedium"
-                    android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/recipeTitleInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Sichtbarkeit" />
-            </LinearLayout>
+                    android:layout_marginBottom="8dp"
+                    android:hint="Beschreibung">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/recipeDescriptionInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <FrameLayout
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_marginBottom="8dp"
+                    android:hint="Erläutere hier die einzelnen Schritte">
 
-                    <com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
-                        android:id="@+id/recipePortionsSelector"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/recipeStepsInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Zutaten" />
+
+                    <fragment
+                        android:id="@+id/ingredientSelectionList"
+                        android:name="com.example.cooksta_app.ui.ingredientSelectionList.IngredientSelectionListFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        tools:layout="@layout/item_ingredient_selection_ingredient" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addIngredientButton"
+                        style="@style/Widget.Material3.Button.TonalButton.Icon"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:text="Neue Zutat"
+                        app:icon="@drawable/ic_add" />
+                </LinearLayout>
 
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/materialSwitch"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Öffentlich" />
-            </LinearLayout>
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical">
 
-        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
-            android:orientation="vertical">
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/TextAppearance.Material3.TitleMedium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Portionen" />
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Kategorien (max. 3)" />
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/TextAppearance.Material3.TitleMedium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Sichtbarkeit" />
+                    </LinearLayout>
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip2"
-                    android:layout_width="wrap_content"
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
+                                android:id="@+id/recipePortionsSelector"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </FrameLayout>
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/materialSwitch"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="Öffentlich" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/asianCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_ramen" />
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip9"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    android:layout_width="wrap_content"
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Kategorien (max. 3)" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip2"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/asianCategory"
+                            app:chipIcon="@drawable/ic_ramen"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip9"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/bakeCategory"
+                            app:chipIcon="@drawable/ic_cake"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip6"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dessertCategory"
+                            app:chipIcon="@drawable/ic_icecream"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip8"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/beverageCategory"
+                            app:chipIcon="@drawable/ic_liquor"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip3"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/mainDishCategory"
+                            app:chipIcon="@drawable/ic_lunch"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip1"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/italianCategory"
+                            app:chipIcon="@drawable/ic_pizza"
+                            app:closeIconVisible="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip4"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/fastCategory"
+                            app:chipIcon="@drawable/ic_acute"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip7"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/soupCategory"
+                            app:chipIcon="@drawable/ic_soup"
+                            app:closeIconEnabled="false" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip5"
+                            style="@style/Widget.Material3.Chip.Input.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/vegetarianCategory"
+                            app:chipIcon="@drawable/ic_apple"
+                            app:closeIconVisible="false" />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Medien" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/selectImageButton"
+                            style="@style/Widget.Material3.Button.TonalButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bild wählen (erforderlich)"
+                            app:icon="@drawable/ic_photo_library" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/imagePreview"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerCrop" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/selectVideoButton"
+                            style="@style/Widget.Material3.Button.TonalButton.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Video wählen (optional)"
+                            app:icon="@drawable/ic_video_library" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:id="@+id/videoPreview"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerCrop" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/bakeCategory"
-                    app:closeIconEnabled="false"
-                    app:chipIcon="@drawable/ic_cake" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dessertCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_icecream" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/beverageCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_liquor" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/mainDishCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_lunch" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip1"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/italianCategory"
-                    app:closeIconVisible="false"
-                    app:chipIcon="@drawable/ic_pizza" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/fastCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_acute" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/soupCategory"
-                    app:closeIconEnabled="false"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    app:chipIcon="@drawable/ic_soup" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip5"
-                    style="@style/Widget.Material3.Chip.Input.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vegetarianCategory"
-                    app:chipIcon="@drawable/ic_apple"
-                    app:closeIconVisible="false" />
-
-            </com.google.android.material.chip.ChipGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginVertical="8dp"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Medien" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp">
+                    android:layout_marginVertical="16dp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectImageButton"
-                    style="@style/Widget.Material3.Button.TonalButton.Icon"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/recipeSaveButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Bild wählen (erforderlich)"
-                    app:icon="@drawable/ic_photo_library" />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/imagePreview"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="centerCrop" />
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="Speichern"
+                    app:icon="@drawable/ic_save"
+                    app:iconGravity="textStart" />
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectVideoButton"
-                    style="@style/Widget.Material3.Button.TonalButton.Icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Video wählen (optional)"
-                    app:icon="@drawable/ic_video_library" />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/videoPreview"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="centerCrop" />
-            </LinearLayout>
-
         </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="16dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/recipeSaveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="Speichern"
-            app:icon="@drawable/ic_save"
-            app:iconGravity="textStart" />
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

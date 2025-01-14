@@ -16,6 +16,7 @@ import com.example.cooksta_app.databinding.FragmentCreateBinding
 import com.example.cooksta_app.ui.ingredientSelectionList.IngredientSelectionListFragment
 import com.example.cooksta_app.ui.shared.numberSelector.NumberSelector
 import com.google.android.material.chip.Chip
+import com.google.android.material.shape.MaterialShapeDrawable
 
 class CreateFragment : Fragment() {
 
@@ -31,6 +32,9 @@ class CreateFragment : Fragment() {
     ): View {
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[CreateViewModel::class.java]
+
+        binding.createAppBarLayout.statusBarForeground =
+            MaterialShapeDrawable.createWithElevationOverlay(context)
 
         val maxSelection = 3
         var selectedChipCount = 0
