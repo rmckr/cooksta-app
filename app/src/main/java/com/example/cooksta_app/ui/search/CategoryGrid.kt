@@ -57,11 +57,10 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
             ) {
                 val position = parent.getChildAdapterPosition(view)
                 val column = position % spanCount
-                outRect.left = if (column == 0) 0 else pixelSpacing / 2
-                outRect.right = if (column == spanCount - 1) 0 else pixelSpacing / 2
+                outRect.left = if (column == 0) 0 else if (column < spanCount - 1) pixelSpacing / 4 else pixelSpacing / 2
+                outRect.right = if (column == 0) pixelSpacing / 2 else if (column < spanCount - 1) pixelSpacing / 4 else 0
                 outRect.top = if (position < spanCount) 0 else pixelSpacing
                 outRect.bottom = 0
-
             }
         }
     }
