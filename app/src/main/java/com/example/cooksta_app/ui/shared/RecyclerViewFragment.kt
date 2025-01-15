@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
+import com.google.android.material.divider.MaterialDividerItemDecoration
 
 abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
@@ -23,8 +24,8 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
         return LinearLayoutManager(context)
     }
 
-    open fun provideDecoration(): ItemDecoration {
-        return DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL)
+    open fun provideDecoration(): ItemDecoration? {
+        return MaterialDividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
     }
 
     override fun onCreateView(
