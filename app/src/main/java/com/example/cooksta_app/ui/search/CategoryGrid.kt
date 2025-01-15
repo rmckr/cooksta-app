@@ -70,6 +70,20 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
 class CategoryAdapter(
     private val cards: List<CategoryCard>
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+    override fun getItemCount(): Int {
+        return cards.size
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_card, parent, false)
+        return CategoryViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
+        val card = cards[position]
+        holder.bind(card)
+    }
+
     inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val imageView = itemView.findViewById<ImageView>(R.id.imageCard)
         private val textView = itemView.findViewById<TextView>(R.id.textViewCard)
@@ -78,23 +92,5 @@ class CategoryAdapter(
             imageView.setImageResource(card.imageResource)
             textView.setText(card.textResource)
         }
-    }
-
-    private fun getItem(position: Int): CategoryCard {
-        return cards[position]
-    }
-
-    override fun getItemCount(): Int {
-        return cards.size
-    }
-
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): CategoryViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_category_card, viewGroup, false)
-        return CategoryViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val card = getItem(position)
-        holder.bind(card)
     }
 }

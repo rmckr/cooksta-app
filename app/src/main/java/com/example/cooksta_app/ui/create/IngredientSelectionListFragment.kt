@@ -69,7 +69,7 @@ class IngredientSelectionListFragment : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentRecyclerViewBinding.inflate(inflater, container, false)
 
         ingredientAdapter = IngredientSelectionAdapter(
