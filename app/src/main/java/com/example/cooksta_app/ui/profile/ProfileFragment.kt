@@ -16,9 +16,6 @@ import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
-import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
-import com.example.cooksta_app.ui.shoppingList.RecipeListFragment
-import com.example.cooksta_app.ui.shoppingList.ShoppingListPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
