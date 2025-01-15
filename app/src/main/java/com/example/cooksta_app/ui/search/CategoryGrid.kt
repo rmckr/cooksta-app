@@ -19,15 +19,15 @@ data class CategoryCard(
 )
 
 private val categories = listOf(
-    CategoryCard(textResource = R.string.asianCategory, imageResource = R.drawable.ic_ramen),
-    CategoryCard(textResource = R.string.bakeCategory, imageResource = R.drawable.ic_cake),
-    CategoryCard(textResource = R.string.dessertCategory, imageResource = R.drawable.ic_icecream),
+    CategoryCard(textResource = R.string.asianCategory, imageResource = R.drawable.ic_ramen_card),
+    CategoryCard(textResource = R.string.bakeCategory, imageResource = R.drawable.ic_cake_card),
+    CategoryCard(textResource = R.string.dessertCategory, imageResource = R.drawable.ic_icecream_card),
     CategoryCard(textResource = R.string.beverageCategory, imageResource = R.drawable.ic_liquor),
-    CategoryCard(textResource = R.string.mainDishCategory, imageResource = R.drawable.ic_lunch),
-    CategoryCard(textResource = R.string.italianCategory, imageResource = R.drawable.ic_pizza),
+    CategoryCard(textResource = R.string.mainDishCategory, imageResource = R.drawable.ic_lunch_card),
+    CategoryCard(textResource = R.string.italianCategory, imageResource = R.drawable.ic_pizza_card),
     CategoryCard(textResource = R.string.fastCategory, imageResource = R.drawable.ic_acute),
-    CategoryCard(textResource = R.string.soupCategory, imageResource = R.drawable.ic_soup),
-    CategoryCard(textResource = R.string.vegetarianCategory, imageResource = R.drawable.ic_apple),
+    CategoryCard(textResource = R.string.soupCategory, imageResource = R.drawable.ic_soup_card),
+    CategoryCard(textResource = R.string.vegetarianCategory, imageResource = R.drawable.ic_vegetables_card),
 )
 
 class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
