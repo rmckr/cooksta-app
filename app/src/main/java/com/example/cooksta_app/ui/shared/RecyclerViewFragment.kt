@@ -36,7 +36,7 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
         binding.recyclerView.adapter = provideAdapter()
         binding.recyclerView.layoutManager = provideLayoutManager()
-        binding.recyclerView.addItemDecoration(provideDecoration())
+        provideDecoration()?.let { binding.recyclerView.addItemDecoration(it) }
 
         return binding.root
     }

@@ -10,17 +10,61 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.load
 import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
+import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
+import com.example.cooksta_app.ui.shoppingList.RecipeListFragment
+import com.example.cooksta_app.ui.shoppingList.ShoppingListPagerAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private fun fetchUserPosts(): List<Post> {
+        return listOf(
+            Post(R.drawable.ic_cake),
+            Post(R.drawable.ic_soup),
+            Post(R.drawable.ic_cake),
+            Post(R.drawable.ic_apple),
+            Post(R.drawable.ic_lunch),
+        )
+    }
+
+    private fun fetchSavedPosts(): List<Post> {
+        return listOf(
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+            Post(R.drawable.ic_pizza),
+            Post(R.drawable.ic_liquor),
+            Post(R.drawable.ic_icecream),
+        )
+    }
 
     private fun handleLogout() {
         // TODO: Handle logout
@@ -49,6 +93,19 @@ class ProfileFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
+        val userPostsGrid = PostsGrid(fetchUserPosts())
+        val savedPostsGrid = PostsGrid(fetchSavedPosts())
+        val adapter = ProfilePagerAdapter(this, listOf(userPostsGrid, savedPostsGrid))
+        binding.profileViewPager.adapter = adapter
+
+        TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Eigene Rezepte"
+                1 -> "Gespeichert"
+                else -> ""
+            }
+        }.attach()
+
         binding.logoutButton.setOnClickListener {
             handleLogout()
         }
@@ -74,5 +131,13 @@ class ProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+class ProfilePagerAdapter(fragment: Fragment, private val fragments: List<Fragment>) : FragmentStateAdapter(fragment) {
+    override fun getItemCount() = fragments.size
+
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
     }
 }
