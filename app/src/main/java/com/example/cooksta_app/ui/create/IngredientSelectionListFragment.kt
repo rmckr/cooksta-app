@@ -1,5 +1,6 @@
 package com.example.cooksta_app.ui.create
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 
-data class IngredientSelectionItem(var name: String, var amount: Double?)
+data class IngredientSelectionItem(var name: String?, var amount: Double?)
 
 class IngredientSelectionListFragment :
     RecyclerViewFragment<IngredientSelectionAdapter>(),
@@ -73,7 +74,7 @@ class IngredientSelectionListFragment :
     }
 
     fun createIngredient() {
-        selectedIngredients.add(IngredientSelectionItem(name = "", amount = null))
+        selectedIngredients.add(IngredientSelectionItem(name = null, amount = null))
         recyclerView.post {
             ingredientAdapter.notifyItemInserted(selectedIngredients.size - 1)
         }
@@ -138,15 +139,16 @@ class IngredientSelectionAdapter(
         private val ingredientAmount = itemView.findViewById<EditText>(R.id.ingredientAmount)
         private val ingredientDeleteButton = itemView.findViewById<MaterialButton>(R.id.ingredientDeleteButton)
 
-        private fun updateIngredientName(name: String) {
+        private fun updateIngredientName(name: String?) {
             ingredientName.setText(name, false)
         }
 
-        private fun updateIngredientAmount(amount: Double) {
-            ingredientAmount.setText(amount.toString())
+        private fun updateIngredientAmount(amount: Double?) {
+            ingredientAmount.setText(amount?.toString())
         }
 
         fun bind(ingredient: IngredientSelectionItem) {
+            Log.d("Test", "bind: $ingredients")
             val currentIngredientNames = ingredients.map { it.name }
             val availableOptions = availableIngredients.filterNot { currentIngredientNames.contains(it) }
 
@@ -185,7 +187,6 @@ class IngredientSelectionAdapter(
                     return
                 }
                 if (amount == 0.0) {
-                    // TODO: Maybe add dialog
                     interactionListener.onIngredientDeleted(adapterPosition, true)
                     return
                 }
@@ -198,10 +199,10 @@ class IngredientSelectionAdapter(
             ingredientName.setAdapter(adapter)
 
             updateIngredientName(ingredient.name)
-            ingredient.amount?.let { updateIngredientAmount(it) }
+            updateIngredientAmount(ingredient.amount)
 
-            val parsedUnit = parseUnit(ingredient.name)
-            if (ingredient.name.isNotEmpty() && parsedUnit == null) {
+            val parsedUnit = parseUnit(ingredient.name ?: "")
+            if (ingredient.name != null && parsedUnit == null) {
                 ingredientNameLayout.error = "Format: \"Zutat (Einheit)\""
             } else {
                 ingredientAmountLayout.suffixText = parsedUnit
