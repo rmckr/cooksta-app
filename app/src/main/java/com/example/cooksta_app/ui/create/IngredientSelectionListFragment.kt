@@ -1,30 +1,24 @@
 package com.example.cooksta_app.ui.create
 
-import android.os.Bundle
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
-import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
+import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 
 data class IngredientSelectionItem(var name: String, var amount: Double?)
 
-class IngredientSelectionListFragment : Fragment(),
+class IngredientSelectionListFragment :
+    RecyclerViewFragment<IngredientSelectionAdapter>(),
     IngredientSelectionAdapter.IngredientSelectionInteractionListener {
-
-    private var _binding: FragmentRecyclerViewBinding? = null
-    private val binding get() = _binding!!
 
     private lateinit var ingredientAdapter: IngredientSelectionAdapter
 
@@ -65,60 +59,51 @@ class IngredientSelectionListFragment : Fragment(),
     )
     val selectedIngredients = mutableListOf<IngredientSelectionItem>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentRecyclerViewBinding.inflate(inflater, container, false)
-
+    override fun provideAdapter(): IngredientSelectionAdapter {
         ingredientAdapter = IngredientSelectionAdapter(
             ingredients = selectedIngredients,
             availableIngredients = availableIngredients,
             interactionListener = this
         )
+        return ingredientAdapter
+    }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = ingredientAdapter
-
-        return binding.root
+    override fun provideDecoration(): RecyclerView.ItemDecoration? {
+        return null
     }
 
     fun createIngredient() {
         selectedIngredients.add(IngredientSelectionItem(name = "", amount = null))
-        binding.recyclerView.post {
+        recyclerView.post {
             ingredientAdapter.notifyItemInserted(selectedIngredients.size - 1)
         }
     }
 
-    override fun onAmountChanged(position: Int, amount: Double) {
+    override fun onIngredientNameChanged(position: Int, name: String) {
+        selectedIngredients[position].name = name
+    }
+
+    override fun onIngredientAmountChanged(position: Int, amount: Double) {
         selectedIngredients[position].amount = amount
-        binding.recyclerView.post {
-            ingredientAdapter.notifyItemChanged(position)
-        }
-        Log.d("Test", "onAmountChanged: $selectedIngredients")
     }
 
-    override fun onIngredientChanged(position: Int, ingredient: String) {
-        selectedIngredients[position].name = ingredient
-        binding.recyclerView.post {
-            ingredientAdapter.notifyItemChanged(position)
-        }
-        Log.d("Test", "onIngredientAdded: $selectedIngredients")
-    }
-
-    override fun onIngredientDeleted(position: Int) {
-        Log.d("Test", "onIngredientDeleted: $selectedIngredients")
-        selectedIngredients.removeAt(position)
-        binding.recyclerView.post {
-            ingredientAdapter.notifyItemRemoved(position)
-        }
-        Log.d("Test", "onIngredientDeleted: $selectedIngredients")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onIngredientDeleted(position: Int, fromZeroAmount: Boolean) {
+        val message = if (fromZeroAmount)
+            "Wenn du die Menge einer Zutat auf \"0\" setzt, wird sie gelöscht." else
+                "Durch das Löschen einer Zutat wird diese aus der Liste entfernt."
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Bist du sicher?")
+            .setMessage(message)
+            .setNegativeButton("Nein") { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton("Ja, löschen") { _, _ ->
+                selectedIngredients.removeAt(position)
+                recyclerView.post {
+                    ingredientAdapter.notifyItemRemoved(position)
+                }
+            }
+            .show()
     }
 }
 
@@ -141,9 +126,9 @@ class IngredientSelectionAdapter(
     override fun getItemCount() = ingredients.size
 
     interface IngredientSelectionInteractionListener {
-        fun onIngredientChanged(position: Int, ingredient: String)
-        fun onAmountChanged(position: Int, amount: Double)
-        fun onIngredientDeleted(position: Int)
+        fun onIngredientNameChanged(position: Int, name: String)
+        fun onIngredientAmountChanged(position: Int, amount: Double)
+        fun onIngredientDeleted(position: Int, fromZeroAmount: Boolean)
     }
 
     inner class IngredientSelectionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -153,13 +138,15 @@ class IngredientSelectionAdapter(
         private val ingredientAmount = itemView.findViewById<EditText>(R.id.ingredientAmount)
         private val ingredientDeleteButton = itemView.findViewById<MaterialButton>(R.id.ingredientDeleteButton)
 
-        private var ingredientNameWatcher: TextWatcher? = null
-        private var ingredientAmountWatcher: TextWatcher? = null
+        private fun updateIngredientName(name: String) {
+            ingredientName.setText(name, false)
+        }
+
+        private fun updateIngredientAmount(amount: Double) {
+            ingredientAmount.setText(amount.toString())
+        }
 
         fun bind(ingredient: IngredientSelectionItem) {
-            ingredientName.removeTextChangedListener(ingredientNameWatcher)
-            ingredientAmount.removeTextChangedListener(ingredientAmountWatcher)
-
             val currentIngredientNames = ingredients.map { it.name }
             val availableOptions = availableIngredients.filterNot { currentIngredientNames.contains(it) }
 
@@ -169,47 +156,79 @@ class IngredientSelectionAdapter(
                 return matchResult?.groupValues?.get(1)
             }
 
-            fun changeIngredient() {
-                val ingredientInputText = ingredientName.text.toString()
-                val parsedUnit = parseUnit(ingredientInputText)
+            fun submitIngredientName() {
+                val name = ingredientName.text.toString()
+                val parsedUnit = parseUnit(name)
+
+                ingredientNameLayout.error = null
+                ingredientAmountLayout.error = null
                 ingredientAmountLayout.suffixText = parsedUnit
-                if (currentIngredientNames.contains(ingredientInputText)) {
-                    ingredientNameLayout.error = "Zutat existiert bereits"
-                    return
-                }
+
                 if (parsedUnit == null) {
                     ingredientNameLayout.error = "Format: \"Zutat (Einheit)\""
                     return
                 }
-                ingredientNameLayout.error = null
-                interactionListener.onIngredientChanged(adapterPosition, ingredientInputText)
+                if (currentIngredientNames.contains(name)) {
+                    ingredientNameLayout.error = "Zutat bereits vorhanden"
+                    return
+                }
+
+                interactionListener.onIngredientNameChanged(adapterPosition, name)
+                updateIngredientName(name)
+            }
+
+            fun submitIngredientAmount() {
+                val amount = ingredientAmount.text.toString().toDoubleOrNull()
+
+                if (amount == null || amount < 0) {
+                    ingredientAmountLayout.error = "Menge > 0"
+                    return
+                }
+                if (amount == 0.0) {
+                    // TODO: Maybe add dialog
+                    interactionListener.onIngredientDeleted(adapterPosition, true)
+                    return
+                }
+
+                interactionListener.onIngredientAmountChanged(adapterPosition, amount)
+                updateIngredientAmount(amount)
             }
 
             val adapter = ArrayAdapter(itemView.context, android.R.layout.simple_dropdown_item_1line, availableOptions)
             ingredientName.setAdapter(adapter)
 
-            ingredientName.setText(ingredient.name, false)
-            ingredientAmount.setText(ingredient.amount?.toString())
+            updateIngredientName(ingredient.name)
+            ingredient.amount?.let { updateIngredientAmount(it) }
+
+            val parsedUnit = parseUnit(ingredient.name)
+            if (ingredient.name.isNotEmpty() && parsedUnit == null) {
+                ingredientNameLayout.error = "Format: \"Zutat (Einheit)\""
+            } else {
+                ingredientAmountLayout.suffixText = parsedUnit
+            }
 
             ingredientName.setOnItemClickListener { _, _, _, _ ->
-                changeIngredient()
+                ingredientNameLayout.clearFocus()
+                ingredientAmountLayout.requestFocus()
+                submitIngredientName()
             }
-            ingredientNameWatcher = ingredientName.addTextChangedListener {
-                changeIngredient()
-            }
-            ingredientAmountWatcher = ingredientAmount.addTextChangedListener {
-                val newAmount = it.toString().toDoubleOrNull()
-                if (newAmount == null || newAmount == 0.0) {
-                    interactionListener.onIngredientDeleted(adapterPosition)
-                } else if (newAmount < 0.0) {
-                    ingredientAmountLayout.error = "Menge > 0"
-                } else {
-                    ingredientAmountLayout.error = null
-                    interactionListener.onAmountChanged(adapterPosition, newAmount)
+            ingredientName.setOnEditorActionListener { view, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    view.clearFocus()
+                    submitIngredientName()
                 }
+                false
             }
+            ingredientAmount.setOnEditorActionListener { view, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    view.clearFocus()
+                    submitIngredientAmount()
+                }
+                false
+            }
+
             ingredientDeleteButton.setOnClickListener {
-                interactionListener.onIngredientDeleted(adapterPosition)
+                interactionListener.onIngredientDeleted(adapterPosition, false)
             }
         }
     }

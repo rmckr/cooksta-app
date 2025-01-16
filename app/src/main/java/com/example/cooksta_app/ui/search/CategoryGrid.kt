@@ -19,15 +19,15 @@ data class CategoryCard(
 )
 
 private val categories = listOf(
-    CategoryCard(textResource = R.string.asianCategory, imageResource = R.drawable.ic_ramen_card),
-    CategoryCard(textResource = R.string.bakeCategory, imageResource = R.drawable.ic_cake_card),
-    CategoryCard(textResource = R.string.dessertCategory, imageResource = R.drawable.ic_icecream_card),
-    CategoryCard(textResource = R.string.beverageCategory, imageResource = R.drawable.ic_liquor),
-    CategoryCard(textResource = R.string.mainDishCategory, imageResource = R.drawable.ic_lunch_card),
-    CategoryCard(textResource = R.string.italianCategory, imageResource = R.drawable.ic_pizza_card),
-    CategoryCard(textResource = R.string.fastCategory, imageResource = R.drawable.ic_acute),
-    CategoryCard(textResource = R.string.soupCategory, imageResource = R.drawable.ic_soup_card),
-    CategoryCard(textResource = R.string.vegetarianCategory, imageResource = R.drawable.ic_vegetables_card),
+    CategoryCard(textResource = R.string.asianCategory, imageResource = R.drawable.card_ramen),
+    CategoryCard(textResource = R.string.bakeCategory, imageResource = R.drawable.card_baking),
+    CategoryCard(textResource = R.string.dessertCategory, imageResource = R.drawable.card_dessert),
+    CategoryCard(textResource = R.string.beverageCategory, imageResource = R.drawable.card_drinks),
+    CategoryCard(textResource = R.string.mainDishCategory, imageResource = R.drawable.card_lunch),
+    CategoryCard(textResource = R.string.italianCategory, imageResource = R.drawable.card_pizza),
+    CategoryCard(textResource = R.string.fastCategory, imageResource = R.drawable.card_fast),
+    CategoryCard(textResource = R.string.soupCategory, imageResource = R.drawable.card_soup),
+    CategoryCard(textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
 )
 
 class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
@@ -57,8 +57,8 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
             ) {
                 val position = parent.getChildAdapterPosition(view)
                 val column = position % spanCount
-                outRect.left = if (column == 0) 0 else if (column < spanCount - 1) pixelSpacing / 4 else pixelSpacing / 2
-                outRect.right = if (column == 0) pixelSpacing / 2 else if (column < spanCount - 1) pixelSpacing / 4 else 0
+                outRect.left = column * pixelSpacing / spanCount
+                outRect.right = pixelSpacing - (column + 1) * pixelSpacing / spanCount
                 outRect.top = if (position < spanCount) 0 else pixelSpacing
                 outRect.bottom = 0
             }

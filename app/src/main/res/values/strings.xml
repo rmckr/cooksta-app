@@ -21,4 +21,8 @@
     <string name="fastCategory">Schnell</string>
     <string name="soupCategory">Suppen &amp; Eintöpfe</string>
     <string name="vegetarianCategory">Vegetarisch</string>
+    <plurals name="selected_recipes_count">
+        <item quantity="one">%d Rezept ausgewählt</item>
+        <item quantity="other">%d Rezepte ausgewählt</item>
+    </plurals>
 </resources>

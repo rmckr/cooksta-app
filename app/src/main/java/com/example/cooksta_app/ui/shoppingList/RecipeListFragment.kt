@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -19,24 +18,20 @@ import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
-import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
 import com.example.cooksta_app.ui.shared.NumberSelector
+import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.textview.MaterialTextView
 
-class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener {
+class RecipeListFragment : RecyclerViewFragment<RecipesAdapter>(), RecipesAdapter.RecipeInteractionListener {
 
-    private var _binding: FragmentRecyclerViewBinding? = null
-    private val binding get() = _binding!!
-
-    private lateinit var viewModel: ShoppingListViewModel
-
-    private var tracker: SelectionTracker<String>? = null
+    private val viewModel: ShoppingListViewModel by lazy {
+        ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+    }
+    private lateinit var tracker: SelectionTracker<String>
 
     private var actionMode: ActionMode? = null
     private val actionModeCallback = object : ActionMode.Callback {
@@ -46,7 +41,7 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
         }
 
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu?): Boolean {
-            val selectionSize = tracker?.selection?.size() ?: 0
+            val selectionSize = tracker.selection.size()
             menu?.findItem(R.id.menu_delete)?.isVisible = selectionSize > 0
             return true
         }
@@ -63,27 +58,55 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            tracker?.clearSelection()
+            tracker.clearSelection()
         }
     }
 
-    fun onSelectionChanged(selection: Selection<*>) {
+    override fun provideAdapter(): RecipesAdapter {
+        return RecipesAdapter(this)
+    }
+
+    override fun onRecyclerViewCreated(recyclerView: RecyclerView) {
+        tracker = SelectionTracker.Builder(
+            "recipe-selection-id",
+            recyclerView,
+            RecipeKeyProvider(adapter),
+            RecipeItemDetailsLookup(recyclerView),
+            StorageStrategy.createStringStorage()
+        ).build()
+        tracker.addObserver(object : SelectionTracker.SelectionObserver<String>() {
+            override fun onSelectionChanged() {
+                super.onSelectionChanged()
+                onSelectionChanged(tracker.selection)
+            }
+        })
+        adapter.tracker = tracker
+
+        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
+            adapter.submitList(recipes)
+        }
+    }
+
+    private fun onSelectionChanged(selection: Selection<*>) {
         val selectedCount = selection.size()
         if (selectedCount > 0) {
             if (actionMode == null) {
                 actionMode = requireActivity().startActionMode(actionModeCallback)
             }
-            // TODO: String resource extrahieren
-            actionMode?.title = "$selectedCount Rezept(e) ausgewählt"
+            actionMode?.title = resources.getQuantityString(
+                R.plurals.selected_recipes_count,
+                selectedCount,
+                selectedCount
+            )
         } else {
             actionMode?.finish()
             actionMode = null
         }
     }
 
-    fun deleteSelectedItems() {
-        val selectedRecipeIds = tracker?.selection?.toList() ?: return
-        tracker!!.clearSelection()
+    private fun deleteSelectedItems() {
+        val selectedRecipeIds = tracker.selection.toList()
+        tracker.clearSelection()
         selectedRecipeIds.forEach { id ->
             viewModel.removeRecipe(id)
         }
@@ -93,62 +116,21 @@ class RecipeListFragment : Fragment(), RecipesAdapter.RecipeInteractionListener 
         viewModel.setRecipePortions(id, portions)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentRecyclerViewBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
-
-        val adapter = RecipesAdapter(this)
-        val layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.addItemDecoration(MaterialDividerItemDecoration(requireContext(), layoutManager.orientation))
-
-        tracker = SelectionTracker.Builder(
-            "recipe-selection-id",
-            binding.recyclerView,
-            RecipeKeyProvider(adapter),
-            RecipeItemDetailsLookup(binding.recyclerView),
-            StorageStrategy.createStringStorage()
-        ).build()
-        tracker?.addObserver(object : SelectionTracker.SelectionObserver<String>() {
-            override fun onSelectionChanged() {
-                super.onSelectionChanged()
-                onSelectionChanged(tracker!!.selection)
-            }
-        })
-        adapter.tracker = tracker
-
-        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
-            adapter.submitList(recipes)
-        }
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        tracker?.onSaveInstanceState(outState)
+        tracker.onSaveInstanceState(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        tracker?.onRestoreInstanceState(savedInstanceState)
+        tracker.onRestoreInstanceState(savedInstanceState)
     }
+}
 
-    class RecipeItemDetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<String>() {
-        override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
-            val view = recyclerView.findChildViewUnder(e.x, e.y) ?: return null
-            return (recyclerView.getChildViewHolder(view) as RecipesAdapter.RecipeViewHolder).getItemDetails()
-        }
+class RecipeItemDetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<String>() {
+    override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
+        val view = recyclerView.findChildViewUnder(e.x, e.y) ?: return null
+        return (recyclerView.getChildViewHolder(view) as RecipesAdapter.RecipeViewHolder).getItemDetails()
     }
 }
 
@@ -162,7 +144,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
     }
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return getItem(position).id.hashCode().toLong()
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecipeViewHolder {

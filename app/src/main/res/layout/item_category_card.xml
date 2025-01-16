@@ -19,11 +19,11 @@
 
             <ImageView
                 android:id="@+id/imageCard"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                tools:srcCompat="@drawable/ic_ramen" />
+                android:scaleType="centerInside"
+                tools:srcCompat="@drawable/card_ramen" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewCard"

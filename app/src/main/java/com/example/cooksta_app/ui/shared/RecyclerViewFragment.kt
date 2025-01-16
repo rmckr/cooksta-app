@@ -9,13 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.example.cooksta_app.databinding.FragmentRecyclerViewBinding
 import com.google.android.material.divider.MaterialDividerItemDecoration
 
 abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
-    private var _binding: FragmentRecyclerViewBinding? = null
-    private val binding get() = _binding!!
+    protected lateinit var recyclerView: RecyclerView
+    protected lateinit var adapter: T
 
     abstract fun provideAdapter(): T
 
@@ -27,22 +26,25 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
         return MaterialDividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
     }
 
+    open fun onRecyclerViewCreated(recyclerView: RecyclerView) {}
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRecyclerViewBinding.inflate(inflater, container, false)
+        recyclerView = RecyclerView(requireContext())
+        recyclerView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        adapter = provideAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = provideLayoutManager()
+        provideDecoration()?.let { recyclerView.addItemDecoration(it) }
 
-        binding.recyclerView.adapter = provideAdapter()
-        binding.recyclerView.layoutManager = provideLayoutManager()
-        provideDecoration()?.let { binding.recyclerView.addItemDecoration(it) }
+        onRecyclerViewCreated(recyclerView)
 
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        return recyclerView
     }
 }

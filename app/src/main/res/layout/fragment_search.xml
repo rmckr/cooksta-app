@@ -1,44 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.search.SearchFragment"
-    android:layout_marginHorizontal="8dp" >
+    android:orientation="vertical"
+    tools:context=".ui.search.SearchFragment">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:fitsSystemWindows="true">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.search.SearchBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
-            android:hint="Suche"
-            app:startIconContentDescription="Such-Symbol"
-            app:startIconDrawable="@drawable/ic_search">
+            android:orientation="vertical" >
 
-            <com.google.android.material.textfield.TextInputEditText
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/categoryGridContainer"
+                android:name="com.example.cooksta_app.ui.search.CategoryGrid"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:scrollbars="none" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/categoryGridContainer"
-        android:name="com.example.cooksta_app.ui.search.CategoryGrid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Stöbern"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
-    </LinearLayout>
-
-</ScrollView>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Stöbern"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
