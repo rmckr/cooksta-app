@@ -296,11 +296,17 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
 
-                        <ImageView
-                            android:id="@+id/imagePreview"
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:scaleType="centerCrop" />
+                            android:layout_height="48dp">
+
+                            <ImageView
+                                android:id="@+id/imagePreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                tools:srcCompat="@tools:sample/avatars" />
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -320,11 +326,17 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
 
-                        <ImageView
-                            android:id="@+id/videoPreview"
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:scaleType="centerCrop" />
+                            android:layout_height="48dp">
+
+                            <ImageView
+                                android:id="@+id/videoPreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                tools:srcCompat="@tools:sample/avatars" />
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
                 </LinearLayout>

@@ -1,11 +1,18 @@
 package com.example.cooksta_app.ui.create
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
 import com.google.android.material.chip.Chip
@@ -16,7 +23,25 @@ class CreateFragment : Fragment() {
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: CreateViewModel
+    private val viewModel: CreateViewModel by lazy {
+        ViewModelProvider(requireActivity())[CreateViewModel::class.java]
+    }
+
+    private var selectedImageUri: Uri? = null
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedImageUri = uri
+        uri?.let {
+            Glide.with(this).load(uri).into(binding.imagePreview)
+        }
+    }
+
+    private var selectedVideoUri: Uri? = null
+    private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedVideoUri = uri
+        uri?.let {
+            Glide.with(this).asBitmap().load(uri).into(binding.videoPreview)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +49,6 @@ class CreateFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[CreateViewModel::class.java]
 
         binding.createAppBarLayout.statusBarForeground =
             MaterialShapeDrawable.createWithElevationOverlay(context)
@@ -58,6 +82,20 @@ class CreateFragment : Fragment() {
             ingredientSelectionListFragment?.let {
                 it.createIngredient()
             }
+        }
+
+        binding.selectImageButton.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+        binding.imagePreview.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+        binding.selectVideoButton.setOnClickListener {
+            pickVideoLauncher.launch("video/*")
+        }
+        binding.videoPreview.setOnClickListener {
+            pickVideoLauncher.launch("video/*")
+
         }
 
         return binding.root

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import coil.load
+import com.bumptech.glide.Glide
 import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
@@ -113,7 +113,7 @@ class ProfileFragment : Fragment() {
         val userId = "67783a1643964ac750c1c18c" // Replace with actual user ID logic
         val imageUrl = "${BuildConfig.API_BASE_URL}/users/${userId}/avatar"
 
-        binding.profileImage.load(imageUrl)
+        Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
         lifecycleScope.launch {
             try {
                 val user = RetrofitClient.apiService.getUserInfo(userId)
