@@ -12,11 +12,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.MaterialShapeDrawable
+import kotlinx.coroutines.launch
 
 class CreateFragment : Fragment() {
 
@@ -70,8 +72,10 @@ class CreateFragment : Fragment() {
             }
         }
 
-        viewModel.portions.observe(viewLifecycleOwner) { value ->
-            binding.recipePortionsSelector.setValue(value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.portions.collect { portions ->
+                binding.recipePortionsSelector.setValue(portions)
+            }
         }
         binding.recipePortionsSelector.setOnValueChangeListener {
             viewModel.setPortions(it)

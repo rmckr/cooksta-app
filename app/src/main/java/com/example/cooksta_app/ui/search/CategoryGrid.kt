@@ -1,6 +1,7 @@
 package com.example.cooksta_app.ui.search
 
 import android.graphics.Rect
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -11,31 +12,39 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
+import com.google.android.material.card.MaterialCardView
 
 
 data class CategoryCard(
+    val target: String,
     val textResource: Int,
     val imageResource: Int
 )
 
+// TODO: Get targets from api
 private val categories = listOf(
-    CategoryCard(textResource = R.string.asianCategory, imageResource = R.drawable.card_ramen),
-    CategoryCard(textResource = R.string.bakeCategory, imageResource = R.drawable.card_baking),
-    CategoryCard(textResource = R.string.dessertCategory, imageResource = R.drawable.card_dessert),
-    CategoryCard(textResource = R.string.beverageCategory, imageResource = R.drawable.card_drinks),
-    CategoryCard(textResource = R.string.mainDishCategory, imageResource = R.drawable.card_lunch),
-    CategoryCard(textResource = R.string.italianCategory, imageResource = R.drawable.card_pizza),
-    CategoryCard(textResource = R.string.fastCategory, imageResource = R.drawable.card_fast),
-    CategoryCard(textResource = R.string.soupCategory, imageResource = R.drawable.card_soup),
-    CategoryCard(textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
+    CategoryCard(target = "asia", textResource = R.string.asianCategory, imageResource = R.drawable.card_ramen),
+    CategoryCard(target = "baking", textResource = R.string.bakeCategory, imageResource = R.drawable.card_baking),
+    CategoryCard(target = "dessert", textResource = R.string.dessertCategory, imageResource = R.drawable.card_dessert),
+    CategoryCard(target = "drinks", textResource = R.string.beverageCategory, imageResource = R.drawable.card_drinks),
+    CategoryCard(target = "main", textResource = R.string.mainDishCategory, imageResource = R.drawable.card_lunch),
+    CategoryCard(target = "italian", textResource = R.string.italianCategory, imageResource = R.drawable.card_pizza),
+    CategoryCard(target = "fast", textResource = R.string.fastCategory, imageResource = R.drawable.card_fast),
+    CategoryCard(target = "soup", textResource = R.string.soupCategory, imageResource = R.drawable.card_soup),
+    CategoryCard(target = "veggie", textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
 )
 
-class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
+class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractionListener {
     private val spanCount = 3
     private val spacing = 16
 
+    override fun onCardClick(target: String) {
+        // TODO: Handle card click
+        Log.d("CategoryGrid", "onCardClick: $target")
+    }
+
     override fun provideAdapter(): CategoryAdapter {
-        return CategoryAdapter(categories)
+        return CategoryAdapter(categories, this)
     }
 
     override fun provideLayoutManager(): RecyclerView.LayoutManager {
@@ -66,8 +75,13 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>() {
     }
 }
 
+interface CategoryInteractionListener {
+    fun onCardClick(target: String)
+}
+
 class CategoryAdapter(
-    private val cards: List<CategoryCard>
+    private val cards: List<CategoryCard>,
+    private val interactionListener: CategoryInteractionListener
 ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
     override fun getItemCount(): Int {
         return cards.size
@@ -84,10 +98,14 @@ class CategoryAdapter(
     }
 
     inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val cardView = itemView.findViewById<MaterialCardView>(R.id.card)
         private val imageView = itemView.findViewById<ImageView>(R.id.imageCard)
         private val textView = itemView.findViewById<TextView>(R.id.textViewCard)
 
         fun bind(card: CategoryCard) {
+            cardView.setOnClickListener {
+                interactionListener.onCardClick(card.target)
+            }
             imageView.setImageResource(card.imageResource)
             textView.setText(card.textResource)
         }

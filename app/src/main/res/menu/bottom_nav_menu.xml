@@ -17,7 +17,7 @@
         android:title="@string/title_add" />
     <item
         android:id="@+id/navigation_shopping_list"
-        android:icon="@drawable/ic_shopping_bag"
+        android:icon="@drawable/ic_cart"
         android:title="@string/title_shoppingList" />
     <item
         android:id="@+id/navigation_profile"
