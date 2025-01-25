@@ -23,6 +23,8 @@ recyclerviewSelection = "1.1.0"
 activityKtx = "1.10.0"
 compiler = "4.16.0"
 glide = "4.16.0"
+glideTransformations = "4.3.0"
+gpuimage = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +49,8 @@ androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "rec
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "compiler" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-transformations = { group = "jp.wasabeef", name = "glide-transformations", version.ref = "glideTransformations" }
+gpuimage = { group = "jp.co.cyberagent.android", name = "gpuimage", version.ref = "gpuimage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

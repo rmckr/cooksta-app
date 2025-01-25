@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.androidx.gridlayout)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.glide)
+    implementation(libs.glide.transformations)
+    implementation(libs.gpuimage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
