@@ -39,8 +39,8 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
     private val spacing = 16
 
     override fun onCardClick(target: String) {
-        // TODO: Handle card click
-        Log.d("CategoryGrid", "onCardClick: $target")
+        val searchFragment = requireParentFragment() as SearchFragment
+        searchFragment.handleCategoryClick(target)
     }
 
     override fun provideAdapter(): CategoryAdapter {
@@ -104,7 +104,7 @@ class CategoryAdapter(
 
         fun bind(card: CategoryCard) {
             cardView.setOnClickListener {
-                interactionListener.onCardClick(card.target)
+                interactionListener.onCardClick(cardView.context.resources.getString(card.textResource))
             }
             imageView.setImageResource(card.imageResource)
             textView.setText(card.textResource)
