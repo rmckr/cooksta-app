@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.VideoView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -20,8 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentHomeBinding
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.sidesheet.SideSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.gpu.BrightnessFilterTransformation
 
@@ -57,7 +56,7 @@ class HomeFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        binding.homeViewPager.adapter = HomeFeedAdapter(sampleData)
+        binding.homeViewPager.adapter = HomeFeedAdapter(binding.homeViewPager, sampleData)
         binding.homeViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
 
         return binding.root
@@ -65,11 +64,12 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
+        _binding = null
     }
 }
 
 class HomeFeedAdapter(
+    private val viewPager: ViewPager2,
     private val posts: List<FeedPost>
 ): RecyclerView.Adapter<HomeFeedAdapter.HomePostViewHolder>() {
 
@@ -80,17 +80,32 @@ class HomeFeedAdapter(
         private val heartButton = itemView.findViewById<CheckBox>(R.id.heartButton)
         private val commentButton = itemView.findViewById<CheckBox>(R.id.commentButton)
         private val bookmarkButton = itemView.findViewById<CheckBox>(R.id.bookmarkButton)
-
+        private val bottomSheet = itemView.findViewById<FrameLayout>(R.id.standard_bottom_sheet)
+        private val bottomSheetArrow = itemView.findViewById<ImageView>(R.id.bottomSheetArrow)
 
         fun bind(post: FeedPost) {
             if (post.videoUrl != null) {
                 videoView.visibility = View.VISIBLE
                 val videoUri = Uri.parse(post.videoUrl)
                 videoView.setVideoURI(videoUri)
-                videoView.start()
+                videoView.setOnClickListener {
+                    videoView.start()
+                }
             } else {
                 videoView.visibility = View.GONE
             }
+
+            val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+            bottomSheetBehavior.addBottomSheetCallback(BottomSheetTouchBehavior(viewPager, bottomSheetArrow))
+            bottomSheet.background.alpha = 0
+
+//            coordinatorLayout.post {
+//                postAppBarLayout.post {
+//                    Log.d("TEST", "bind: ${coordinatorLayout.measuredHeight} ${postAppBarLayout.measuredHeight}")
+//                    bottomSheetBehavior.maxHeight = coordinatorLayout.height - postAppBarLayout.height
+//                }
+//            }
+
             Glide.with(imageViewBackdrop).load(post.imageUrl)
                 .transform(MultiTransformation(
                     BrightnessFilterTransformation(-0.25f),
@@ -99,20 +114,20 @@ class HomeFeedAdapter(
                 .into(imageViewBackdrop)
             Glide.with(imageView).load(post.imageUrl).into(imageView)
 
-            heartButton.setOnCheckedChangeListener { checkBox, state ->
+            heartButton.setOnCheckedChangeListener { button, isChecked ->
                 // TODO: Handle button checked
             }
-            commentButton.setOnCheckedChangeListener { checkBox, state ->
+            commentButton.setOnCheckedChangeListener { button, isChecked ->
                 // TODO: Handle button checked
             }
-            bookmarkButton.setOnCheckedChangeListener { checkBox, state ->
+            bookmarkButton.setOnCheckedChangeListener { button, isChecked ->
                 // TODO: Handle button checked
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomePostViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_post, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
         return HomePostViewHolder(view)
     }
 
@@ -122,5 +137,27 @@ class HomeFeedAdapter(
 
     override fun onBindViewHolder(holder: HomePostViewHolder, position: Int) {
         holder.bind(posts[position])
+    }
+}
+
+class BottomSheetTouchBehavior(private val viewPager2: ViewPager2, private val arrowView: ImageView) : BottomSheetBehavior.BottomSheetCallback() {
+
+    override fun onStateChanged(_bottomSheet: View, newState: Int) {
+        when (newState) {
+            BottomSheetBehavior.STATE_EXPANDED -> {
+                arrowView.animate().rotation(180f).setDuration(250)
+            }
+            BottomSheetBehavior.STATE_COLLAPSED -> {
+                arrowView.animate().rotation(0f).setDuration(250)
+            }
+        }
+        viewPager2.isUserInputEnabled = when (newState) {
+            BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_EXPANDED -> { false }
+            else -> { true }
+        }
+    }
+
+    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        bottomSheet.background.alpha = (slideOffset * 255).toInt().coerceIn(0, 255)
     }
 }
