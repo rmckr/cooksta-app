@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentShoppingListBinding
+import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -141,6 +142,7 @@ class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<F
 }
 
 class IngredientsListFragment : RecyclerViewFragment<IngredientsAdapter>() {
+    // TODO: Implement arguments (checkboxes boolean and ingredients list)
     override fun provideAdapter(): IngredientsAdapter {
         val viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
         return IngredientsAdapter(viewModel.ingredients)
