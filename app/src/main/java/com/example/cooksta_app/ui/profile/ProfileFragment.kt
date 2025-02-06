@@ -82,14 +82,13 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_to_edit_profile)
         }
 
-        val imageUrl = "${BuildConfig.API_BASE_URL}/users/me/avatar"
-
-        Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
         lifecycleScope.launch {
             try {
                 val user = RetrofitClient.apiService.getMe()
                 binding.username.text = user.username
                 binding.biography.text = user.biography
+                val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
+                Glide.with(requireParentFragment()).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
