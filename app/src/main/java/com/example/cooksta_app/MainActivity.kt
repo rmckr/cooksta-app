@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.cooksta_app.databinding.ActivityMainBinding
+import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -60,10 +61,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        RetrofitClient.initialize(applicationContext)
 
-        if (!isLoggedIn) {
+        if (!RetrofitClient.isLoggedIn) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()

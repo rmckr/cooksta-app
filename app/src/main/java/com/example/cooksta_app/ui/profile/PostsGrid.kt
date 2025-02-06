@@ -1,10 +1,13 @@
 package com.example.cooksta_app.ui.profile
 
 import android.graphics.Rect
+import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
@@ -14,10 +17,26 @@ data class Post(
     val thumbnailResource: Int
 )
 
-class PostsGrid(
-    private val posts: List<Post>
-) : RecyclerViewFragment<PostsGridAdapter>() {
+class PostsGrid : RecyclerViewFragment<PostsGridAdapter>() {
+    private val posts: List<Post> = listOf(
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_soup),
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_apple),
+        Post(R.drawable.ic_lunch),
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_soup),
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_apple),
+        Post(R.drawable.ic_lunch),
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_soup),
+        Post(R.drawable.ic_cake),
+        Post(R.drawable.ic_apple),
+        Post(R.drawable.ic_lunch),
+    )
     private val spanCount = 3
+    private val spacing = 4
 
     override fun provideAdapter(): PostsGridAdapter {
         return PostsGridAdapter(posts)
@@ -28,6 +47,11 @@ class PostsGrid(
     }
 
     override fun provideDecoration(): RecyclerView.ItemDecoration {
+        val pixelSpacing = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            spacing.toFloat(),
+            resources.displayMetrics
+        ).toInt()
         return object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
                 outRect: Rect,
@@ -35,11 +59,18 @@ class PostsGrid(
                 parent: RecyclerView,
                 state: RecyclerView.State
             ) {
-                val totalWidth = parent.width
-                val itemWidth = totalWidth / spanCount
+                val position = parent.getChildAdapterPosition(view)
+                val column = position % spanCount
+                outRect.left = pixelSpacing * column / spanCount
+                outRect.right = pixelSpacing - (column + 1) * pixelSpacing / spanCount
+                outRect.top = if (position < spanCount) 0 else pixelSpacing
+                outRect.bottom = 0
+
+                val itemSize = (parent.width - pixelSpacing * (spanCount - 1)) / spanCount
+
                 view.layoutParams = view.layoutParams.apply {
-                    width = itemWidth
-                    height = itemWidth
+                    width = itemSize
+                    height = itemSize
                 }
             }
         }

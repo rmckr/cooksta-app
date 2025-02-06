@@ -52,11 +52,6 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
     }
 
     override fun provideDecoration(): RecyclerView.ItemDecoration {
-        val pixelSpacing = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            spacing.toFloat(),
-            resources.displayMetrics
-        ).toInt()
         return object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
                 outRect: Rect,
@@ -64,12 +59,18 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
                 parent: RecyclerView,
                 state: RecyclerView.State
             ) {
+                val pixelSpacing = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    spacing.toFloat(),
+                    resources.displayMetrics
+                ).toInt()
                 val position = parent.getChildAdapterPosition(view)
                 val column = position % spanCount
                 outRect.left = column * pixelSpacing / spanCount
                 outRect.right = pixelSpacing - (column + 1) * pixelSpacing / spanCount
                 outRect.top = if (position < spanCount) 0 else pixelSpacing
                 outRect.bottom = 0
+
             }
         }
     }

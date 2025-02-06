@@ -1,9 +1,11 @@
 package com.example.cooksta_app.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -13,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.BuildConfig
+import com.example.cooksta_app.LoginActivity
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
@@ -24,47 +27,16 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private fun fetchUserPosts(): List<Post> {
-        return listOf(
-            Post(R.drawable.ic_cake),
-            Post(R.drawable.ic_soup),
-            Post(R.drawable.ic_cake),
-            Post(R.drawable.ic_apple),
-            Post(R.drawable.ic_lunch),
-        )
-    }
-
-    private fun fetchSavedPosts(): List<Post> {
-        return listOf(
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-            Post(R.drawable.ic_pizza),
-            Post(R.drawable.ic_liquor),
-            Post(R.drawable.ic_icecream),
-        )
-    }
-
     private fun handleLogout() {
         // TODO: Handle logout
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("isLoggedIn", false)
+            apply()
+        }
+        val intent = Intent(requireActivity(), LoginActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
     }
 
     override fun onCreateView(
@@ -90,8 +62,8 @@ class ProfileFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        val userPostsGrid = PostsGrid(fetchUserPosts())
-        val savedPostsGrid = PostsGrid(fetchSavedPosts())
+        val userPostsGrid = PostsGrid()
+        val savedPostsGrid = PostsGrid()
         val adapter = ProfilePagerAdapter(this, listOf(userPostsGrid, savedPostsGrid))
         binding.profileViewPager.adapter = adapter
 
@@ -110,13 +82,12 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_to_edit_profile)
         }
 
-        val userId = "67783a1643964ac750c1c18c" // Replace with actual user ID logic
-        val imageUrl = "${BuildConfig.API_BASE_URL}/users/${userId}/avatar"
+        val imageUrl = "${BuildConfig.API_BASE_URL}/users/me/avatar"
 
         Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
         lifecycleScope.launch {
             try {
-                val user = RetrofitClient.apiService.getUserInfo(userId)
+                val user = RetrofitClient.apiService.getMe()
                 binding.username.text = user.username
                 binding.biography.text = user.biography
             } catch (e: Exception) {
