@@ -15,13 +15,7 @@ object RetrofitClient {
 
     private lateinit var tokenStore: TokenStore
 
-    private val okHttpClient by lazy {
-        OkHttpClient.Builder()
-            .addInterceptor(LogInterceptor())
-            .addInterceptor(AuthInterceptor(tokenStore))
-            .authenticator(TokenRefreshAuthenticator(tokenStore))
-            .build()
-    }
+    private lateinit var okHttpClient: OkHttpClient
 
     private val retrofit by lazy {
         Retrofit.Builder()
@@ -31,13 +25,21 @@ object RetrofitClient {
             .build()
     }
 
-    val apiService by lazy {
+    val apiService: APIService by lazy {
         retrofit.create(APIService::class.java)
     }
 
     fun initialize(context: Context) {
         if (!::tokenStore.isInitialized) {
             this.tokenStore = TokenStore(context.applicationContext)
+        }
+        if (!::okHttpClient.isInitialized) {
+            this.okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(LogInterceptor())
+                .addInterceptor(NetworkInterceptor(context.applicationContext))
+                .addInterceptor(AuthInterceptor(tokenStore))
+                .authenticator(TokenRefreshAuthenticator(tokenStore))
+                .build()
         }
     }
 
@@ -47,7 +49,7 @@ object RetrofitClient {
         val response = apiService.login(LoginRequest(username, password))
         if (response.isSuccessful) {
             response.body()?.let {
-                this.tokenStore.saveTokens(it.accessToken, it.refreshToken)
+                tokenStore.saveTokens(it.accessToken, it.refreshToken)
                 return@login true
             }
         }

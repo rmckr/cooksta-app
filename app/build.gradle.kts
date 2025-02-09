@@ -19,7 +19,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "API_BASE_URL", "\"http://localhost:9000/api\"")
+            buildConfigField("String", "API_BASE_URL", "\"http://localhost:3000/api\"")
         }
         release {
             buildConfigField("String", "API_BASE_URL", "\"https://cooksta.app/api\"")

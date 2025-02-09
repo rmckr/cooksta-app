@@ -2,9 +2,9 @@ package com.example.cooksta_app.network
 
 import android.content.Context
 
-class TokenStore(private val context: Context) {
+class TokenStore(context: Context) {
 
-    private var sharedPreferences = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    private val sharedPreferences = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
     val accessToken get() = sharedPreferences.getString("accessToken", null)
 

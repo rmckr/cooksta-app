@@ -16,7 +16,7 @@ interface APIService {
     suspend fun refresh(@Body refreshToken: String): Response<TokenResponse>
 
     @GET("users/me")
-    suspend fun getMe(): User
+    suspend fun getMe(): Response<User>
     @GET("users/{userId}")
-    suspend fun getUser(@Path("userId") userId: String): User
+    suspend fun getUser(@Path("userId") userId: String): Response<User>
 }
