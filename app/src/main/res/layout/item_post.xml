@@ -48,6 +48,14 @@
             android:button="@drawable/ic_heart"
             app:buttonTint="@android:color/white" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-8dp"
+            android:text="0"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"/>
+
         <CheckBox
             android:id="@+id/bookmarkButton"
             android:layout_width="wrap_content"
@@ -92,18 +100,20 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         style="@style/TextAppearance.Material3.HeadlineMedium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Titel" />
+                        android:text="Titel"
+                        android:textColor="@android:color/white" />
 
                     <ImageView
                         android:id="@+id/bottomSheetArrow"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:scaleType="center"
+                        app:tint="@android:color/white"
                         app:srcCompat="@drawable/ic_arrow_up" />
 
                 </LinearLayout>
@@ -146,6 +156,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/shoppingListButton"
                     style="@style/Widget.Material3.Button.TonalButton.Icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

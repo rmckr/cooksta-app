@@ -1,19 +1,23 @@
 package com.example.cooksta_app.ui.shared
 
 import android.net.Uri
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
+import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.ItemPostBinding
 import com.example.cooksta_app.model.Post
 import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.gpu.BrightnessFilterTransformation
@@ -110,6 +114,21 @@ class FeedPostViewHolder(
                     else -> ""
                 }
             }.attach()
+
+            shoppingListButton.setOnClickListener {
+                val dialogView = LayoutInflater.from(fragment.requireContext()).inflate(R.layout.dialog_add_to_shopping_list, null)
+
+                MaterialAlertDialogBuilder(fragment.requireContext())
+                    .setTitle("Bist du sicher?")
+                    .setMessage("Wenn du zustimmst, wird das Rezept zu deiner Einkaufsliste hinzugefügt")
+                    .setView(dialogView)
+                    .setNegativeButton("Nein") { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton("Ja, hinzufügen") { _, _ ->
+                        fragment.findNavController().navigate(R.id.navigation_shopping_list)
+                    }
+                    .show()
+            }
+
         }
     }
 }
