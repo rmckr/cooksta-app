@@ -3,14 +3,9 @@ package com.example.cooksta_app.model
 data class User(
     val id: String,
     val username: String,
-    val passwordHash: String,
+    val password: String,
     val biography: String,
     val favorites: List<String>,
-    val shoppingList: List<ShoppingListItem>,
+    val shoppingList: Map<String, Int>,
     val isPrivate: Boolean
-)
-
-data class ShoppingListItem(
-    val recipeId: String,
-    val servings: Int
 )

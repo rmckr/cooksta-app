@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentShoppingListBinding
-import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -121,7 +120,7 @@ class ShoppingListFragment : Fragment() {
     }
 }
 
-data class Recipe(
+data class ShoppingListEntry(
     val id: String,
     val name: String,
     var portions: Int = 1

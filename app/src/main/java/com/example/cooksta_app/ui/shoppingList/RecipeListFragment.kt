@@ -134,7 +134,7 @@ class RecipeItemDetailsLookup(private val recyclerView: RecyclerView) : ItemDeta
     }
 }
 
-class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<Recipe, RecipesAdapter.RecipeViewHolder>(
+class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<ShoppingListEntry, RecipesAdapter.RecipeViewHolder>(
     DiffCallback()
 ) {
     var tracker: SelectionTracker<String>? = null
@@ -200,7 +200,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
             recipeCard.isActivated = isSelected
         }
 
-        fun bind(recipe: Recipe, isSelected: Boolean) {
+        fun bind(recipe: ShoppingListEntry, isSelected: Boolean) {
             updateSelection(isSelected)
 
             recipeName.text = recipe.name
@@ -222,16 +222,16 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
         data class UpdatePortions(val portions: Int) : Payload()
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<Recipe>() {
-        override fun areItemsTheSame(oldItem: Recipe, newItem: Recipe): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<ShoppingListEntry>() {
+        override fun areItemsTheSame(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Recipe, newItem: Recipe): Boolean {
+        override fun areContentsTheSame(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Boolean {
             return oldItem == newItem
         }
 
-        override fun getChangePayload(oldItem: Recipe, newItem: Recipe): Any? {
+        override fun getChangePayload(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Any? {
             return if (oldItem.portions != newItem.portions) Payload.UpdatePortions(newItem.portions) else null
         }
     }

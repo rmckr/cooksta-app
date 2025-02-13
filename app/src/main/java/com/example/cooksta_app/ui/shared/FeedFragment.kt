@@ -8,20 +8,21 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.cooksta_app.databinding.FragmentFeedBinding
-import com.example.cooksta_app.databinding.ItemPostBinding
-import com.example.cooksta_app.model.Post
+import com.example.cooksta_app.model.Recipe
+import kotlinx.coroutines.launch
 
 abstract class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private val posts by lazy { providePosts() }
+    private var posts: List<Recipe> = emptyList()
 
-    abstract fun providePosts(): List<Post>
+    abstract suspend fun providePosts(): List<Recipe>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,8 +40,14 @@ abstract class FeedFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        binding.homeViewPager.adapter = FeedAdapter()
+        val feedAdapter = FeedAdapter()
+        binding.homeViewPager.adapter = feedAdapter
         binding.homeViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            posts = providePosts()
+            feedAdapter.notifyItemRangeInserted(0, posts.size)
+        }
 
         return binding.root
     }
@@ -50,16 +57,17 @@ abstract class FeedFragment : Fragment() {
         _binding = null
     }
 
-    inner class FeedAdapter : RecyclerView.Adapter<FeedPostViewHolder>() {
+    fun setViewPagerInput(state: Boolean) {
+        binding.homeViewPager.isUserInputEnabled = state
+    }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedPostViewHolder {
-            val binding = ItemPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return FeedPostViewHolder(binding, this@FeedFragment, this@FeedFragment.binding.homeViewPager)
+    inner class FeedAdapter : FragmentStateAdapter(this) {
+        override fun createFragment(position: Int): Fragment {
+            val recipe = posts[position]
+            return FeedPostFragment.newInstance(recipe)
         }
 
-        override fun getItemCount() = this@FeedFragment.posts.size
-
-        override fun onBindViewHolder(holder: FeedPostViewHolder, position: Int) = holder.bind(this@FeedFragment.posts[position])
+        override fun getItemCount(): Int = posts.size
     }
 }
 

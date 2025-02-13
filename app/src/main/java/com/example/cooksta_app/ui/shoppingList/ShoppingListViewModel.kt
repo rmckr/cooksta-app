@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class ShoppingListViewModel : ViewModel() {
-    private val _recipes = MutableLiveData<List<Recipe>>(
+    private val _recipes = MutableLiveData<List<ShoppingListEntry>>(
         mutableListOf(
-            Recipe("spaghettiRecipe", "Spaghetti Bolognese"),
-            Recipe("pizzaRecipe", "Pizza Margherita"),
-            Recipe("caesarRecipe", "Caesar Salad")
+            ShoppingListEntry("spaghettiRecipe", "Spaghetti Bolognese"),
+            ShoppingListEntry("pizzaRecipe", "Pizza Margherita"),
+            ShoppingListEntry("caesarRecipe", "Caesar Salad")
         )
     )
-    val recipes: LiveData<List<Recipe>> get() = _recipes
+    val recipes: LiveData<List<ShoppingListEntry>> get() = _recipes
 
     fun clearRecipes() {
         _recipes.value = emptyList()
