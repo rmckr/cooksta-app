@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -27,6 +28,7 @@ import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.gpu.BrightnessFilterTransformation
@@ -263,6 +265,20 @@ class FeedPostFragment : Fragment() {
 
             bookmarkButton.setOnClickListener { toggleSave() }
             bottomSheetSaveButton.setOnClickListener { toggleSave() }
+            shoppingListButton.setOnClickListener {
+                val dialogView = LayoutInflater.from(this@FeedPostFragment.requireContext())
+                    .inflate(R.layout.dialog_add_to_shopping_list, null)
+
+                MaterialAlertDialogBuilder(this@FeedPostFragment.requireContext())
+                    .setTitle("Rezept hinzufügen?")
+                    .setMessage("Gib' die Portionen an, für die du das Rezept einkaufen willst:")
+                    .setView(dialogView)
+                    .setNegativeButton("Abbrechen") { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton("Hinzufügen") { _, _ ->
+                        this@FeedPostFragment.findNavController().navigate(R.id.navigation_shopping_list)
+                    }
+                    .show()
+            }
         }
 
         return binding.root
