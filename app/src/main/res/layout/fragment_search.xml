@@ -15,16 +15,20 @@
         <com.google.android.material.search.SearchBar
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="Rezepte suchen..." />
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.search.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="Rezepte suchen..."
         app:layout_anchor="@id/search_bar">
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/searchResultsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </com.google.android.material.search.SearchView>
 
     <LinearLayout
@@ -44,6 +48,7 @@
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.Material3.Button.TonalButton"
+            android:id="@+id/search_all"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

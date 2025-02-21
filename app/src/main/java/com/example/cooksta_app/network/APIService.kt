@@ -12,6 +12,8 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.QueryName
 import retrofit2.http.Streaming
 
 interface APIService {
@@ -31,7 +33,7 @@ interface APIService {
     @GET("recipes/{recipeId}/media")
     suspend fun getRecipeMedia(@Path("recipeId") recipeId: String): Response<ResponseBody>
     @GET("recipes/feed")
-    suspend fun getRecipeFeed(): Response<List<Recipe>>
+    suspend fun getRecipeFeed(@Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
 
     @POST("recipes/{recipeId}/like")
     suspend fun postRecipeLike(@Path("recipeId") recipeId: String): Response<StateResponse>

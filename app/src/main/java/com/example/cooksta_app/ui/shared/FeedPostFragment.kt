@@ -240,7 +240,7 @@ class FeedPostFragment : Fragment() {
 
         with(binding) {
             Log.d("TEST", "bind: $post")
-            loadMedia(post.id)
+            loadMedia(post._id)
 
             setupBottomSheet(post)
 

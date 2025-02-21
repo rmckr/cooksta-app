@@ -2,6 +2,7 @@ package com.example.cooksta_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.cooksta_app.databinding.ActivityLoginBinding
@@ -16,17 +17,16 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val loginSuccessful = RetrofitClient.login(username, password)
             if (loginSuccessful) {
-                val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-                with(sharedPreferences.edit()) {
-                    putBoolean("isLoggedIn", true)
-                    apply()
-                }
                 val intent = Intent(applicationContext, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
                 binding.editTextUsername.setText("")
                 binding.editTextPassword.setText("")
+
+                val intent = Intent(applicationContext, MainActivity::class.java)
+                startActivity(intent)
+                finish()
             }
         }
     }
