@@ -13,6 +13,7 @@ import com.example.cooksta_app.databinding.ItemSearchResultBinding
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
+import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : Rec
                                     .into(serachRecipePicture)
                             }
                         } else if (mediaType?.contains("video") == true) {
-                            val bitmap = getVideoThumbnail(mediaStream)
+                            val bitmap = Utilities.getVideoThumbnail(mediaStream)
                             CoroutineScope(Dispatchers.Main).launch {
                                 serachRecipePicture.setImageBitmap(bitmap)
                             }
@@ -95,22 +96,5 @@ class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : Rec
         }
     }
 
-    // Funktion zum Extrahieren des ersten Frames eines Videos
-    private fun getVideoThumbnail(inputStream: InputStream?): Bitmap? {
-        if (inputStream == null) return null
-        val retriever = MediaMetadataRetriever()
-        return try {
-            val tempFile = File.createTempFile("video_", ".mp4")
-            tempFile.outputStream().use { output ->
-                inputStream.copyTo(output)
-            }
-            retriever.setDataSource(tempFile.absolutePath)
-            retriever.getFrameAtTime(1, MediaMetadataRetriever.OPTION_CLOSEST)
-        } catch (e: Exception) {
-            Log.e("getVideoThumbnail", "Fehler beim Extrahieren des Frames", e)
-            null
-        } finally {
-            retriever.release()
-        }
-    }
+
 }
