@@ -8,21 +8,28 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.cooksta_app.databinding.FragmentFeedBinding
-import com.example.cooksta_app.model.Recipe
-import kotlinx.coroutines.launch
 
-abstract class FeedFragment : Fragment() {
+class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private var posts: List<Recipe> = emptyList()
+    private val recipeIds: List<String> by lazy {
+        arguments?.getStringArrayList(ARG_RECIPE_IDS)?.toList() ?: throw IllegalStateException("$ARG_RECIPE_IDS argument is missing")
+    }
 
-    abstract suspend fun providePosts(): List<Recipe>
+    companion object {
+        private const val ARG_RECIPE_IDS = "recipeIds"
+
+        fun newInstance(recipeIds: List<String>): FeedFragment = FeedFragment().apply {
+            arguments = Bundle().apply {
+                putStringArrayList(ARG_RECIPE_IDS, ArrayList(recipeIds))
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,11 +50,7 @@ abstract class FeedFragment : Fragment() {
         val feedAdapter = FeedAdapter()
         binding.homeViewPager.adapter = feedAdapter
         binding.homeViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            posts = providePosts()
-            feedAdapter.notifyItemRangeInserted(0, posts.size)
-        }
+        binding.homeViewPager.offscreenPageLimit = 1
 
         return binding.root
     }
@@ -63,11 +66,11 @@ abstract class FeedFragment : Fragment() {
 
     inner class FeedAdapter : FragmentStateAdapter(this) {
         override fun createFragment(position: Int): Fragment {
-            val recipe = posts[position]
-            return FeedPostFragment.newInstance(recipe)
+            val recipeId = recipeIds[position]
+            return FeedPostFragment.newInstance(position, recipeId)
         }
 
-        override fun getItemCount(): Int = posts.size
+        override fun getItemCount(): Int = recipeIds.size
     }
 }
 
