@@ -33,23 +33,22 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val recipeIds = fetchRecipeIds()
-            val feedFragment = FeedFragment.newInstance(recipeIds)
+        childFragmentManager.beginTransaction()
+            .replace(view.id, FeedFragment())
+            .commit()
 
-            childFragmentManager.beginTransaction()
-                .replace(view.id, feedFragment)
-                .commit()
-        }
-    }
-
-    private suspend fun fetchRecipeIds(): List<String> {
-        return withContext(Dispatchers.IO) {
-            val feedResponse = RetrofitClient.apiService.getRecipeFeed(
-                limit = 20,
-                page = null
-            )
-            if (feedResponse.isSuccessful) feedResponse.body()?.map { it.id } ?: emptyList() else emptyList()
+        lifecycleScope.launch {
+            val recipeIds = withContext(Dispatchers.IO) {
+                val feedResponse = RetrofitClient.apiService.getRecipeFeed(
+                    limit = 20,
+                    page = null
+                )
+                if (feedResponse.isSuccessful) feedResponse.body()?.map { it.id } ?: emptyList() else emptyList()
+            }
+            val resultBundle = Bundle().apply {
+                putStringArrayList("recipeIds", ArrayList(recipeIds))
+            }
+            childFragmentManager.setFragmentResult("feed", resultBundle)
         }
     }
 }
