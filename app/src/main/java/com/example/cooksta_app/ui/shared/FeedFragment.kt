@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.cooksta_app.databinding.FragmentFeedBinding
-import com.example.cooksta_app.model.Recipe
 import kotlinx.coroutines.launch
 
 abstract class FeedFragment : Fragment() {
@@ -20,9 +19,9 @@ abstract class FeedFragment : Fragment() {
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private var posts: List<Recipe> = emptyList()
+    private var recipeIds: List<String> = emptyList()
 
-    abstract suspend fun providePosts(): List<Recipe>
+    abstract suspend fun provideRecipeIds(): List<String>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,10 +42,11 @@ abstract class FeedFragment : Fragment() {
         val feedAdapter = FeedAdapter()
         binding.homeViewPager.adapter = feedAdapter
         binding.homeViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.homeViewPager.offscreenPageLimit = 1
 
         viewLifecycleOwner.lifecycleScope.launch {
-            posts = providePosts()
-            feedAdapter.notifyItemRangeInserted(0, posts.size)
+            recipeIds = provideRecipeIds()
+            feedAdapter.notifyItemRangeInserted(0, recipeIds.size)
         }
 
         return binding.root
@@ -63,11 +63,11 @@ abstract class FeedFragment : Fragment() {
 
     inner class FeedAdapter : FragmentStateAdapter(this) {
         override fun createFragment(position: Int): Fragment {
-            val recipe = posts[position]
-            return FeedPostFragment.newInstance(recipe)
+            val recipeId = recipeIds[position]
+            return FeedPostFragment.newInstance(position, recipeId)
         }
 
-        override fun getItemCount(): Int = posts.size
+        override fun getItemCount(): Int = recipeIds.size
     }
 }
 

@@ -27,6 +27,7 @@ class SkeletonTextView @JvmOverloads constructor(
 
     fun load(value: String) {
         this.objectAnimator.cancel()
+        this.alpha = 1f
         this.background = null
         this.text = value
     }
