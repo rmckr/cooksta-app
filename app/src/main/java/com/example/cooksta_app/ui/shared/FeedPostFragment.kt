@@ -18,6 +18,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
+import androidx.transition.Visibility
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -157,6 +158,11 @@ class FeedPostFragment : Fragment() {
 
                             binding.postVideoTexture.setOnClickListener {
                                 exoPlayer.playWhenReady = !exoPlayer.isPlaying
+                                if (exoPlayer.playWhenReady) {
+                                    binding.playButton.visibility = View.GONE
+                                } else {
+                                    binding.playButton.visibility = View.VISIBLE
+                                }
                             }
                             this@FeedPostFragment.exoPlayer = exoPlayer
                         }
