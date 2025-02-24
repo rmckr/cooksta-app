@@ -8,8 +8,11 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.cooksta_app.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_feed" />
+        android:label="@string/title_home">
+        <action
+            android:id="@+id/action_navigation_home_to_feedFragment"
+            app:destination="@id/navigation_feed" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.cooksta_app.ui.search.SearchFragment"
@@ -17,7 +20,7 @@
         tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/action_navigation_search_to_feedFragment"
-            app:destination="@id/feedFragment"
+            app:destination="@id/navigation_feed"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_right"
@@ -53,7 +56,12 @@
         android:label="EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile" />
     <fragment
-        android:id="@+id/feedFragment"
+        android:id="@+id/navigation_feed"
         android:name="com.example.cooksta_app.ui.shared.FeedFragment"
-        android:label="FeedFragment" />
+        android:label="FeedFragment"
+        tools:layout="@layout/fragment_post">
+        <argument
+            android:name="recipeIds"
+            app:argType="string[]" />
+    </fragment>
 </navigation>
