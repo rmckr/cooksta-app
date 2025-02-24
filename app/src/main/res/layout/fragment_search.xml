@@ -47,8 +47,8 @@
             android:scrollbars="none" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.TonalButton"
             android:id="@+id/search_all"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

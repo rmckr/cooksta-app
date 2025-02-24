@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentSearchBinding
-import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.network.RetrofitClient
-import com.example.cooksta_app.ui.shared.FeedFragment
 import com.google.android.material.search.SearchView
 import kotlinx.coroutines.launch
 
@@ -21,7 +21,7 @@ class SearchFragment : Fragment() {
 
     private fun handleSearch(query: String) {
         lifecycleScope.launch {
-            val searchResponse = RetrofitClient.apiService.getRecipeFeed() // TODO: Replace with search
+            val searchResponse = RetrofitClient.apiService.searchRecipes(query)
             if (searchResponse.isSuccessful) {
                 val searchResults = SearchResultsFragment.newInstance(searchResponse.body() ?: emptyList())
                 parentFragmentManager.beginTransaction()
@@ -31,11 +31,11 @@ class SearchFragment : Fragment() {
         }
     }
 
-    fun handleCategoryClick(category: String) {
+    fun handleCategoryClick(category: CategoryCard) {
         with(binding) {
             searchView.show()
-            searchView.editText.setText(category)
-            handleSearch(category)
+            searchView.editText.setText(category.textResource)
+            handleSearch(category.target)
         }
     }
 
@@ -45,6 +45,18 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
+
+        binding.searchAll.setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_search_to_feedFragment)
+            lifecycleScope.launch {
+                val allPostsResponse = RetrofitClient.apiService.getRecipeFeed(limit = null, page = null)
+                val recipeIds = if (allPostsResponse.isSuccessful) allPostsResponse.body()?.map { it.id } ?: emptyList() else emptyList()
+                val resultBundle = Bundle().apply {
+                    putStringArrayList("recipeIds", ArrayList(recipeIds))
+                }
+                parentFragmentManager.setFragmentResult("feed", resultBundle)
+            }
+        }
 
         binding.searchView.addTransitionListener { _, _, newState ->
             if (newState == SearchView.TransitionState.HIDDEN) {
@@ -58,20 +70,6 @@ class SearchFragment : Fragment() {
                 handleSearch(query)
             }
             true
-        }
-
-        binding.searchAll.setOnClickListener {
-            class AllPostsFragment : FeedFragment() {
-                override suspend fun providePosts(): List<Recipe> {
-                    val feedResponse = RetrofitClient.apiService.getRecipeFeed()
-                    if (feedResponse.isSuccessful) {
-                        return feedResponse.body() ?: emptyList()
-                    }
-                    return emptyList()
-                }
-            }
-            val allPostsFragment = AllPostsFragment()
-            // TODO: navigate to fragment
         }
 
         return binding.root

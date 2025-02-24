@@ -1,7 +1,6 @@
 package com.example.cooksta_app.ui.search
 
 import android.graphics.Rect
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -23,22 +22,22 @@ data class CategoryCard(
 
 // TODO: Get targets from api
 private val categories = listOf(
-    CategoryCard(target = "asia", textResource = R.string.asianCategory, imageResource = R.drawable.card_ramen),
+    CategoryCard(target = "asian", textResource = R.string.asianCategory, imageResource = R.drawable.card_ramen),
     CategoryCard(target = "baking", textResource = R.string.bakeCategory, imageResource = R.drawable.card_baking),
     CategoryCard(target = "dessert", textResource = R.string.dessertCategory, imageResource = R.drawable.card_dessert),
-    CategoryCard(target = "drinks", textResource = R.string.beverageCategory, imageResource = R.drawable.card_drinks),
+    CategoryCard(target = "drink", textResource = R.string.beverageCategory, imageResource = R.drawable.card_drinks),
     CategoryCard(target = "main", textResource = R.string.mainDishCategory, imageResource = R.drawable.card_lunch),
     CategoryCard(target = "italian", textResource = R.string.italianCategory, imageResource = R.drawable.card_pizza),
-    CategoryCard(target = "fast", textResource = R.string.fastCategory, imageResource = R.drawable.card_fast),
+    CategoryCard(target = "quick", textResource = R.string.fastCategory, imageResource = R.drawable.card_fast),
     CategoryCard(target = "soup", textResource = R.string.soupCategory, imageResource = R.drawable.card_soup),
-    CategoryCard(target = "veggie", textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
+    CategoryCard(target = "vegetarian", textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
 )
 
 class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractionListener {
     private val spanCount = 3
     private val spacing = 16
 
-    override fun onCardClick(target: String) {
+    override fun onCardClick(target: CategoryCard) {
         val searchFragment = requireParentFragment() as SearchFragment
         searchFragment.handleCategoryClick(target)
     }
@@ -77,7 +76,7 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
 }
 
 interface CategoryInteractionListener {
-    fun onCardClick(target: String)
+    fun onCardClick(target: CategoryCard)
 }
 
 class CategoryAdapter(
@@ -105,7 +104,7 @@ class CategoryAdapter(
 
         fun bind(card: CategoryCard) {
             cardView.setOnClickListener {
-                interactionListener.onCardClick(cardView.context.resources.getString(card.textResource))
+                interactionListener.onCardClick(card)
             }
             imageView.setImageResource(card.imageResource)
             textView.setText(card.textResource)

@@ -23,12 +23,13 @@ android {
             buildConfigField("String", "API_BASE_URL", "\"http://localhost:3000/api\"")
         }
         release {
-            buildConfigField("String", "API_BASE_URL", "\"https://cooksta.app/api\"")
+            buildConfigField("String", "API_BASE_URL", "\"http://185.170.114.179:3000/api\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
