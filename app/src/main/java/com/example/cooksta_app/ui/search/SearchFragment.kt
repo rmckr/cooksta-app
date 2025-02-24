@@ -33,9 +33,13 @@ class SearchFragment : Fragment() {
 
     fun handleCategoryClick(category: CategoryCard) {
         with(binding) {
+            searchView.isAutoShowKeyboard = false
             searchView.show()
             searchView.editText.setText(category.textResource)
             handleSearch(category.target)
+            searchView.postDelayed({
+                searchView.isAutoShowKeyboard = true
+            }, 500)
         }
     }
 
