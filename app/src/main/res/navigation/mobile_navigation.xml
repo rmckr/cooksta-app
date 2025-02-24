@@ -14,7 +14,15 @@
         android:id="@+id/navigation_search"
         android:name="com.example.cooksta_app.ui.search.SearchFragment"
         android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_navigation_search_to_feedFragment"
+            app:destination="@id/feedFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_add"
         android:name="com.example.cooksta_app.ui.create.CreateFragment"

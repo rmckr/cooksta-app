@@ -12,9 +12,7 @@ import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentSearchBinding
 import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.search.SearchView
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SearchFragment : Fragment() {
 
@@ -49,7 +47,7 @@ class SearchFragment : Fragment() {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
         binding.searchAll.setOnClickListener {
-            findNavController().navigate(R.id.feedFragment)
+            findNavController().navigate(R.id.action_navigation_search_to_feedFragment)
             lifecycleScope.launch {
                 val allPostsResponse = RetrofitClient.apiService.getRecipeFeed(limit = null, page = null)
                 val recipeIds = if (allPostsResponse.isSuccessful) allPostsResponse.body()?.map { it.id } ?: emptyList() else emptyList()
