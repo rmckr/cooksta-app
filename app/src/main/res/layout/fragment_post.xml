@@ -101,7 +101,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.example.cooksta_app.ui.shared.SkeletonTextView
+                    <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
                         android:id="@+id/bottomSheetTitle"
                         style="@style/TextAppearance.Material3.TitleMedium"
                         android:layout_width="0dp"

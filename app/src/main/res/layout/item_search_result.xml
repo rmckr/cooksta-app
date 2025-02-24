@@ -22,7 +22,7 @@
             android:layout_width="72dp"
             android:layout_height="72dp">
 
-            <ImageView
+            <com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
                 android:id="@+id/serachRecipePicture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

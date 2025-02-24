@@ -46,13 +46,13 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.example.cooksta_app.ui.shared.SkeletonTextView
+                <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
                     android:id="@+id/username"
                     style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <com.example.cooksta_app.ui.shared.SkeletonTextView
+                <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
                     android:id="@+id/biography"
                     style="@style/TextAppearance.Material3.BodyMedium"
                     android:layout_width="match_parent"

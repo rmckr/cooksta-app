@@ -80,8 +80,10 @@ class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : Rec
                             }
                         } else if (mediaType?.contains("video") == true) {
                             val bitmap = Utilities.getVideoThumbnail(mediaStream)
-                            CoroutineScope(Dispatchers.Main).launch {
-                                serachRecipePicture.setImageBitmap(bitmap)
+                            if (bitmap !== null) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    serachRecipePicture.load(bitmap)
+                                }
                             }
                         }
                     }
