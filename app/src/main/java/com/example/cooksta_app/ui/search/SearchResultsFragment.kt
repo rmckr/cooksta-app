@@ -1,7 +1,5 @@
 package com.example.cooksta_app.ui.search
 
-import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,8 +15,6 @@ import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.InputStream
 
 class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
 
@@ -71,7 +67,7 @@ class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : Rec
             searchRecipeName.text = recipe.title
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val response = RetrofitClient.apiService.getRecipeMedia(recipe._id)
+                    val response = RetrofitClient.apiService.getRecipeMedia(recipe.id)
                     if (response.isSuccessful) {
                         val mediaType = response.headers()["Content-Type"]
                         val mediaStream = response.body()?.byteStream()

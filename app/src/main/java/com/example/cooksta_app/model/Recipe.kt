@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Recipe(
-    @Suppress("PropertyName") val _id: String,
+    val id: String,
     val creatorId: String,
     val title: String,
     val description: String,

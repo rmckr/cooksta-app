@@ -33,6 +33,8 @@ interface APIService {
     suspend fun getRecipeMedia(@Path("recipeId") recipeId: String): Response<ResponseBody>
     @GET("recipes/feed")
     suspend fun getRecipeFeed(@Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
+    @GET("recipes/search")
+    suspend fun searchRecipes(@Query("q") query: String, @Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
 
     @POST("recipes/{recipeId}/like")
     suspend fun postRecipeLike(@Path("recipeId") recipeId: String): Response<StateResponse>
