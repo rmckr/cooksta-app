@@ -7,11 +7,16 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentSearchBinding
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.FeedFragment
 import com.google.android.material.search.SearchView
+import kotlinx.coroutines.launch
+import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
@@ -45,6 +50,18 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
+
+        binding.searchAllButton.setOnClickListener {
+            findNavController().navigate(R.id.feedFragment)
+            lifecycleScope.launch {
+                val allPostsResponse = RetrofitClient.apiService.getRecipeFeed(limit = null, page = null)
+                val recipeIds = if (allPostsResponse.isSuccessful) allPostsResponse.body()?.map { it.id } ?: emptyList() else emptyList()
+                val resultBundle = Bundle().apply {
+                    putStringArrayList("recipeIds", ArrayList(recipeIds))
+                }
+                parentFragmentManager.setFragmentResult("feed", resultBundle)
+            }
+        }
 
         binding.searchView.addTransitionListener { _, _, newState ->
             if (newState == SearchView.TransitionState.HIDDEN) {

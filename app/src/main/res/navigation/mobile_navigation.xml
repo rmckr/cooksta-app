@@ -44,4 +44,8 @@
         android:name="com.example.cooksta_app.ui.profile.EditProfileFragment"
         android:label="EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="com.example.cooksta_app.ui.shared.FeedFragment"
+        android:label="FeedFragment" />
 </navigation>

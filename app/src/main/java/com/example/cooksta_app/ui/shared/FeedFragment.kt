@@ -17,19 +17,7 @@ class FeedFragment : Fragment() {
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private val recipeIds: List<String> by lazy {
-        arguments?.getStringArrayList(ARG_RECIPE_IDS)?.toList() ?: throw IllegalStateException("$ARG_RECIPE_IDS argument is missing")
-    }
-
-    companion object {
-        private const val ARG_RECIPE_IDS = "recipeIds"
-
-        fun newInstance(recipeIds: List<String>): FeedFragment = FeedFragment().apply {
-            arguments = Bundle().apply {
-                putStringArrayList(ARG_RECIPE_IDS, ArrayList(recipeIds))
-            }
-        }
-    }
+    private var recipeIds: List<String> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +36,13 @@ class FeedFragment : Fragment() {
         }
 
         val feedAdapter = FeedAdapter()
-        binding.homeViewPager.adapter = feedAdapter
-        binding.homeViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
-        binding.homeViewPager.offscreenPageLimit = 1
+        binding.feedViewPager.adapter = feedAdapter
+        binding.feedViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.feedViewPager.offscreenPageLimit = 1
+        parentFragmentManager.setFragmentResultListener("feed", viewLifecycleOwner) { _, bundle ->
+            recipeIds = bundle.getStringArrayList("recipeIds") ?: emptyList()
+            feedAdapter.notifyItemRangeInserted(0, recipeIds.size)
+        }
 
         return binding.root
     }
@@ -61,7 +53,7 @@ class FeedFragment : Fragment() {
     }
 
     fun setViewPagerInput(state: Boolean) {
-        binding.homeViewPager.isUserInputEnabled = state
+        binding.feedViewPager.isUserInputEnabled = state
     }
 
     inner class FeedAdapter : FragmentStateAdapter(this) {
