@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Cooksta</string>
     <string name="title_home">Start</string>
+    <string name="title">Titel</string>
+    <string name="description">Beschreibung</string>
     <string name="title_search">Suche</string>
     <string name="title_add">Erstellen</string>
     <string name="title_shoppingList">Einkaufsliste</string>
@@ -11,8 +13,18 @@
     <string name="text_shoppingListInfo">Wenn du Rezepte zu deiner Einkaufsliste hinzufügst, wirst du sie hier sehen.\n\nViel Spaß beim Einkaufen!</string>
     <string name="recipe">Rezepte</string>
     <string name="own_recipes">Eigene Rezepte</string>
-    <string name="save">Gespeichert</string>
-    <string name="ingredients">Alle Zutaten</string>
+    <string name="saved">Gespeichert</string>
+    <string name="ingredients">Zutaten</string>
+    <string name="all_ingredients">Alle Zutaten</string>
+    <string name="new_ingredient">Neue Zutat</string>
+    <string name="portions">Portionen</string>
+    <string name="visibility">Sichtbarkeit</string>
+    <string name="isPublic">Öffentlich</string>
+    <string name="limitCategory">Kategorien (max. 3)</string>
+    <string name="media">Medien (min. 1)</string>
+    <string name="choose_image">Bild wählen</string>
+    <string name="choose_video">Video wählen</string>
+    <string name="save">Speichern</string>
     <string name="recipes">Alle Rezepte</string>
     <string name="search_recipes">Rezepte suchen…</string>
     <string name="choose_ingredients">Zutat auswählen</string>
