@@ -26,6 +26,7 @@
                 android:id="@+id/recipePicture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/recipeImage"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/ic_launcher" />
         </com.google.android.material.card.MaterialCardView>

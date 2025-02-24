@@ -1,6 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -11,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:hint="Zutat auswählen"
+        android:hint="@string/choose_ingredients"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -29,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_weight="1.25"
-        android:hint="Menge"
+        android:hint="@string/amount"
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -45,6 +44,6 @@
         style="@style/Widget.Material3.Button.IconButton.Outlined"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Zutat löschen"
+        android:contentDescription="@string/delete_ingredients"
         app:icon="@drawable/ic_delete" />
 </LinearLayout>

@@ -25,7 +25,7 @@
                 android:theme="?attr/actionBarTheme"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:menu="@menu/shopping_list_bar"
-                app:title="@string/text_shoppingListTitle" />
+                app:title="@string/title_shoppingList" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout2"
@@ -61,6 +61,7 @@
                 android:layout_width="256dp"
                 android:layout_height="256dp"
                 android:layout_marginVertical="16dp"
+                android:contentDescription="@string/shoppingBagImage"
                 android:src="@drawable/shopping_bag" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -95,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:clickable="true"
-            android:contentDescription="Delete shopping list"
+            android:contentDescription="@string/delete_shoppingList"
             android:src="@drawable/ic_delete"
             android:visibility="invisible"
             app:layout_anchor="@id/viewPager"
