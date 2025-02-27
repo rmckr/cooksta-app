@@ -36,6 +36,9 @@ interface APIService {
     @GET("recipes/search")
     suspend fun searchRecipes(@Query("q") query: String, @Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
 
+    @POST("recipes")
+    suspend fun postRecipe(): Response<Recipe>
+
     @POST("recipes/{recipeId}/like")
     suspend fun postRecipeLike(@Path("recipeId") recipeId: String): Response<StateResponse>
     @DELETE("recipes/{recipeId}/like")

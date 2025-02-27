@@ -1,21 +1,30 @@
 package com.example.cooksta_app.ui.create
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.RippleDrawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
+import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.MaterialShapeDrawable
 import kotlinx.coroutines.launch
@@ -43,6 +52,94 @@ class CreateFragment : Fragment() {
         uri?.let {
             Glide.with(this).asBitmap().load(uri).into(binding.videoPreview)
         }
+    }
+
+    private fun triggerRippleEffect(view: View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.isPressed = true
+            view.invalidate()
+            view.postDelayed({
+                view.isPressed = false
+                view.invalidate()
+            }, 1000)
+        }
+    }
+
+    private fun shakeView(view: View) {
+        ObjectAnimator.ofFloat(view, "translationX", 0f, 10f, -10f, 5f, -5f, 0f).apply {
+            duration = 300
+            start()
+        }
+    }
+
+    private fun validateInputs(): Boolean {
+        var isValid = true
+
+        // Title
+        if (binding.recipeTitleInput.text.isNullOrBlank()) {
+            binding.recipeTitleLayout.error = getString(R.string.error_title_required)
+            binding.recipeTitleInput.requestFocus()
+            isValid = false
+        } else {
+            binding.recipeTitleLayout.error = null
+        }
+
+        // Description
+        if (binding.recipeDescriptionInput.text.isNullOrBlank()) {
+            binding.recipeDescriptionLayout.error = getString(R.string.error_description_required)
+            if (isValid) binding.recipeDescriptionInput.requestFocus()
+            isValid = false
+        } else {
+            binding.recipeDescriptionLayout.error = null
+        }
+
+        if (!isValid) { return false }
+
+        // Ingredients
+        val ingredientViewModel:CreateViewModel by activityViewModels()
+
+        if (ingredientViewModel.ingredientSelectionCount == 0) {
+            binding.emptyIngredientSelectionView.visibility = View.VISIBLE
+            triggerRippleEffect(binding.ingredients)
+            shakeView(binding.ingredients)
+            isValid = false
+        } else {
+            binding.emptyIngredientSelectionView.visibility = View.GONE
+        }
+
+        val ingredientSelectionListFragment =
+            childFragmentManager.findFragmentById(R.id.ingredientSelectionList) as? IngredientSelectionListFragment
+
+        if (ingredientSelectionListFragment != null && !ingredientSelectionListFragment.validate()) {
+            isValid = false
+        }
+
+        if (!isValid) { return false }
+
+        // Category
+        if (binding.chipGroup.checkedChipIds.isEmpty()) {
+            binding.emptyCategorySelectionView.visibility = View.VISIBLE
+            triggerRippleEffect(binding.categories)
+            shakeView(binding.categories)
+            isValid = false
+        } else {
+            binding.emptyCategorySelectionView.visibility = View.GONE
+        }
+
+        if(!isValid) { return false }
+
+        // Media
+        if (selectedImageUri == null && selectedVideoUri == null) {
+            binding.emptyMediaSelectionView.visibility = View.VISIBLE
+            triggerRippleEffect(binding.media)
+            shakeView(binding.media)
+            isValid = false
+        } else {
+            binding.imagePreview.setBackgroundResource(0)
+            binding.emptyMediaSelectionView.visibility = View.GONE
+        }
+
+        return isValid
     }
 
     override fun onCreateView(
@@ -83,8 +180,14 @@ class CreateFragment : Fragment() {
 
         binding.addIngredientButton.setOnClickListener {
             val ingredientSelectionListFragment = childFragmentManager.findFragmentById(R.id.ingredientSelectionList) as? IngredientSelectionListFragment
-            ingredientSelectionListFragment?.let {
-                it.createIngredient()
+            ingredientSelectionListFragment?.createIngredient()
+        }
+
+        binding.recipeSaveButton.setOnClickListener {
+            if (validateInputs()) {
+                lifecycleScope.launch {
+                    RetrofitClient.apiService.postRecipe()
+                }
             }
         }
 
@@ -99,7 +202,6 @@ class CreateFragment : Fragment() {
         }
         binding.videoPreview.setOnClickListener {
             pickVideoLauncher.launch("video/*")
-
         }
 
         return binding.root

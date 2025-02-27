@@ -18,6 +18,7 @@ class CreateViewModel : ViewModel() {
     }
 
     val ingredientSelectionCount get() = _ingredientSelection.value.size
+
     fun createIngredient() {
         _ingredientSelection.value = _ingredientSelection.value.toMutableList().apply {
             add(IngredientSelectionItem(id = UUID.randomUUID().toString(), name = null, amount = null))
@@ -34,5 +35,8 @@ class CreateViewModel : ViewModel() {
         _ingredientSelection.value = _ingredientSelection.value.toMutableList().apply {
             removeAt(position)
         }
+    }
+    fun clearIngredients() {
+        _ingredientSelection.value = emptyList() // Zutatenliste leeren
     }
 }

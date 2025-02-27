@@ -51,6 +51,13 @@
     <string name="userImage">User-Bild</string>
     <string name="less">Weniger</string>
     <string name="more">Mehr</string>
+    <string name="error_title_required">Bitte gib einen Titel ein.</string>
+    <string name="error_description_required">Bitte gib eine Beschreibung ein.</string>
+    <string name="error_category_required">Bitte wähle mindestens eine Kategorie aus.</string>
+    <string name="error_media_required">Bitte wähle mindestens ein Bild oder Video aus.</string>
+    <string name="error_ingredients_required">Füge mindestens eine Zutat hinzu!</string>
+    <string name="error_indicate_amount">Bitte gib eine Menge an.</string>
+    <string name="error_choose_ingredient">Bitte wähle eine Zutat aus.</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>
