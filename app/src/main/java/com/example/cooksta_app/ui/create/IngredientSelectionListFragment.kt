@@ -24,9 +24,7 @@ import kotlinx.coroutines.launch
 
 data class IngredientSelectionItem(var id: String, var name: String?, var amount: Double?)
 
-class IngredientSelectionListFragment :
-    RecyclerViewFragment<IngredientSelectionAdapter>(),
-    IngredientSelectionAdapter.IngredientSelectionInteractionListener {
+class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelectionAdapter>(), IngredientSelectionAdapter.IngredientSelectionInteractionListener {
 
     private val viewModel: CreateViewModel by lazy {
         ViewModelProvider(requireActivity())[CreateViewModel::class.java]

@@ -21,13 +21,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
 import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class CreateFragment : Fragment() {
 
@@ -72,7 +76,24 @@ class CreateFragment : Fragment() {
         }
     }
 
-    private fun validateInputs(): Boolean {
+    private suspend fun showMissingAmountDialog(): Boolean {
+        return suspendCoroutine { continuation ->
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Fehlende Mengenangaben")
+                .setMessage("Es gibt Zutaten, die keine Mengenangabe haben. Diese werden später auch ohne Mengenangabe angezeigt.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    continuation.resume(true)  // Dialog akzeptiert
+                }
+                .setNegativeButton("Abbrechen") { dialog, _ ->
+                    dialog.dismiss()
+                    continuation.resume(false) // Dialog abgelehnt
+                }
+                .show()
+        }
+    }
+
+    private suspend fun validateInputs(): Boolean {
         var isValid = true
 
         // Title
@@ -96,7 +117,7 @@ class CreateFragment : Fragment() {
         if (!isValid) { return false }
 
         // Ingredients
-        val ingredientViewModel:CreateViewModel by activityViewModels()
+        val ingredientViewModel: CreateViewModel by activityViewModels()
 
         if (ingredientViewModel.ingredientSelectionCount == 0) {
             binding.emptyIngredientSelectionView.visibility = View.VISIBLE
@@ -110,8 +131,39 @@ class CreateFragment : Fragment() {
         val ingredientSelectionListFragment =
             childFragmentManager.findFragmentById(R.id.ingredientSelectionList) as? IngredientSelectionListFragment
 
-        if (ingredientSelectionListFragment != null && !ingredientSelectionListFragment.validate()) {
-            isValid = false
+        if (ingredientSelectionListFragment != null) {
+            with(ingredientSelectionListFragment) {
+                var firstInvalidTextLayout: View? = null
+                var hasNullIngredient = false
+
+                for (i in 0 until adapter.itemCount) {
+                    val ingredient = adapter.currentList[i]
+
+                    val name = ingredient.name?.trim()
+                    val amount = ingredient.amount
+
+                    val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? IngredientSelectionAdapter.IngredientSelectionViewHolder
+
+                    if (name.isNullOrBlank()) {
+                        isValid = false
+                        viewHolder?.ingredientNameLayout?.error = getString(R.string.error_choose_ingredient)
+                        if (firstInvalidTextLayout === null) firstInvalidTextLayout = viewHolder?.ingredientNameLayout
+                    } else {
+                        viewHolder?.ingredientNameLayout?.error = null
+                    }
+
+                    if (amount == null) {
+                        hasNullIngredient = true
+                    }
+                }
+
+                if (hasNullIngredient) {
+                    val dialogResult = showMissingAmountDialog()
+                    if (!dialogResult) {
+                        isValid = false
+                    }
+                }
+            }
         }
 
         if (!isValid) { return false }
@@ -184,9 +236,10 @@ class CreateFragment : Fragment() {
         }
 
         binding.recipeSaveButton.setOnClickListener {
-            if (validateInputs()) {
-                lifecycleScope.launch {
+            lifecycleScope.launch {
+                if (validateInputs()) {
                     RetrofitClient.apiService.postRecipe()
+                    findNavController().navigate(R.id.navigation_profile)
                 }
             }
         }
