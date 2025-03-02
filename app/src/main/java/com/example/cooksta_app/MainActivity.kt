@@ -1,6 +1,7 @@
 package com.example.cooksta_app
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +21,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         enableEdgeToEdge()
-        window.isNavigationBarContrastEnforced = false
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
 
         setContentView(binding.root)
 

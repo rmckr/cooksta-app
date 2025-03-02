@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.cooksta_app.R
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.FeedFragment
 import kotlinx.coroutines.Dispatchers
@@ -33,10 +35,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        childFragmentManager.beginTransaction()
-            .replace(view.id, FeedFragment())
-            .commit()
-
         lifecycleScope.launch {
             val recipeIds = withContext(Dispatchers.IO) {
                 val feedResponse = RetrofitClient.apiService.getRecipeFeed(
@@ -45,10 +43,13 @@ class HomeFragment : Fragment() {
                 )
                 if (feedResponse.isSuccessful) feedResponse.body()?.map { it.id } ?: emptyList() else emptyList()
             }
-            val resultBundle = Bundle().apply {
-                putStringArrayList("recipeIds", ArrayList(recipeIds))
-            }
-            childFragmentManager.setFragmentResult("feed", resultBundle)
+            findNavController().navigate(
+                R.id.action_navigation_home_to_feedFragment,
+                Bundle().apply {
+                    putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
+                    putBoolean(FeedFragment.ARG_IS_HOME_FEED, true)
+                }
+            )
         }
     }
 }

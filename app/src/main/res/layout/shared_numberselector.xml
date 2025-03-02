@@ -18,7 +18,7 @@
             app:icon="@drawable/ic_stat_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Weniger" />
+            android:contentDescription="@string/less" />
 
         <EditText
             android:id="@+id/selectorInput"
@@ -26,8 +26,9 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="center"
-            android:hint="Anzahl"
+            android:hint="@string/amount"
             android:imeOptions="actionDone"
+            android:importantForAutofill="no"
             android:inputType="number"
             android:maxLength="3"
             android:text=""
@@ -39,6 +40,6 @@
             app:icon="@drawable/ic_stat_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Mehr" />
+            android:contentDescription="@string/more" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -13,8 +13,10 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 
 abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
-    protected lateinit var recyclerView: RecyclerView
-    protected lateinit var adapter: T
+    lateinit var recyclerView: RecyclerView
+        private set
+    lateinit var adapter: T
+        private set
 
     abstract fun provideAdapter(): T
 

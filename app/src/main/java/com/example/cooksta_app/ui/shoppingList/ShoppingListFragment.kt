@@ -108,7 +108,7 @@ class ShoppingListFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout2, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.recipe)
-                1 -> getString(R.string.ingredients)
+                1 -> getString(R.string.all_ingredients)
                 else -> ""
             }
         }.attach()

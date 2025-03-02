@@ -16,7 +16,7 @@
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Rezepte suchen..." />
+            android:hint="@string/search_recipes" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.search.SearchView
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:text="Alle Rezepte"
+            android:text="@string/recipes"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
