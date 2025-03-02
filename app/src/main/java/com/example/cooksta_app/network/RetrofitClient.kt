@@ -38,7 +38,7 @@ object RetrofitClient {
                 .addInterceptor(LogInterceptor())
                 .addInterceptor(NetworkInterceptor(context.applicationContext))
                 .addInterceptor(AuthInterceptor(tokenStore))
-                .authenticator(TokenRefreshAuthenticator(tokenStore))
+                .authenticator(TokenRefreshAuthenticator())
                 .build()
         }
     }
