@@ -15,6 +15,7 @@ import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
 
@@ -60,7 +61,7 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
                 CoroutineScope(Dispatchers.IO).launch {
                     val bitmap = Utilities.fetchVideoThumbnail(binding.searchRecipePicture.context, recipe.id)
                     if (bitmap != null) {
-                        CoroutineScope(Dispatchers.Main).launch {
+                        withContext(Dispatchers.Main) {
                             binding.searchRecipePicture.load(bitmap)
                         }
                     }
@@ -68,7 +69,7 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
 
                 binding.searchResultCard.setOnClickListener {
                     findNavController(binding.root).navigate(
-                        R.id.action_navigation_profile_to_navigation_feed,
+                        R.id.action_navigation_search_to_feedFragment,
                         Bundle().apply {
                             putStringArray(FeedFragment.ARG_RECIPE_IDS, recipes.map { it.id }.toTypedArray())
                             putInt(FeedFragment.ARG_POSITION, adapterPosition)

@@ -20,11 +20,9 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.ItemShoppingListRecipeBinding
 import com.example.cooksta_app.model.ShoppingListItem
-import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
@@ -220,27 +218,10 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
                 inputMethodManager.hideSoftInputFromWindow(itemView.windowToken, 0)
             }
             CoroutineScope(Dispatchers.IO).launch {
-                val response = RetrofitClient.apiService.getRecipeMedia(recipe.id)
-                if (response.isSuccessful) {
-                    val mediaType = response.headers()["Content-Type"]
-                    val mediaStream = response.body()?.byteStream()
-
-                    if (mediaType?.contains("image") == true) {
-                        val bitmap = Glide.with(binding.recipePicture.context)
-                            .asBitmap()
-                            .load(mediaStream?.readBytes())
-                            .submit()
-                            .get()
-                        withContext(Dispatchers.Main) {
-                            binding.recipePicture.load(bitmap)
-                        }
-                    } else if (mediaType?.contains("video") == true) {
-                        val bitmap = Utilities.getVideoThumbnail(mediaStream)
-                        if (bitmap !== null) {
-                            withContext(Dispatchers.Main) {
-                                binding.recipePicture.load(bitmap)
-                            }
-                        }
+                val bitmap = Utilities.fetchVideoThumbnail(binding.recipePicture.context, recipe.id)
+                if (bitmap != null) {
+                    withContext(Dispatchers.Main) {
+                        binding.recipePicture.load(bitmap)
                     }
                 }
             }
