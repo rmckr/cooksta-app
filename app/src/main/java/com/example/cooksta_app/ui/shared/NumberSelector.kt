@@ -6,19 +6,22 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.cooksta_app.R
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import java.util.Locale
 
 class NumberSelector @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val _value = MutableLiveData<Int>(0)
-    val value: LiveData<Int> = _value
+    private val _value = MutableStateFlow(1)
+    val value: StateFlow<Int> = _value
 
     private var coerceValue: (Int) -> Int = { it.coerceIn(1, 999) }
     private var onValueChangeListener: ((Int) -> Unit)? = null
@@ -58,22 +61,24 @@ class NumberSelector @JvmOverloads constructor(
             false
         }
         decrementButton.setOnClickListener {
-            val coercedValue = coerceValue(_value.value?.minus(1) ?: 0)
+            val coercedValue = coerceValue(_value.value.minus(1))
             _value.value = coercedValue
             onValueChangeListener?.invoke(coercedValue)
         }
         incrementButton.setOnClickListener {
-            val coercedValue = coerceValue(_value.value?.plus(1) ?: 0)
+            val coercedValue = coerceValue(_value.value.plus(1))
             _value.value = coercedValue
-            onValueChangeListener?.invoke(_value.value!!)
+            onValueChangeListener?.invoke(_value.value)
         }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
-            value.observe(lifecycleOwner) { newValue ->
-                inputField.setText(coerceValue(newValue).toString())
+            lifecycleOwner.lifecycleScope.launch {
+                value.collect {
+                    inputField.setText(String.format(Locale.getDefault(), "%d", coerceValue(it)))
+                }
             }
         }
     }
