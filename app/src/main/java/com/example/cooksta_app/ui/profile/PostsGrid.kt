@@ -107,6 +107,15 @@ class PostsGridAdapter(
                     }
                 }
             }
+            imageView.setOnClickListener {
+                findNavController(imageView).navigate(
+                    R.id.action_navigation_profile_to_navigation_feed,
+                    Bundle().apply {
+                        putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
+                        putInt(FeedFragment.ARG_POSITION, adapterPosition)
+                    }
+                )
+            }
         }
     }
 }

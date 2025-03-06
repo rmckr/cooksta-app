@@ -20,7 +20,9 @@ class FeedFragment : Fragment() {
     companion object {
         const val ARG_RECIPE_IDS = "recipeIds"
         const val ARG_IS_HOME_FEED = "isHomeFeed"
+        const val ARG_POSITION = "position"
 
+        // TODO: Think about deleting this
         fun newInstance(recipeIds: List<String>): FeedFragment = FeedFragment().apply {
             arguments = Bundle().apply {
                 putStringArray(ARG_RECIPE_IDS, recipeIds.toTypedArray())
@@ -33,6 +35,9 @@ class FeedFragment : Fragment() {
     }
     private val isHomeFeed: Boolean by lazy {
         arguments?.getBoolean(ARG_IS_HOME_FEED, false) ?: false
+    }
+    private val position: Int by lazy {
+        arguments?.getInt(ARG_POSITION) ?: 0
     }
 
     private var _binding: FragmentFeedBinding? = null
@@ -54,7 +59,6 @@ class FeedFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        Log.d("TEST", "onCreateView: $isHomeFeed")
         if (isHomeFeed) {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 activity?.finish()
@@ -69,6 +73,10 @@ class FeedFragment : Fragment() {
         binding.feedViewPager.adapter = feedAdapter
         binding.feedViewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.feedViewPager.offscreenPageLimit = 1
+
+        if (position > 0) {
+            binding.feedViewPager.currentItem = position
+        }
 
         return binding.root
     }
