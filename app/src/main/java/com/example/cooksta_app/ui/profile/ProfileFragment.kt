@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -28,15 +28,16 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private fun handleLogout() {
-        // TODO: Handle logout
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putBoolean("isLoggedIn", false)
-            apply()
+        lifecycleScope.launch {
+            val logoutSuccessful = RetrofitClient.logout()
+            if (logoutSuccessful) {
+                val intent = Intent(requireActivity(), LoginActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            } else {
+                Toast.makeText(requireContext(), "Logout failed", Toast.LENGTH_SHORT).show()
+            }
         }
-        val intent = Intent(requireActivity(), LoginActivity::class.java)
-        startActivity(intent)
-        requireActivity().finish()
     }
 
     override fun onCreateView(

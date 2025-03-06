@@ -1,24 +1,19 @@
 package com.example.cooksta_app.ui.shoppingList
 
-import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentShoppingListBinding
-import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.textview.MaterialTextView
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class ShoppingListFragment : Fragment() {
@@ -34,6 +29,14 @@ class ShoppingListFragment : Fragment() {
     ): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+
+        // TODO: Display loading spinner while loading data
+        viewModel.loadShoppingList()
+        lifecycleScope.launch {
+            viewModel.recipes.collect {
+                handleVisibility()
+            }
+        }
 
         binding.shoppingListAppBarLayout.statusBarForeground =
             MaterialShapeDrawable.createWithElevationOverlay(context)
@@ -55,8 +58,7 @@ class ShoppingListFragment : Fragment() {
                 dialog.cancel()
             }
             .setPositiveButton("Ja, löschen") { _, _ ->
-                viewModel.clearRecipes()
-                viewModel.ingredients.clear()
+                viewModel.clear()
                 handleVisibility()
             }
 
@@ -66,7 +68,7 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun handleVisibility() {
-        if (viewModel.recipes.value?.isEmpty() != false && viewModel.ingredients.isEmpty()) {
+        if (viewModel.recipes.value.isEmpty() && viewModel.ingredients.value.isEmpty()) {
             binding.emptyLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
             binding.floatingActionButton.visibility = View.GONE
@@ -102,6 +104,13 @@ class ShoppingListFragment : Fragment() {
     private fun setupViewPager() {
         val recipeListFragment = RecipeListFragment()
         val ingredientsListFragment = IngredientsListFragment()
+
+        lifecycleScope.launch {
+            viewModel.ingredients.collect { ingredients ->
+                ingredientsListFragment.submitIngredients(ingredients)
+            }
+        }
+
         val adapter = ShoppingListPagerAdapter(this, listOf(recipeListFragment, ingredientsListFragment))
         binding.viewPager.adapter = adapter
 
@@ -120,66 +129,10 @@ class ShoppingListFragment : Fragment() {
     }
 }
 
-data class ShoppingListEntry(
-    val id: String,
-    val name: String,
-    var portions: Int = 1
-)
-
-data class Ingredient(
-    val name: String,
-    val amount: String,
-    var isChecked: Boolean = false
-)
-
 class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<Fragment>) : FragmentStateAdapter(fragment) {
     override fun getItemCount() = fragments.size
 
     override fun createFragment(position: Int): Fragment {
         return fragments[position]
     }
-}
-
-class IngredientsListFragment : RecyclerViewFragment<IngredientsAdapter>() {
-    // TODO: Implement arguments (checkboxes boolean and ingredients list)
-    override fun provideAdapter(): IngredientsAdapter {
-        val viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
-        return IngredientsAdapter(viewModel.ingredients)
-    }
-}
-
-class IngredientsAdapter(private val ingredients: List<Ingredient>) : RecyclerView.Adapter<IngredientsAdapter.IngredientViewHolder>() {
-
-    class IngredientViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ingredientCard: MaterialCardView = itemView.findViewById(R.id.ingredientCard)
-        val ingredientName: MaterialTextView = itemView.findViewById(R.id.ingredientName)
-        val ingredientAmount: MaterialTextView = itemView.findViewById(R.id.ingredientAmount)
-        val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkBox)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_shopping_list_ingredient, parent, false)
-        return IngredientViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
-        val ingredient = ingredients[position]
-
-        val defaultColor = ContextCompat.getColor(holder.ingredientName.context, R.color.md_theme_onSurface)
-        val checkedColor = ContextCompat.getColor(holder.ingredientName.context, R.color.md_theme_primary)
-
-        holder.ingredientName.text = ingredient.name
-        holder.ingredientName.paintFlags = if (ingredient.isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
-        holder.ingredientName.setTextColor(if (ingredient.isChecked) checkedColor else defaultColor)
-        holder.ingredientAmount.text = ingredient.amount
-
-        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            ingredient.isChecked = isChecked
-            holder.ingredientName.paintFlags = if (isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
-            holder.ingredientName.setTextColor(if (isChecked) checkedColor else defaultColor)
-        }
-        holder.ingredientCard.setOnClickListener { holder.checkBox.isChecked = !holder.checkBox.isChecked }
-    }
-
-    override fun getItemCount(): Int = ingredients.size
 }

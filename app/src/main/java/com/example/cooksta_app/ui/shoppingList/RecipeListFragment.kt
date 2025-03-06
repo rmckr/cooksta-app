@@ -7,11 +7,11 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
@@ -20,11 +20,17 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
-import com.example.cooksta_app.ui.shared.NumberSelector
+import com.example.cooksta_app.databinding.ItemShoppingListRecipeBinding
+import com.example.cooksta_app.model.ShoppingListItem
+import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textview.MaterialTextView
+import com.example.cooksta_app.ui.shared.Utilities
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RecipeListFragment : RecyclerViewFragment<RecipesAdapter>(), RecipesAdapter.RecipeInteractionListener {
 
@@ -82,8 +88,10 @@ class RecipeListFragment : RecyclerViewFragment<RecipesAdapter>(), RecipesAdapte
         })
         adapter.tracker = tracker
 
-        viewModel.recipes.observe(viewLifecycleOwner) { recipes ->
-            adapter.submitList(recipes)
+        lifecycleScope.launch {
+            viewModel.recipes.collect { recipes ->
+                adapter.submitList(recipes)
+            }
         }
     }
 
@@ -134,7 +142,7 @@ class RecipeItemDetailsLookup(private val recyclerView: RecyclerView) : ItemDeta
     }
 }
 
-class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<ShoppingListEntry, RecipesAdapter.RecipeViewHolder>(
+class RecipesAdapter(private val interactionListener: RecipeInteractionListener) : ListAdapter<ShoppingListItem, RecipesAdapter.RecipeViewHolder>(
     DiffCallback()
 ) {
     var tracker: SelectionTracker<String>? = null
@@ -148,8 +156,8 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecipeViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_shopping_list_recipe, viewGroup, false)
-        return RecipeViewHolder(view)
+        val binding = ItemShoppingListRecipeBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        return RecipeViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
@@ -163,7 +171,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
             payloads.forEach { payload ->
                 when (payload) {
                     "Selection-Changed" -> holder.updateSelection(tracker?.isSelected(recipe.id) ?: false)
-                    is Payload.UpdatePortions -> holder.updatePortions(recipe.id, payload.portions)
+                    is Payload.UpdatePortions -> holder.updatePortions(payload.portions)
                 }
             }
         } else {
@@ -175,10 +183,7 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
         fun onSetPortions(id: String, portions: Int)
     }
 
-    inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val recipeCard = itemView.findViewById<MaterialCardView>(R.id.recipeCard)
-        private val recipeName = itemView.findViewById<MaterialTextView>(R.id.recipeName)
-        private val recipePortionsSelector = itemView.findViewById<NumberSelector>(R.id.recipePortionsSelector)
+    inner class RecipeViewHolder(private val binding: ItemShoppingListRecipeBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> {
             return object : ItemDetailsLookup.ItemDetails<String>() {
@@ -187,33 +192,57 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
             }
         }
 
-        fun updatePortions(id: String, portions: Int) {
-            interactionListener.onSetPortions(id, portions)
-            recipePortionsSelector.setValue(portions)
+        fun updatePortions(portions: Int) {
+            binding.recipePortionsSelector.setValue(portions)
         }
 
         fun updateSelection(isSelected: Boolean) {
-            val defaultColor = ContextCompat.getColor(recipeCard.context, R.color.md_theme_surface)
-            val selectedColor = ContextCompat.getColor(recipeCard.context, R.color.md_theme_surfaceVariant)
+            val defaultColor = ContextCompat.getColor(binding.recipeCard.context, R.color.md_theme_surface)
+            val selectedColor = ContextCompat.getColor(binding.recipeCard.context, R.color.md_theme_surfaceVariant)
 
-            recipeCard.setCardBackgroundColor(if (isSelected) selectedColor else defaultColor)
-            recipeCard.isActivated = isSelected
+            binding.recipeCard.setCardBackgroundColor(if (isSelected) selectedColor else defaultColor)
+            binding.recipeCard.isActivated = isSelected
         }
 
-        fun bind(recipe: ShoppingListEntry, isSelected: Boolean) {
+        fun bind(recipe: ShoppingListItem, isSelected: Boolean) {
             updateSelection(isSelected)
 
-            recipeName.text = recipe.name
+            binding.recipeName.text = recipe.title
 
-            recipePortionsSelector.setValue(recipe.portions)
-            recipePortionsSelector.setOnValueChangeListener {
+            binding.recipePortionsSelector.setValue(recipe.portions)
+            binding.recipePortionsSelector.setOnValueChangeListener {
                 interactionListener.onSetPortions(recipe.id, it)
             }
 
-            recipeCard.setOnClickListener { view ->
+            binding.recipeCard.setOnClickListener { view ->
                 view.clearFocus()
                 val inputMethodManager = itemView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(itemView.windowToken, 0)
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                val response = RetrofitClient.apiService.getRecipeMedia(recipe.id)
+                if (response.isSuccessful) {
+                    val mediaType = response.headers()["Content-Type"]
+                    val mediaStream = response.body()?.byteStream()
+
+                    if (mediaType?.contains("image") == true) {
+                        val bitmap = Glide.with(binding.recipePicture.context)
+                            .asBitmap()
+                            .load(mediaStream?.readBytes())
+                            .submit()
+                            .get()
+                        withContext(Dispatchers.Main) {
+                            binding.recipePicture.load(bitmap)
+                        }
+                    } else if (mediaType?.contains("video") == true) {
+                        val bitmap = Utilities.getVideoThumbnail(mediaStream)
+                        if (bitmap !== null) {
+                            withContext(Dispatchers.Main) {
+                                binding.recipePicture.load(bitmap)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -222,16 +251,16 @@ class RecipesAdapter(private val interactionListener: RecipeInteractionListener)
         data class UpdatePortions(val portions: Int) : Payload()
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<ShoppingListEntry>() {
-        override fun areItemsTheSame(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<ShoppingListItem>() {
+        override fun areItemsTheSame(oldItem: ShoppingListItem, newItem: ShoppingListItem): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Boolean {
+        override fun areContentsTheSame(oldItem: ShoppingListItem, newItem: ShoppingListItem): Boolean {
             return oldItem == newItem
         }
 
-        override fun getChangePayload(oldItem: ShoppingListEntry, newItem: ShoppingListEntry): Any? {
+        override fun getChangePayload(oldItem: ShoppingListItem, newItem: ShoppingListItem): Any? {
             return if (oldItem.portions != newItem.portions) Payload.UpdatePortions(newItem.portions) else null
         }
     }
