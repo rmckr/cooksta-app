@@ -3,6 +3,7 @@ package com.example.cooksta_app.network
 import android.content.Context
 import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.model.LoginRequest
+import com.example.cooksta_app.model.RefreshTokenRequest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
@@ -56,10 +57,21 @@ object RetrofitClient {
         return false
     }
 
+    suspend fun logout(): Boolean {
+        val refreshToken = this.tokenStore.refreshToken ?: return false
+        val response = apiService.logout(RefreshTokenRequest(refreshToken))
+        if (response.isSuccessful) {
+            tokenStore.clearTokens()
+            return true
+        } else {
+            return false
+        }
+    }
+
     suspend fun refreshToken(): String? {
         return mutex.withLock {
             val refreshToken = this.tokenStore.refreshToken ?: return null
-            val response = apiService.refresh(refreshToken)
+            val response = apiService.refresh(RefreshTokenRequest(refreshToken))
             if (response.isSuccessful) {
                 response.body()?.let {
                     this.tokenStore.saveTokens(it.accessToken, it.refreshToken)

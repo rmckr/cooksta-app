@@ -6,6 +6,7 @@ import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.model.TokenResponse
 import com.example.cooksta_app.model.User
 import com.example.cooksta_app.model.Recipe
+import com.example.cooksta_app.model.RefreshTokenRequest
 import com.example.cooksta_app.model.ShoppingListResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -21,8 +22,10 @@ import retrofit2.http.Streaming
 interface APIService {
     @POST("/login")
     suspend fun login(@Body request: LoginRequest): Response<TokenResponse>
+    @POST("/logout")
+    suspend fun logout(@Body request: RefreshTokenRequest): Response<Any>
     @POST("/refresh")
-    suspend fun refresh(@Body refreshToken: String): Response<TokenResponse>
+    suspend fun refresh(@Body request: RefreshTokenRequest): Response<TokenResponse>
 
     @GET("users/me")
     suspend fun getMe(): Response<User>
