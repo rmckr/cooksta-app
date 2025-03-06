@@ -2,20 +2,19 @@ package com.example.cooksta_app.ui.search
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.ItemSearchResultBinding
 import com.example.cooksta_app.model.Recipe
-import com.example.cooksta_app.network.RetrofitClient
+import com.example.cooksta_app.ui.shared.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
 
@@ -40,9 +39,8 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
         }
     }
 
-    inner class SearchResultsAdapter : RecyclerView.Adapter<SearchResultViewHolder>() {
+    inner class SearchResultsAdapter : RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
-            // TODO: Create layout
             val binding = ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return SearchResultViewHolder(binding)
         }
@@ -55,48 +53,33 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
         override fun getItemCount(): Int {
             return recipes.size
         }
-    }
 
-    override fun provideAdapter(): SearchResultsAdapter {
-        return SearchResultsAdapter()
-    }
-}
-
-class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(recipe: Recipe) {
-        with(binding) {
-            searchRecipeName.text = recipe.title
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = RetrofitClient.apiService.getRecipeMedia(recipe.id)
-                    if (response.isSuccessful) {
-                        val mediaType = response.headers()["Content-Type"]
-                        val mediaStream = response.body()?.byteStream()
-
-                        if (mediaType?.contains("image") == true) {
-                            val bitmap = Glide.with(serachRecipePicture.context)
-                                .asBitmap()
-                                .load(mediaStream?.readBytes())
-                                .submit()
-                                .get()
-                            withContext(Dispatchers.Main) {
-                                serachRecipePicture.load(bitmap)
-                            }
-                        } else if (mediaType?.contains("video") == true) {
-                            val bitmap = Utilities.getVideoThumbnail(mediaStream)
-                            if (bitmap !== null) {
-                                withContext(Dispatchers.Main) {
-                                    serachRecipePicture.load(bitmap)
-                                }
-                            }
+        inner class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
+            fun bind(recipe: Recipe) {
+                binding.searchRecipeName.text = recipe.title
+                CoroutineScope(Dispatchers.IO).launch {
+                    val bitmap = Utilities.fetchVideoThumbnail(binding.searchRecipePicture.context, recipe.id)
+                    if (bitmap != null) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            binding.searchRecipePicture.load(bitmap)
                         }
                     }
-                } catch (e: Exception) {
-                    Log.e("SearchResultViewHolder", "Fehler beim Laden des Media", e)
+                }
+
+                binding.searchResultCard.setOnClickListener {
+                    findNavController(binding.root).navigate(
+                        R.id.action_navigation_profile_to_navigation_feed,
+                        Bundle().apply {
+                            putStringArray(FeedFragment.ARG_RECIPE_IDS, recipes.map { it.id }.toTypedArray())
+                            putInt(FeedFragment.ARG_POSITION, adapterPosition)
+                        }
+                    )
                 }
             }
         }
     }
 
-
+    override fun provideAdapter(): SearchResultsAdapter {
+        return SearchResultsAdapter()
+    }
 }

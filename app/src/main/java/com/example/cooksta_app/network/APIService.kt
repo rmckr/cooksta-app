@@ -35,6 +35,8 @@ interface APIService {
     suspend fun getUser(@Path("userId") userId: String): Response<User>
     @PATCH("users/{userId}")
     suspend fun patchUser(@Path("userId") userId: String, @Body user: PartialUser): Response<User>
+    @GET("users/{userId}/recipes")
+    suspend fun getUserRecipes(@Path("userId") userId: String): Response<List<Recipe>>
 
     @GET("recipes/{recipeId}")
     suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>

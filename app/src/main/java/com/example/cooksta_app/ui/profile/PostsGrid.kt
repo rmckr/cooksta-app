@@ -1,45 +1,46 @@
 package com.example.cooksta_app.ui.profile
 
 import android.graphics.Rect
-import android.util.Log
+import android.os.Bundle
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.setPadding
+import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
+import com.example.cooksta_app.ui.shared.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-
-data class Post(
-    val thumbnailResource: Int
-)
+import com.example.cooksta_app.ui.shared.Utilities
+import com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PostsGrid : RecyclerViewFragment<PostsGridAdapter>() {
-    private val posts: List<Post> = listOf(
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_soup),
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_apple),
-        Post(R.drawable.ic_lunch),
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_soup),
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_apple),
-        Post(R.drawable.ic_lunch),
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_soup),
-        Post(R.drawable.ic_cake),
-        Post(R.drawable.ic_apple),
-        Post(R.drawable.ic_lunch),
-    )
+    private val recipes: ArrayList<String> by lazy {
+        arguments?.getStringArrayList(ARG_RECIPE_IDS) ?: throw IllegalStateException("recipeIds argument is missing")
+    }
+
+    companion object {
+        private const val ARG_RECIPE_IDS = "recipeIds"
+
+        fun newInstance(recipes: List<String>): PostsGrid {
+            val args = Bundle()
+            args.putStringArrayList(ARG_RECIPE_IDS, ArrayList(recipes))
+            val fragment = PostsGrid()
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     private val spanCount = 3
     private val spacing = 4
 
     override fun provideAdapter(): PostsGridAdapter {
-        return PostsGridAdapter(posts)
+        return PostsGridAdapter(recipes)
     }
 
     override fun provideLayoutManager(): RecyclerView.LayoutManager {
@@ -78,27 +79,34 @@ class PostsGrid : RecyclerViewFragment<PostsGridAdapter>() {
 }
 
 class PostsGridAdapter(
-    private val posts: List<Post>
+    private val recipeIds: List<String>
 ) : RecyclerView.Adapter<PostsGridAdapter.PostsGridViewHolder>() {
     override fun getItemCount(): Int {
-        return posts.size
+        return recipeIds.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsGridViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_post_grid, parent, false)
+        val view = SkeletonImageView(parent.context, null).apply {
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        }
         return PostsGridViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PostsGridViewHolder, position: Int) {
-        val post = posts[position]
-        holder.bind(post)
+        val recipeId = recipeIds[position]
+        holder.bind(recipeId)
     }
 
-    inner class PostsGridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView = itemView.findViewById<ImageView>(R.id.postGridImage)
-
-        fun bind(post: Post) {
-            imageView.setImageResource(post.thumbnailResource)
+    inner class PostsGridViewHolder(private val imageView: SkeletonImageView) : RecyclerView.ViewHolder(imageView) {
+        fun bind(recipeId: String) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val bitmap = Utilities.fetchVideoThumbnail(imageView.context, recipeId)
+                if (bitmap !== null) {
+                    withContext(Dispatchers.Main) {
+                        imageView.load(bitmap)
+                    }
+                }
+            }
         }
     }
 }

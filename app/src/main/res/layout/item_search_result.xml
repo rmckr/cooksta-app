@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/searchResultCard"
     style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
             android:layout_height="72dp">
 
             <com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
-                android:id="@+id/serachRecipePicture"
+                android:id="@+id/search_recipe_picture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />

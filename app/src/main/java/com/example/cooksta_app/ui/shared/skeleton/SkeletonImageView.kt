@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatImageView
 
 class SkeletonImageView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet,
+    attrs: AttributeSet?,
     defStyleAttr: Int = 0
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
 

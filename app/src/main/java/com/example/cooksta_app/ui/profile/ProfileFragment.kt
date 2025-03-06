@@ -20,7 +20,9 @@ import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileFragment : Fragment() {
 
@@ -63,18 +65,31 @@ class ProfileFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        val userPostsGrid = PostsGrid()
-        val savedPostsGrid = PostsGrid()
-        val adapter = ProfilePagerAdapter(this, listOf(userPostsGrid, savedPostsGrid))
-        binding.profileViewPager.adapter = adapter
+        lifecycleScope.launch {
+            // TODO: Load seperately
+            val userResponse = RetrofitClient.apiService.getMe()
+            val recipesResponse = RetrofitClient.apiService.getUserRecipes("me")
+            if (userResponse.isSuccessful && recipesResponse.isSuccessful) {
+                val favorites = userResponse.body()?.favorites ?: emptyList()
+                val ownRecipes = recipesResponse.body()?.map { it.id } ?: emptyList()
 
-        TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Eigene Rezepte"
-                1 -> "Gespeichert"
-                else -> ""
+                withContext(Dispatchers.Main) {
+                    val userPostsGrid = PostsGrid.newInstance(ownRecipes)
+                    val savedPostsGrid = PostsGrid.newInstance(favorites)
+                    val adapter = ProfilePagerAdapter(this@ProfileFragment, listOf(userPostsGrid, savedPostsGrid))
+                    binding.profileViewPager.adapter = adapter
+
+                    TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
+                        tab.text = when (position) {
+                            0 -> "Eigene Rezepte"
+                            1 -> "Gespeichert"
+                            else -> ""
+                        }
+                    }.attach()
+                }
             }
-        }.attach()
+        }
+
 
         binding.logoutButton.setOnClickListener {
             handleLogout()
