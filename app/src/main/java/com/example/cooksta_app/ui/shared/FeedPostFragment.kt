@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentPostBinding
+import com.example.cooksta_app.model.Ingredient
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
@@ -231,10 +232,13 @@ class FeedPostFragment : Fragment() {
                             return fragments[position]
                         }
                     }
+
+                    val ingredientsListFragment = IngredientsListFragment.withoutCheckboxes()
+                    ingredientsListFragment.submitIngredients(recipe.ingredients.map { Ingredient(it.key, it.value) })
                     bottomSheetViewPager.adapter = FragmentAdapter(
                         listOf(
                             PostDescriptionFragment.newInstance(recipe.description),
-                            IngredientsListFragment(),
+                            ingredientsListFragment,
                             CommentsFragment()
                         )
                     )

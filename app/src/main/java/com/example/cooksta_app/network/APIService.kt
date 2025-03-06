@@ -2,14 +2,17 @@ package com.example.cooksta_app.network
 
 import com.example.cooksta_app.model.StateResponse
 import com.example.cooksta_app.model.LoginRequest
+import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.model.TokenResponse
 import com.example.cooksta_app.model.User
 import com.example.cooksta_app.model.Recipe
+import com.example.cooksta_app.model.ShoppingListResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -23,8 +26,12 @@ interface APIService {
 
     @GET("users/me")
     suspend fun getMe(): Response<User>
+    @GET("users/{userId}/shopping-list")
+    suspend fun getShoppingList(@Path("userId") userId: String): Response<ShoppingListResponse>
     @GET("users/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<User>
+    @PATCH("users/{userId}")
+    suspend fun patchUser(@Path("userId") userId: String, @Body user: PartialUser): Response<User>
 
     @GET("recipes/{recipeId}")
     suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>

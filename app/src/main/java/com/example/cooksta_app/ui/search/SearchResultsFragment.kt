@@ -15,6 +15,7 @@ import com.example.cooksta_app.ui.shared.Utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
 
@@ -73,15 +74,18 @@ class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : Rec
                         val mediaStream = response.body()?.byteStream()
 
                         if (mediaType?.contains("image") == true) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                Glide.with(serachRecipePicture.context)
-                                    .load(mediaStream)
-                                    .into(serachRecipePicture)
+                            val bitmap = Glide.with(serachRecipePicture.context)
+                                .asBitmap()
+                                .load(mediaStream?.readBytes())
+                                .submit()
+                                .get()
+                            withContext(Dispatchers.Main) {
+                                serachRecipePicture.load(bitmap)
                             }
                         } else if (mediaType?.contains("video") == true) {
                             val bitmap = Utilities.getVideoThumbnail(mediaStream)
                             if (bitmap !== null) {
-                                CoroutineScope(Dispatchers.Main).launch {
+                                withContext(Dispatchers.Main) {
                                     serachRecipePicture.load(bitmap)
                                 }
                             }

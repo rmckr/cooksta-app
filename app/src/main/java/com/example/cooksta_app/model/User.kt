@@ -9,3 +9,13 @@ data class User(
     val shoppingList: Map<String, Int>,
     val isPrivate: Boolean
 )
+
+data class PartialUser(
+    val id: String? = null,
+    val username: String? = null,
+    val password: String? = null,
+    val biography: String? = null,
+    val favorites: List<String>? = null,
+    val shoppingList: Map<String, Int>? = null,
+    val isPrivate: Boolean? = null
+)
