@@ -36,7 +36,7 @@ class CreateFragment : Fragment() {
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
         uri?.let {
-            Glide.with(this).load(uri).into(binding.imagePreview)
+            Glide.with(requireActivity()).load(uri).into(binding.imagePreview)
         }
     }
 
@@ -44,7 +44,7 @@ class CreateFragment : Fragment() {
     private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedVideoUri = uri
         uri?.let {
-            Glide.with(this).asBitmap().load(uri).into(binding.videoPreview)
+            Glide.with(requireActivity()).asBitmap().load(uri).into(binding.videoPreview)
         }
     }
 

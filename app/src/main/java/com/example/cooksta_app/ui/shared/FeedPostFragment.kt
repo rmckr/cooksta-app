@@ -111,7 +111,7 @@ class FeedPostFragment : Fragment() {
                             postImage.visibility = View.VISIBLE
                             postImageBackdrop.visibility = View.VISIBLE
 
-                            Glide.with(this@FeedPostFragment)
+                            Glide.with(requireActivity())
                                 .load(tempFile)
                                 .transform(
                                     MultiTransformation(
@@ -121,7 +121,7 @@ class FeedPostFragment : Fragment() {
                                 )
                                 .into(postImageBackdrop)
 
-                            Glide.with(this@FeedPostFragment)
+                            Glide.with(requireActivity())
                                 .load(tempFile)
                                 .into(postImage)
                         }

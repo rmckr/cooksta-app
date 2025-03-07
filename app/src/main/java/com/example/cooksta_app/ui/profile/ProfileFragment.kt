@@ -105,7 +105,7 @@ class ProfileFragment : Fragment() {
                 binding.username.load(user.username)
                 binding.biography.load(user.biography)
                 val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
-                Glide.with(requireParentFragment()).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
+                Glide.with(requireActivity()).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImage)
             }
         }
     }

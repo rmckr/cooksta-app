@@ -7,8 +7,8 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.setPadding
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
@@ -16,14 +16,17 @@ import com.example.cooksta_app.databinding.ItemSearchResultBinding
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.ui.shared.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-import com.example.cooksta_app.ui.shared.Utilities
+import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.textview.MaterialTextView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
+
+    private val mediaCacheManager by lazy {
+        MediaCacheManager(requireActivity())
+    }
 
     private val recipes: ArrayList<Recipe> by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -86,12 +89,10 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
         inner class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(recipe: Recipe) {
                 binding.searchRecipeName.text = recipe.title
-                CoroutineScope(Dispatchers.IO).launch {
-                    val bitmap = Utilities.fetchVideoThumbnail(binding.searchRecipePicture.context, recipe.id)
+                lifecycleScope.launch {
+                    val bitmap = mediaCacheManager.getThumbnailBitmap(recipe.id)
                     if (bitmap != null) {
-                        withContext(Dispatchers.Main) {
-                            binding.searchRecipePicture.load(bitmap)
-                        }
+                        withContext(Dispatchers.Main) { binding.searchRecipePicture.load(bitmap) }
                     }
                 }
 

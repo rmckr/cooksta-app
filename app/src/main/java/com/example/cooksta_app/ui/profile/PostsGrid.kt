@@ -6,20 +6,25 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.ui.shared.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-import com.example.cooksta_app.ui.shared.Utilities
 import com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
-import kotlinx.coroutines.CoroutineScope
+import com.example.cooksta_app.utils.MediaCacheManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PostsGrid : RecyclerViewFragment<PostsGridAdapter>() {
+class PostsGrid : RecyclerViewFragment<PostsGrid.PostsGridAdapter>() {
+
+    private val mediaCacheManager by lazy {
+        MediaCacheManager(requireActivity())
+    }
+
     private val recipes: ArrayList<String> by lazy {
         arguments?.getStringArrayList(ARG_RECIPE_IDS) ?: throw IllegalStateException("recipeIds argument is missing")
     }
@@ -76,45 +81,41 @@ class PostsGrid : RecyclerViewFragment<PostsGridAdapter>() {
             }
         }
     }
-}
 
-class PostsGridAdapter(
-    private val recipeIds: List<String>
-) : RecyclerView.Adapter<PostsGridAdapter.PostsGridViewHolder>() {
-    override fun getItemCount(): Int {
-        return recipeIds.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsGridViewHolder {
-        val view = SkeletonImageView(parent.context, null).apply {
-            scaleType = ImageView.ScaleType.CENTER_CROP
+    inner class PostsGridAdapter(private val recipeIds: List<String>) : RecyclerView.Adapter<PostsGridAdapter.PostsGridViewHolder>() {
+        override fun getItemCount(): Int {
+            return recipeIds.size
         }
-        return PostsGridViewHolder(view)
-    }
 
-    override fun onBindViewHolder(holder: PostsGridViewHolder, position: Int) {
-        val recipeId = recipeIds[position]
-        holder.bind(recipeId)
-    }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsGridViewHolder {
+            val view = SkeletonImageView(parent.context, null).apply {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            return PostsGridViewHolder(view)
+        }
 
-    inner class PostsGridViewHolder(private val imageView: SkeletonImageView) : RecyclerView.ViewHolder(imageView) {
-        fun bind(recipeId: String) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val bitmap = Utilities.fetchVideoThumbnail(imageView.context, recipeId)
-                if (bitmap !== null) {
-                    withContext(Dispatchers.Main) {
-                        imageView.load(bitmap)
+        override fun onBindViewHolder(holder: PostsGridViewHolder, position: Int) {
+            val recipeId = recipeIds[position]
+            holder.bind(recipeId)
+        }
+
+        inner class PostsGridViewHolder(private val imageView: SkeletonImageView) : RecyclerView.ViewHolder(imageView) {
+            fun bind(recipeId: String) {
+                lifecycleScope.launch {
+                    val bitmap = mediaCacheManager.getThumbnailBitmap(recipeId)
+                    if (bitmap !== null) {
+                        withContext(Dispatchers.Main) { imageView.load(bitmap) }
                     }
                 }
-            }
-            imageView.setOnClickListener {
-                findNavController(imageView).navigate(
-                    R.id.action_navigation_profile_to_navigation_feed,
-                    Bundle().apply {
-                        putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
-                        putInt(FeedFragment.ARG_POSITION, adapterPosition)
-                    }
-                )
+                imageView.setOnClickListener {
+                    findNavController(imageView).navigate(
+                        R.id.action_navigation_profile_to_navigation_feed,
+                        Bundle().apply {
+                            putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
+                            putInt(FeedFragment.ARG_POSITION, adapterPosition)
+                        }
+                    )
+                }
             }
         }
     }
