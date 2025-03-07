@@ -97,7 +97,7 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
 
                 binding.searchResultCard.setOnClickListener {
                     findNavController(binding.root).navigate(
-                        R.id.action_navigation_search_to_feedFragment,
+                        R.id.action_navigation_search_to_navigation_feed,
                         Bundle().apply {
                             putStringArray(FeedFragment.ARG_RECIPE_IDS, recipes.map { it.id }.toTypedArray())
                             putInt(FeedFragment.ARG_POSITION, adapterPosition)

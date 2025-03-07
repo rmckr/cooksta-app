@@ -49,7 +49,7 @@ class SearchFragment : Fragment() {
                 val allPostsResponse = RetrofitClient.apiService.getRecipeFeed(limit = null, page = null)
                 val recipeIds = if (allPostsResponse.isSuccessful) allPostsResponse.body()?.map { it.id } ?: emptyList() else emptyList()
                 findNavController().navigate(
-                    R.id.action_navigation_search_to_feedFragment,
+                    R.id.action_navigation_search_to_navigation_feed,
                     Bundle().apply { putStringArray("recipeIds", recipeIds.toTypedArray()) }
                 )
             }

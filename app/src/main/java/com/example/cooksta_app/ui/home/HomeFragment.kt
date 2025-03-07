@@ -44,7 +44,7 @@ class HomeFragment : Fragment() {
                 if (feedResponse.isSuccessful) feedResponse.body()?.map { it.id } ?: emptyList() else emptyList()
             }
             findNavController().navigate(
-                R.id.action_navigation_home_to_feedFragment,
+                R.id.action_navigation_home_to_navigation_feed,
                 Bundle().apply {
                     putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
                     putBoolean(FeedFragment.ARG_IS_HOME_FEED, true)
