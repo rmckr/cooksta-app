@@ -2,8 +2,13 @@ package com.example.cooksta_app.ui.search
 
 import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.view.setPadding
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
@@ -12,6 +17,7 @@ import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.ui.shared.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.example.cooksta_app.ui.shared.Utilities
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +43,28 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
             val fragment = SearchResultsFragment()
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        if (recipes.isEmpty()) {
+            val emptyView = MaterialTextView(requireContext()).apply {
+                text = "Keine Ergebnisse"
+                gravity = Gravity.CENTER
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                val padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics).toInt()
+                setPadding(padding)
+            }
+            return emptyView
+        } else {
+           return super.onCreateView(inflater, container, savedInstanceState)
         }
     }
 

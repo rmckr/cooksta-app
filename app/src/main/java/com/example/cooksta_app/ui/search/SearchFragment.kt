@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.cooksta_app.R
@@ -20,16 +21,8 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private fun handleSearch(query: String) {
-        lifecycleScope.launch {
-            val searchResponse = RetrofitClient.apiService.searchRecipes(query)
-            if (searchResponse.isSuccessful) {
-                val searchResults = SearchResultsFragment.newInstance(searchResponse.body() ?: emptyList())
-                parentFragmentManager.beginTransaction()
-                    .replace(binding.searchResultsContainer.id, searchResults)
-                    .commit()
-            }
-        }
+    private val viewModel: SearchViewModel by lazy {
+        ViewModelProvider(requireActivity())[SearchViewModel::class.java]
     }
 
     fun handleCategoryClick(category: CategoryCard) {
@@ -37,7 +30,7 @@ class SearchFragment : Fragment() {
             searchView.isAutoShowKeyboard = false
             searchView.show()
             searchView.editText.setText(category.textResource)
-            handleSearch(category.target)
+            viewModel.search(category.target)
             searchView.postDelayed({
                 searchView.isAutoShowKeyboard = true
             }, 500)
@@ -71,7 +64,7 @@ class SearchFragment : Fragment() {
         binding.searchView.editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = binding.searchView.editText.text.toString()
-                handleSearch(query)
+                viewModel.search(query)
             }
             true
         }
@@ -81,6 +74,15 @@ class SearchFragment : Fragment() {
                 binding.searchView.hide()
             } else {
                 findNavController().popBackStack()
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.results.collect {
+                val searchResults = SearchResultsFragment.newInstance(it)
+                parentFragmentManager.beginTransaction()
+                    .replace(binding.searchResultsContainer.id, searchResults)
+                    .commit()
             }
         }
 
