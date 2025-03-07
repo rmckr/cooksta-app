@@ -1,7 +1,6 @@
 package com.example.cooksta_app.ui.shared
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +74,7 @@ class FeedFragment : Fragment() {
         binding.feedViewPager.offscreenPageLimit = 1
 
         if (position > 0) {
-            binding.feedViewPager.currentItem = position
+            binding.feedViewPager.setCurrentItem(position, false)
         }
 
         return binding.root
@@ -93,7 +92,7 @@ class FeedFragment : Fragment() {
     inner class FeedAdapter : FragmentStateAdapter(this) {
         override fun createFragment(position: Int): Fragment {
             val recipeId = recipeIds[position]
-            return FeedPostFragment.newInstance(position, recipeId)
+            return FeedPostFragment.newInstance(recipeId)
         }
 
         override fun getItemCount(): Int = recipeIds.size

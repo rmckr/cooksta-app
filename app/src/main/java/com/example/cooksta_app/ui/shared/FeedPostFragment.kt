@@ -18,7 +18,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
-import androidx.transition.Visibility
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -42,13 +41,11 @@ import java.io.File
 class FeedPostFragment : Fragment() {
 
     companion object {
-        private const val ARG_POSITION = "position"
-        private const val ARG_RECIPE_ID = "recipeId"
+        const val ARG_RECIPE_ID = "recipeId"
 
-        fun newInstance(position: Int, recipeId: String): FeedPostFragment {
+        fun newInstance(recipeId: String): FeedPostFragment {
             val fragment = FeedPostFragment()
             val bundle = Bundle()
-            bundle.putInt(ARG_POSITION, position)
             bundle.putString(ARG_RECIPE_ID, recipeId)
             fragment.arguments = bundle
             return fragment
@@ -58,11 +55,8 @@ class FeedPostFragment : Fragment() {
     private var _binding: FragmentPostBinding? = null
     private val binding get() = _binding!!
 
-    private val position: Int by lazy {
-        arguments?.getInt(ARG_POSITION) ?: throw IllegalStateException("Position argument is missing")
-    }
     private val recipeId: String by lazy {
-        arguments?.getString(ARG_RECIPE_ID) ?: throw IllegalStateException("Recipe argument is missing")
+        arguments?.getString(ARG_RECIPE_ID) ?: throw IllegalStateException("$ARG_RECIPE_ID argument is missing")
     }
 
     private var isLiked = MutableStateFlow(false)
@@ -145,7 +139,6 @@ class FeedPostFragment : Fragment() {
                                     exoPlayer.setMediaItem(MediaItem.fromUri(tempFile.toUri()))
                                     exoPlayer.prepare()
                                     exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
-                                    if (position == 0) { exoPlayer.play() }
                                 }
 
                                 override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
@@ -157,14 +150,6 @@ class FeedPostFragment : Fragment() {
                                 override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
                             }
 
-                            binding.postVideoTexture.setOnClickListener {
-                                exoPlayer.playWhenReady = !exoPlayer.isPlaying
-                                if (exoPlayer.playWhenReady) {
-                                    binding.playButton.visibility = View.GONE
-                                } else {
-                                    binding.playButton.visibility = View.VISIBLE
-                                }
-                            }
                             this@FeedPostFragment.exoPlayer = exoPlayer
                         }
                     }
@@ -303,6 +288,21 @@ class FeedPostFragment : Fragment() {
 
         with(binding) {
             loadMedia()
+            if (exoPlayer !== null) {
+                binding.postVideoTexture.setOnClickListener {
+                    exoPlayer!!.playWhenReady = !exoPlayer!!.isPlaying
+                }
+                exoPlayer!!.addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        super.onIsPlayingChanged(isPlaying)
+                        if (isPlaying) {
+                            binding.playButton.visibility = View.GONE
+                        } else {
+                            binding.playButton.visibility = View.VISIBLE
+                        }
+                    }
+                })
+            }
 
             setupBottomSheet()
 
@@ -353,6 +353,7 @@ class FeedPostFragment : Fragment() {
         super.onPause()
         exoPlayer?.pause()
         exoPlayer?.seekTo(0)
+        binding.playButton.visibility = View.GONE
     }
 
     override fun onDestroyView() {
