@@ -153,10 +153,10 @@ class FeedPostFragment : Fragment() {
                             this@FeedPostFragment.exoPlayer = exoPlayer
                         }
                     }
-                    else -> Toast.makeText(requireContext(), "Unsupported media type", Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(requireContext(), getString(R.string.toast_unsupported_media), Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(requireContext(), "Media is unavailable", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_unavailable_media), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -229,9 +229,9 @@ class FeedPostFragment : Fragment() {
                     )
                     TabLayoutMediator(bottomSheetTabLayout, bottomSheetViewPager) { tab, position ->
                         tab.text = when (position) {
-                            0 -> "Beschreibung"
-                            1 -> "Zutaten"
-                            2 -> "Kommentare"
+                            0 -> getString(R.string.description)
+                            1 -> getString(R.string.ingredients)
+                            2 -> getString(R.string.comments)
                             else -> ""
                         }
                     }.attach()
@@ -330,11 +330,11 @@ class FeedPostFragment : Fragment() {
                     .inflate(R.layout.dialog_add_to_shopping_list, null)
 
                 MaterialAlertDialogBuilder(this@FeedPostFragment.requireContext())
-                    .setTitle("Rezept hinzufügen?")
-                    .setMessage("Gib' die Portionen an, für die du das Rezept einkaufen willst:")
+                    .setTitle(getString(R.string.title_dialog_shoppingList))
+                    .setMessage(getString(R.string.message_dialog_shoppingList))
                     .setView(dialogView)
-                    .setNegativeButton("Abbrechen") { dialog, _ -> dialog.dismiss() }
-                    .setPositiveButton("Hinzufügen") { _, _ ->
+                    .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.add)) { _, _ ->
                         this@FeedPostFragment.findNavController().navigate(R.id.navigation_shopping_list)
                     }
                     .show()

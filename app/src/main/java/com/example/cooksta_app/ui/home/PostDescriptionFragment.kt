@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
+import com.example.cooksta_app.R
 
 class PostDescriptionFragment : Fragment() {
     override fun onCreateView(
@@ -20,7 +21,7 @@ class PostDescriptionFragment : Fragment() {
         textView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         val padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics).toInt()
         textView.setPadding(padding)
-        textView.text = arguments?.getString("description") ?: "No description available"
+        textView.text = arguments?.getString("description") ?: getString(R.string.no_description)
 
         return textView
     }

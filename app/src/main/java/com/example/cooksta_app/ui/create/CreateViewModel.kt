@@ -37,6 +37,6 @@ class CreateViewModel : ViewModel() {
         }
     }
     fun clearIngredients() {
-        _ingredientSelection.value = emptyList() // Zutatenliste leeren
+        _ingredientSelection.value = emptyList()
     }
 }

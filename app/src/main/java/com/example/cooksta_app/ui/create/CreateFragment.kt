@@ -1,22 +1,12 @@
 package com.example.cooksta_app.ui.create
 
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.RippleDrawable
-import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -59,14 +49,12 @@ class CreateFragment : Fragment() {
     }
 
     private fun triggerRippleEffect(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.isPressed = true
+        view.isPressed = true
+        view.invalidate()
+        view.postDelayed({
+            view.isPressed = false
             view.invalidate()
-            view.postDelayed({
-                view.isPressed = false
-                view.invalidate()
-            }, 1000)
-        }
+        }, 1000)
     }
 
     private fun shakeView(view: View) {
@@ -79,15 +67,15 @@ class CreateFragment : Fragment() {
     private suspend fun showMissingAmountDialog(): Boolean {
         return suspendCoroutine { continuation ->
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Fehlende Mengenangaben")
-                .setMessage("Es gibt Zutaten, die keine Mengenangabe haben. Diese werden später auch ohne Mengenangabe angezeigt.")
-                .setPositiveButton("OK") { dialog, _ ->
+                .setTitle(getString(R.string.title_dialog_ingredients))
+                .setMessage(getString(R.string.message_dialog_ingredients))
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     dialog.dismiss()
-                    continuation.resume(true)  // Dialog akzeptiert
+                    continuation.resume(true)
                 }
-                .setNegativeButton("Abbrechen") { dialog, _ ->
+                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                     dialog.dismiss()
-                    continuation.resume(false) // Dialog abgelehnt
+                    continuation.resume(false)
                 }
                 .show()
         }

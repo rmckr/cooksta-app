@@ -83,10 +83,10 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
 
         if (hasNullIngredient) {
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Fehlende Mengenangaben")
-                .setMessage("Es gibt Zutaten, die keine Mengenangabe haben. Diese werden später auch ohne Mengenangabe angezeigt.")
-                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-                .setNegativeButton("Abbrechen") { dialog, _ ->
+                .setTitle(getString(R.string.title_dialog_ingredients))
+                .setMessage(getString(R.string.message_dialog_ingredients))
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                     dialog.dismiss()
                     isValid = false
                 }
@@ -101,13 +101,13 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
 
     override fun onIngredientDeleted(position: Int, fromZeroAmount: Boolean) {
         val message = if (fromZeroAmount)
-            "Wenn du die Menge einer Zutat auf \"0\" setzt, wird sie gelöscht." else
-                "Durch das Löschen einer Zutat wird diese aus der Liste entfernt."
+            getString(R.string.message_option_no1) else
+                getString(R.string.message_option_no2)
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Bist du sicher?")
+            .setTitle(getString(R.string.title_dialog_delete))
             .setMessage(message)
-            .setNegativeButton("Nein") { dialog, _ -> dialog.cancel() }
-            .setPositiveButton("Ja, löschen") { _, _ -> viewModel.deleteIngredient(position) }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.cancel() }
+            .setPositiveButton(getString(R.string.delete)) { _, _ -> viewModel.deleteIngredient(position) }
             .show()
     }
 

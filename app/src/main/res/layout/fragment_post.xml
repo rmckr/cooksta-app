@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="-8dp"
-            android:text="0"
+            android:text="@string/likeNumber"
             android:layout_gravity="center"
             android:textColor="@android:color/white"/>
 
@@ -96,7 +96,8 @@
             android:layout_height="match_parent"
             android:background="@android:color/black"
             android:orientation="vertical"
-            android:paddingTop="16dp">
+            android:paddingTop="16dp"
+            android:clickable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -149,7 +150,7 @@
                         android:layout_marginRight="4dp"
                         android:layout_weight="1"
                         android:checkable="true"
-                        android:text="Mag ich"
+                        android:text="@string/like"
                         app:icon="@drawable/ic_heart"
                         app:iconGravity="textStart" />
 
@@ -161,7 +162,7 @@
                         android:layout_marginLeft="4dp"
                         android:layout_weight="1"
                         android:checkable="true"
-                        android:text="Speichern"
+                        android:text="@string/save"
                         app:icon="@drawable/ic_bookmark"
                         app:iconGravity="textStart" />
                 </LinearLayout>
@@ -172,7 +173,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Zu Einkaufsliste hinzufügen"
+                    android:text="@string/text_add_to_shoppingList"
                     app:icon="@drawable/ic_cart_add"
                     app:iconGravity="textStart" />
 
@@ -191,17 +192,17 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Beschreibung" />
+                    android:text="@string/description" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Zutaten" />
+                    android:text="@string/ingredients" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Kommentare" />
+                    android:text="@string/comments" />
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.viewpager2.widget.ViewPager2
