@@ -49,15 +49,14 @@ class ShoppingListFragment : Fragment() {
         return binding.root
     }
 
-    // TODO: Extract strings to XML
     private fun setupDeleteDialog() {
         deleteDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Bist du sicher?")
-            .setMessage("Die Einkaufsliste löschen bedeutet, dass alle hinugefügten Rezepte gelöscht werden.")
-            .setNegativeButton("Nein") { dialog, _ ->
+            .setTitle(getString(R.string.title_dialog_delete))
+            .setMessage(getString(R.string.message_dialog_delete_shoppingList))
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.cancel()
             }
-            .setPositiveButton("Ja, löschen") { _, _ ->
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 viewModel.clear()
                 handleVisibility()
             }

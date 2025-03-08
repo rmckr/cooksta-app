@@ -22,6 +22,7 @@
     <string name="all_ingredients">Alle Zutaten</string>
     <string name="new_ingredient">Neue Zutat</string>
     <string name="portions">Portionen</string>
+    <string name="portions2">Portionen:</string>
     <string name="visibility">Sichtbarkeit</string>
     <string name="isPublic">Öffentlich</string>
     <string name="limitCategory">Kategorien (max. 3)</string>
@@ -70,6 +71,7 @@
     <string name="ok">OK</string>
     <string name="delete">Ja, löschen</string>
     <string name="no">Nein</string>
+    <string name="message_dialog_delete_shoppingList">Die Einkaufsliste löschen bedeutet, dass alle hinugefügten Rezepte gelöscht werden.</string>
     <string name="title_dialog_delete">Bist du sicher?</string>
     <string name="message_option_no1">Wenn du die Menge einer Zutat auf "0" setzt, wird sie gelöscht.</string>
     <string name="message_option_no2">Durch das Löschen einer Zutat wird diese aus der Liste entfernt.</string>
@@ -80,6 +82,7 @@
     <string name="toast_unsupported_media">Unsupported media type</string>
     <string name="toast_unavailable_media">Media is unavailable</string>
     <string name="no_description">No description available</string>
+    <string name="error_add_shoppingList">Fehler beim Hinzufügen des Rezepts</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>

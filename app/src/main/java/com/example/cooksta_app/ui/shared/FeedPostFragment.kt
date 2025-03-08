@@ -22,8 +22,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.example.cooksta_app.R
+import com.example.cooksta_app.databinding.DialogAddToShoppingListBinding
 import com.example.cooksta_app.databinding.FragmentPostBinding
 import com.example.cooksta_app.model.Ingredient
+import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.home.PostDescriptionFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
@@ -326,16 +328,32 @@ class FeedPostFragment : Fragment() {
             bookmarkButton.setOnClickListener { toggleSave() }
             bottomSheetSaveButton.setOnClickListener { toggleSave() }
             shoppingListButton.setOnClickListener {
-                val dialogView = LayoutInflater.from(this@FeedPostFragment.requireContext())
-                    .inflate(R.layout.dialog_add_to_shopping_list, null)
+                val dialogBinding = DialogAddToShoppingListBinding.inflate(LayoutInflater.from(this@FeedPostFragment.requireContext()))
 
                 MaterialAlertDialogBuilder(this@FeedPostFragment.requireContext())
                     .setTitle(getString(R.string.title_dialog_shoppingList))
                     .setMessage(getString(R.string.message_dialog_shoppingList))
-                    .setView(dialogView)
+                    .setView(dialogBinding.root)
                     .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                     .setPositiveButton(getString(R.string.add)) { _, _ ->
-                        this@FeedPostFragment.findNavController().navigate(R.id.navigation_shopping_list)
+                        fun showErrorToast() {
+                            Toast.makeText(requireContext(), getString(R.string.error_add_shoppingList), Toast.LENGTH_LONG).show()
+                        }
+                        lifecycleScope.launch {
+                            val userResponse = RetrofitClient.apiService.getUser("me")
+                            if (userResponse.isSuccessful) {
+                                val newShoppingList = userResponse.body()?.shoppingList?.toMutableMap() ?: return@launch showErrorToast()
+                                newShoppingList[recipeId] = dialogBinding.recipePortionsSelector.value.value
+                                val patchResponse = RetrofitClient.apiService.patchUser("me", PartialUser(shoppingList = newShoppingList))
+                                if (patchResponse.isSuccessful) {
+                                    this@FeedPostFragment.findNavController().navigate(R.id.navigation_shopping_list)
+                                } else {
+                                    showErrorToast()
+                                }
+                            } else {
+                                showErrorToast()
+                            }
+                        }
                     }
                     .show()
             }
