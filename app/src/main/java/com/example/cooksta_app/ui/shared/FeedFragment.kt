@@ -66,6 +66,10 @@ class FeedFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().popBackStack()
             }
+            binding.feedAppBarLayout.visibility = View.VISIBLE
+            binding.feedAppBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         val feedAdapter = FeedAdapter()
