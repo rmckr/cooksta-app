@@ -210,6 +210,7 @@ class FeedPostFragment : Fragment() {
                     bottomSheetLayout.background.alpha = (minBottomSheetAlpha * 255).toInt()
                     val bottomSheetBehavior = BottomSheetBehavior.from(standardBottomSheet)
                     bottomSheetBehavior.addBottomSheetCallback(BottomSheetTouchBehavior())
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
                     class FragmentAdapter(private val fragments: List<Fragment>) :
                         FragmentStateAdapter(this@FeedPostFragment) {
