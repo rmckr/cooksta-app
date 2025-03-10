@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.shared
+package com.example.cooksta_app.ui.shared.feed
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -42,12 +42,17 @@ class FeedFragment : Fragment() {
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    fun setViewPagerInput(state: Boolean) {
+        binding.feedViewPager.isUserInputEnabled = state
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentFeedBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -80,17 +85,11 @@ class FeedFragment : Fragment() {
         if (position > 0) {
             binding.feedViewPager.setCurrentItem(position, false)
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    fun setViewPagerInput(state: Boolean) {
-        binding.feedViewPager.isUserInputEnabled = state
     }
 
     inner class FeedAdapter : FragmentStateAdapter(this) {

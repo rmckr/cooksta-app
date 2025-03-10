@@ -7,6 +7,7 @@
     tools:context=".ui.shoppingList.ShoppingListFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/shoppinListLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            app:liftOnScroll="true">
+            app:liftOnScroll="true"
+            app:liftOnScrollTargetViewId="@id/viewPager">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
@@ -44,17 +46,33 @@
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <FrameLayout
+            android:id="@+id/loadingSpinnerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="32dp"
+            android:paddingBottom="?attr/actionBarSize"
+            android:visibility="visible"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/emptyLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="center"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingHorizontal="32dp"
+            android:paddingBottom="?attr/actionBarSize"
             android:visibility="gone"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:visibility="visible">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -99,8 +117,7 @@
             android:contentDescription="@string/delete_shoppingList"
             android:src="@drawable/ic_delete"
             android:visibility="invisible"
-            app:layout_anchor="@id/viewPager"
-            app:layout_anchorGravity="bottom|end"
+            android:layout_gravity="top|right"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </FrameLayout>

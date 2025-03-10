@@ -5,13 +5,11 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
+import com.example.cooksta_app.databinding.ItemCategoryCardBinding
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
-import com.google.android.material.card.MaterialCardView
 
 
 data class CategoryCard(
@@ -33,7 +31,7 @@ private val categories = listOf(
     CategoryCard(target = "vegetarian", textResource = R.string.vegetarianCategory, imageResource = R.drawable.card_veggie),
 )
 
-class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractionListener {
+class CategoryGridFragment : RecyclerViewFragment<CategoryGridFragment.Adapter>(), CategoryInteractionListener {
     private val spanCount = 3
     private val spacing = 16
 
@@ -42,8 +40,8 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
         searchFragment.handleCategoryClick(target)
     }
 
-    override fun provideAdapter(): CategoryAdapter {
-        return CategoryAdapter(categories, this)
+    override fun provideAdapter(): Adapter {
+        return Adapter(categories, this)
     }
 
     override fun provideLayoutManager(): RecyclerView.LayoutManager {
@@ -73,41 +71,32 @@ class CategoryGrid : RecyclerViewFragment<CategoryAdapter>(), CategoryInteractio
             }
         }
     }
+
+    inner class Adapter(private val cards: List<CategoryCard>, private val interactionListener: CategoryInteractionListener) : RecyclerView.Adapter<Adapter.CategoryCardViewHolder>() {
+        override fun getItemCount() = cards.size
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): CategoryCardViewHolder {
+            val binding = ItemCategoryCardBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+            return CategoryCardViewHolder(binding)
+        }
+
+        override fun onBindViewHolder(holder: CategoryCardViewHolder, position: Int) {
+            val card = cards[position]
+            holder.bind(card)
+        }
+
+        inner class CategoryCardViewHolder(private val binding: ItemCategoryCardBinding) : RecyclerView.ViewHolder(binding.root) {
+            fun bind(card: CategoryCard) {
+                binding.card.setOnClickListener {
+                    interactionListener.onCardClick(card)
+                }
+                binding.imageCard.setImageResource(card.imageResource)
+                binding.textViewCard.setText(card.textResource)
+            }
+        }
+    }
 }
 
 interface CategoryInteractionListener {
     fun onCardClick(target: CategoryCard)
-}
-
-class CategoryAdapter(
-    private val cards: List<CategoryCard>,
-    private val interactionListener: CategoryInteractionListener
-) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
-    override fun getItemCount(): Int {
-        return cards.size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_card, parent, false)
-        return CategoryViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val card = cards[position]
-        holder.bind(card)
-    }
-
-    inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cardView = itemView.findViewById<MaterialCardView>(R.id.card)
-        private val imageView = itemView.findViewById<ImageView>(R.id.imageCard)
-        private val textView = itemView.findViewById<TextView>(R.id.textViewCard)
-
-        fun bind(card: CategoryCard) {
-            cardView.setOnClickListener {
-                interactionListener.onCardClick(card)
-            }
-            imageView.setImageResource(card.imageResource)
-            textView.setText(card.textResource)
-        }
-    }
 }

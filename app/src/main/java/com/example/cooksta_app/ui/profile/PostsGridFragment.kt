@@ -3,49 +3,76 @@ package com.example.cooksta_app.ui.profile
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
-import com.example.cooksta_app.ui.shared.FeedFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
 import com.example.cooksta_app.utils.MediaCacheManager
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PostsGrid : RecyclerViewFragment<PostsGrid.PostsGridAdapter>() {
+class PostsGridFragment : RecyclerViewFragment<PostsGridFragment.Adapter>() {
 
     private val mediaCacheManager by lazy {
         MediaCacheManager(requireActivity())
     }
 
     private val recipes: ArrayList<String> by lazy {
-        arguments?.getStringArrayList(ARG_RECIPE_IDS) ?: throw IllegalStateException("recipeIds argument is missing")
-    }
-
-    companion object {
-        private const val ARG_RECIPE_IDS = "recipeIds"
-
-        fun newInstance(recipes: List<String>): PostsGrid {
-            val args = Bundle()
-            args.putStringArrayList(ARG_RECIPE_IDS, ArrayList(recipes))
-            val fragment = PostsGrid()
-            fragment.arguments = args
-            return fragment
-        }
+        arguments?.getStringArrayList(ARG_RECIPE_IDS) ?: throw IllegalStateException("$ARG_RECIPE_IDS argument is missing")
     }
 
     private val spanCount = 3
     private val spacing = 4
 
-    override fun provideAdapter(): PostsGridAdapter {
-        return PostsGridAdapter(recipes)
+    companion object {
+        private const val ARG_RECIPE_IDS = "recipeIds"
+
+        fun newInstance(recipes: List<String>): PostsGridFragment {
+            val args = Bundle()
+            args.putStringArrayList(ARG_RECIPE_IDS, ArrayList(recipes))
+            val fragment = PostsGridFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        if (recipes.isEmpty()) {
+            val emptyView = MaterialTextView(requireContext()).apply {
+                text = "Keine Ergebnisse"
+                gravity = Gravity.CENTER
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                val padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics).toInt()
+                setPadding(padding)
+            }
+            return emptyView
+        } else {
+            return super.onCreateView(inflater, container, savedInstanceState)
+        }
+    }
+
+    override fun provideAdapter(): Adapter {
+        return Adapter(recipes)
     }
 
     override fun provideLayoutManager(): RecyclerView.LayoutManager {
@@ -82,24 +109,24 @@ class PostsGrid : RecyclerViewFragment<PostsGrid.PostsGridAdapter>() {
         }
     }
 
-    inner class PostsGridAdapter(private val recipeIds: List<String>) : RecyclerView.Adapter<PostsGridAdapter.PostsGridViewHolder>() {
+    inner class Adapter(private val recipeIds: List<String>) : RecyclerView.Adapter<Adapter.PostsGridItemViewHolder>() {
         override fun getItemCount(): Int {
             return recipeIds.size
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsGridViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsGridItemViewHolder {
             val view = SkeletonImageView(parent.context, null).apply {
                 scaleType = ImageView.ScaleType.CENTER_CROP
             }
-            return PostsGridViewHolder(view)
+            return PostsGridItemViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: PostsGridViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: PostsGridItemViewHolder, position: Int) {
             val recipeId = recipeIds[position]
             holder.bind(recipeId)
         }
 
-        inner class PostsGridViewHolder(private val imageView: SkeletonImageView) : RecyclerView.ViewHolder(imageView) {
+        inner class PostsGridItemViewHolder(private val imageView: SkeletonImageView) : RecyclerView.ViewHolder(imageView) {
             fun bind(recipeId: String) {
                 lifecycleScope.launch {
                     val bitmap = mediaCacheManager.getThumbnailBitmap(recipeId)

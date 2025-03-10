@@ -1,55 +1,38 @@
 package com.example.cooksta_app.ui.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.cooksta_app.R
 import com.example.cooksta_app.network.RetrofitClient
-import com.example.cooksta_app.ui.shared.FeedFragment
-import kotlinx.coroutines.Dispatchers
+import com.example.cooksta_app.ui.shared.LoadingFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class HomeFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val frameLayout = FrameLayout(requireContext()).apply {
-            id = View.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        }
-        return frameLayout
-    }
+class HomeFragment : LoadingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycleScope.launch {
-            val recipeIds = withContext(Dispatchers.IO) {
-                val feedResponse = RetrofitClient.apiService.getRecipeFeed(
-                    limit = 20,
-                    page = null
-                )
-                if (feedResponse.isSuccessful) feedResponse.body()?.map { it.id } ?: emptyList() else emptyList()
-            }
-            findNavController().navigate(
-                R.id.action_navigation_home_to_navigation_feed,
-                Bundle().apply {
-                    putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
-                    putBoolean(FeedFragment.ARG_IS_HOME_FEED, true)
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val feedResponse = RetrofitClient.apiService.getRecipeFeed(
+                limit = 20,
+                page = null
             )
+            if (feedResponse.isSuccessful) {
+                val recipeIds = feedResponse.body()?.map { it.id } ?: emptyList()
+                val currentDestination = findNavController().currentDestination
+                if (currentDestination?.getAction(R.id.action_navigation_home_to_navigation_feed) != null && isAdded) {
+                    findNavController().navigate(
+                        R.id.action_navigation_home_to_navigation_feed,
+                        Bundle().apply {
+                            putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeIds.toTypedArray())
+                            putBoolean(FeedFragment.ARG_IS_HOME_FEED, true)
+                        }
+                    )
+                }
+            }
         }
     }
 }

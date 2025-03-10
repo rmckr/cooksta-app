@@ -8,36 +8,26 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.example.cooksta_app.R
-import com.google.android.material.button.MaterialButton
+import com.example.cooksta_app.databinding.SharedNumberSelectorBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class NumberSelector @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet,
-    defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
-    private val _value = MutableStateFlow(1)
-    val value: StateFlow<Int> = _value
+class NumberSelector @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+    private val _currentValue = MutableStateFlow(1)
+    val currentValue: StateFlow<Int> get() = _currentValue
 
     private var coerceValue: (Int) -> Int = { it.coerceIn(1, 999) }
     private var onValueChangeListener: ((Int) -> Unit)? = null
 
-    private val inputField: EditText
-    private val incrementButton: MaterialButton
-    private val decrementButton: MaterialButton
+    private var _binding: SharedNumberSelectorBinding? = null
+    private val binding get() = _binding!!
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.shared_numberselector, this, true)
+        _binding = SharedNumberSelectorBinding.inflate(LayoutInflater.from(context), this, true)
 
-        inputField = findViewById(R.id.selectorInput)
-        decrementButton = findViewById(R.id.selectorDecButton)
-        incrementButton = findViewById(R.id.selectorIncButton)
-
-        inputField.setOnFocusChangeListener { view, hasFocus ->
+        binding.selectorInput.setOnFocusChangeListener { view, hasFocus ->
             view as EditText
             if (hasFocus) {
                 view.post { view.selectAll() }
@@ -49,26 +39,26 @@ class NumberSelector @JvmOverloads constructor(
             }
         }
 
-        inputField.setOnEditorActionListener { view, actionId, _ ->
+        binding.selectorInput.setOnEditorActionListener { view, actionId, _ ->
             view as EditText
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val inputValue = inputField.text.toString().toIntOrNull() ?: 0
+                val inputValue = binding.selectorInput.text.toString().toIntOrNull() ?: 0
                 val coercedValue = coerceValue(inputValue)
                 onValueChangeListener?.invoke(coercedValue)
-                _value.value = coercedValue
+                _currentValue.value = coercedValue
                 view.clearFocus()
             }
             false
         }
-        decrementButton.setOnClickListener {
-            val coercedValue = coerceValue(_value.value.minus(1))
-            _value.value = coercedValue
+        binding.selectorDecButton.setOnClickListener {
+            val coercedValue = coerceValue(_currentValue.value.minus(1))
+            _currentValue.value = coercedValue
             onValueChangeListener?.invoke(coercedValue)
         }
-        incrementButton.setOnClickListener {
-            val coercedValue = coerceValue(_value.value.plus(1))
-            _value.value = coercedValue
-            onValueChangeListener?.invoke(_value.value)
+        binding.selectorIncButton.setOnClickListener {
+            val coercedValue = coerceValue(_currentValue.value.plus(1))
+            _currentValue.value = coercedValue
+            onValueChangeListener?.invoke(_currentValue.value)
         }
     }
 
@@ -76,8 +66,8 @@ class NumberSelector @JvmOverloads constructor(
         super.onAttachedToWindow()
         findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
             lifecycleOwner.lifecycleScope.launch {
-                value.collect {
-                    inputField.setText(String.format(Locale.getDefault(), "%d", coerceValue(it)))
+                currentValue.collect {
+                    binding.selectorInput.setText(String.format(Locale.getDefault(), "%d", coerceValue(it)))
                 }
             }
         }
@@ -87,8 +77,8 @@ class NumberSelector @JvmOverloads constructor(
         coerceValue = coercion
     }
 
-    fun setValue(value: Int) {
-        _value.value = value
+    fun setCurrentValue(value: Int) {
+        _currentValue.value = value
     }
 
     fun setOnValueChangeListener(listener: (Int) -> Unit) {

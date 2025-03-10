@@ -130,7 +130,7 @@ class CreateFragment : Fragment() {
                     val name = ingredient.name?.trim()
                     val amount = ingredient.amount
 
-                    val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? IngredientSelectionAdapter.IngredientSelectionViewHolder
+                    val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? IngredientSelectionListFragment.Adapter.IngredientViewHolder
 
                     if (name.isNullOrBlank()) {
                         isValid = false
@@ -182,12 +182,13 @@ class CreateFragment : Fragment() {
         return isValid
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.createAppBarLayout.statusBarForeground =
             MaterialShapeDrawable.createWithElevationOverlay(context)
@@ -211,7 +212,7 @@ class CreateFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.portions.collect { portions ->
-                binding.recipePortionsSelector.setValue(portions)
+                binding.recipePortionsSelector.setCurrentValue(portions)
             }
         }
         binding.recipePortionsSelector.setOnValueChangeListener {
@@ -244,8 +245,6 @@ class CreateFragment : Fragment() {
         binding.videoPreview.setOnClickListener {
             pickVideoLauncher.launch("video/*")
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {

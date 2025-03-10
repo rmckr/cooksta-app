@@ -56,6 +56,10 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="userId"
+            app:argType="string"
+            android:defaultValue="me" />
     </fragment>
     <fragment
         android:id="@+id/navigation_edit_profile"
@@ -64,7 +68,7 @@
         tools:layout="@layout/fragment_edit_profile" />
     <fragment
         android:id="@+id/navigation_feed"
-        android:name="com.example.cooksta_app.ui.shared.FeedFragment"
+        android:name="com.example.cooksta_app.ui.shared.feed.FeedFragment"
         android:label="FeedFragment"
         tools:layout="@layout/fragment_post">
         <argument

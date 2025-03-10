@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.ItemSearchResultBinding
 import com.example.cooksta_app.model.Recipe
-import com.example.cooksta_app.ui.shared.FeedFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
 import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.textview.MaterialTextView
@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchResultsAdapter>() {
+class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.Adapter>() {
 
     private val mediaCacheManager by lazy {
         MediaCacheManager(requireActivity())
@@ -49,6 +49,10 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
         }
     }
 
+    override fun provideAdapter(): Adapter {
+        return Adapter()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -71,13 +75,13 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
         }
     }
 
-    inner class SearchResultsAdapter : RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
+    inner class Adapter : RecyclerView.Adapter<Adapter.SearchResultItemViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultItemViewHolder {
             val binding = ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return SearchResultViewHolder(binding)
+            return SearchResultItemViewHolder(binding)
         }
 
-        override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: SearchResultItemViewHolder, position: Int) {
             val recipe = recipes[position]
             holder.bind(recipe)
         }
@@ -86,7 +90,7 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
             return recipes.size
         }
 
-        inner class SearchResultViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
+        inner class SearchResultItemViewHolder(private val binding: ItemSearchResultBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(recipe: Recipe) {
                 binding.searchRecipeName.text = recipe.title
                 lifecycleScope.launch {
@@ -107,9 +111,5 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.SearchR
                 }
             }
         }
-    }
-
-    override fun provideAdapter(): SearchResultsAdapter {
-        return SearchResultsAdapter()
     }
 }

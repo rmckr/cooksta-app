@@ -1,6 +1,7 @@
 package com.example.cooksta_app.ui.shoppingList
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,19 +22,23 @@ class ShoppingListFragment : Fragment() {
     private var _binding: FragmentShoppingListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: ShoppingListViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+    }
     private var deleteDialog: MaterialAlertDialogBuilder? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+        return binding.root
+    }
 
-        // TODO: Display loading spinner while loading data
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         viewModel.loadShoppingList()
         lifecycleScope.launch {
             viewModel.recipes.collect {
+                Log.d("TEST", "onViewCreated: collected: $it")
                 handleVisibility()
             }
         }
@@ -42,11 +47,8 @@ class ShoppingListFragment : Fragment() {
             MaterialShapeDrawable.createWithElevationOverlay(context)
 
         setupDeleteDialog()
-        handleVisibility()
         setupToolbar()
         setupViewPager()
-
-        return binding.root
     }
 
     private fun setupDeleteDialog() {
@@ -67,12 +69,21 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun handleVisibility() {
-        if (viewModel.recipes.value.isEmpty() && viewModel.ingredients.value.isEmpty()) {
+        Log.d("TEST", "handleVisibility: ${viewModel.recipes.value} ${viewModel.ingredients.value}")
+        if (viewModel.recipes.value == null && viewModel.ingredients.value == null) {
+            binding.loadingSpinnerLayout.visibility = View.VISIBLE
+            binding.emptyLayout.visibility = View.GONE
+            binding.viewPager.visibility = View.GONE
+            binding.floatingActionButton.visibility = View.GONE
+            binding.shoppingListAppBarLayout.setExpanded(true, true)
+        } else if (viewModel.recipes.value!!.isEmpty() && viewModel.ingredients.value!!.isEmpty()) {
+            binding.loadingSpinnerLayout.visibility = View.GONE
             binding.emptyLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
             binding.floatingActionButton.visibility = View.GONE
             binding.shoppingListAppBarLayout.setExpanded(true, true)
         } else {
+            binding.loadingSpinnerLayout.visibility = View.GONE
             binding.emptyLayout.visibility = View.GONE
             binding.viewPager.visibility = View.VISIBLE
             binding.floatingActionButton.visibility = View.VISIBLE
@@ -106,11 +117,13 @@ class ShoppingListFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.ingredients.collect { ingredients ->
-                ingredientsListFragment.submitIngredients(ingredients)
+                if (ingredients != null) {
+                    ingredientsListFragment.submitIngredients(ingredients)
+                }
             }
         }
 
-        val adapter = ShoppingListPagerAdapter(this, listOf(recipeListFragment, ingredientsListFragment))
+        val adapter = ShoppingListPagerAdapter(listOf(recipeListFragment, ingredientsListFragment))
         binding.viewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout2, binding.viewPager) { tab, position ->
@@ -126,12 +139,12 @@ class ShoppingListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
 
-class ShoppingListPagerAdapter(fragment: Fragment, private val fragments: List<Fragment>) : FragmentStateAdapter(fragment) {
-    override fun getItemCount() = fragments.size
+    inner class ShoppingListPagerAdapter(private val fragments: List<Fragment>) : FragmentStateAdapter(this) {
+        override fun getItemCount() = fragments.size
 
-    override fun createFragment(position: Int): Fragment {
-        return fragments[position]
+        override fun createFragment(position: Int): Fragment {
+            return fragments[position]
+        }
     }
 }

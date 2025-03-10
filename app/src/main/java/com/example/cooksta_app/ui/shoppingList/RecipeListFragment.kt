@@ -180,7 +180,7 @@ class RecipeListFragment : RecyclerViewFragment<RecipeListFragment.RecipesAdapte
             }
 
             fun updatePortions(portions: Int) {
-                binding.recipePortionsSelector.setValue(portions)
+                binding.recipePortionsSelector.setCurrentValue(portions)
             }
 
             fun updateSelection(isSelected: Boolean) {
@@ -196,7 +196,7 @@ class RecipeListFragment : RecyclerViewFragment<RecipeListFragment.RecipesAdapte
 
                 binding.recipeName.text = recipe.title
 
-                binding.recipePortionsSelector.setValue(recipe.portions)
+                binding.recipePortionsSelector.setCurrentValue(recipe.portions)
                 binding.recipePortionsSelector.setOnValueChangeListener {
                     interactionListener.onSetPortions(recipe.id, it)
                 }

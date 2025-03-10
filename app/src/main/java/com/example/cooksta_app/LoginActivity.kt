@@ -24,9 +24,7 @@ class LoginActivity : AppCompatActivity() {
                 binding.editTextUsername.setText("")
                 binding.editTextPassword.setText("")
 
-                val intent = Intent(applicationContext, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                Toast.makeText(this@LoginActivity, "Falsche Zugangsdaten", Toast.LENGTH_LONG).show()
             }
         }
     }

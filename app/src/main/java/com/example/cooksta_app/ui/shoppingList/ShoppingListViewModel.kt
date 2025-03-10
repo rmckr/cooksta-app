@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ShoppingListViewModel : ViewModel() {
-    private val _recipes = MutableStateFlow<List<ShoppingListItem>>(emptyList())
-    val recipes: StateFlow<List<ShoppingListItem>> get() = _recipes
+    private val _recipes = MutableStateFlow<List<ShoppingListItem>?>(null)
+    val recipes: StateFlow<List<ShoppingListItem>?> get() = _recipes
 
-    private val _ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
-    val ingredients: StateFlow<List<Ingredient>> get() = _ingredients
+    private val _ingredients = MutableStateFlow<List<Ingredient>?>(null)
+    val ingredients: StateFlow<List<Ingredient>?> get() = _ingredients
 
     private fun sendUpdateAndReload() {
         viewModelScope.launch {
             val patchResponse = RetrofitClient.apiService.patchUser("me", PartialUser(
-                shoppingList = recipes.value.associate { recipe -> recipe.id to recipe.portions }
+                shoppingList = recipes.value?.associate { recipe -> recipe.id to recipe.portions }
             ))
             if (patchResponse.isSuccessful) {
                 loadShoppingList()
@@ -30,10 +30,10 @@ class ShoppingListViewModel : ViewModel() {
 
     fun loadShoppingList() {
         viewModelScope.launch {
-            val userResponse = RetrofitClient.apiService.getShoppingList("me")
-            if (userResponse.isSuccessful) {
-                _recipes.value = userResponse.body()?.shoppingList ?: emptyList()
-                _ingredients.value = userResponse.body()?.ingredients ?: emptyList()
+            val shoppingListResponse = RetrofitClient.apiService.getShoppingList("me")
+            if (shoppingListResponse.isSuccessful) {
+                _recipes.value = shoppingListResponse.body()?.shoppingList ?: emptyList()
+                _ingredients.value = shoppingListResponse.body()?.ingredients ?: emptyList()
             }
         }
     }
@@ -44,11 +44,11 @@ class ShoppingListViewModel : ViewModel() {
         sendUpdateAndReload()
     }
     fun removeRecipe(id: String) {
-        _recipes.value = _recipes.value.filter { it.id != id }
+        _recipes.value = _recipes.value?.filter { it.id != id }
         sendUpdateAndReload()
     }
     fun setRecipePortions(id: String, portions: Int) {
-        _recipes.value = _recipes.value.map {
+        _recipes.value = _recipes.value?.map {
             if (it.id == id) it.copy(portions = portions.coerceAtLeast(1).coerceAtMost(999)) else it
         }
         sendUpdateAndReload()

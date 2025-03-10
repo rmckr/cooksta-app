@@ -8,13 +8,17 @@ import com.example.cooksta_app.model.User
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.model.RefreshTokenRequest
 import com.example.cooksta_app.model.ShoppingListResponse
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Streaming
@@ -27,8 +31,6 @@ interface APIService {
     @POST("/refresh")
     suspend fun refresh(@Body request: RefreshTokenRequest): Response<TokenResponse>
 
-    @GET("users/me")
-    suspend fun getMe(): Response<User>
     @GET("users/{userId}/shopping-list")
     suspend fun getShoppingList(@Path("userId") userId: String): Response<ShoppingListResponse>
     @GET("users/{userId}")
@@ -37,6 +39,9 @@ interface APIService {
     suspend fun patchUser(@Path("userId") userId: String, @Body user: PartialUser): Response<User>
     @GET("users/{userId}/recipes")
     suspend fun getUserRecipes(@Path("userId") userId: String): Response<List<Recipe>>
+    @Multipart
+    @PUT("users/{userId}/avatar")
+    suspend fun putAvatar(@Path("userId") userId: String, @Part avatar: MultipartBody.Part): Response<Void>
 
     @GET("recipes/{recipeId}")
     suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>

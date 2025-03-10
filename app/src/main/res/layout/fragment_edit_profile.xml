@@ -55,6 +55,7 @@
             android:hint="@string/usernameHint">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editUsernameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
@@ -67,6 +68,7 @@
             android:hint="@string/biography">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editBiographyInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
@@ -85,6 +87,7 @@
             android:hint="@string/passwordHint">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editPasswordInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword" />

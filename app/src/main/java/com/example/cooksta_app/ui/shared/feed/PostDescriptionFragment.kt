@@ -1,4 +1,4 @@
-package com.example.cooksta_app.ui.home
+package com.example.cooksta_app.ui.shared.feed
 
 import android.os.Bundle
 import android.util.TypedValue
@@ -11,6 +11,15 @@ import androidx.fragment.app.Fragment
 import com.example.cooksta_app.R
 
 class PostDescriptionFragment : Fragment() {
+
+    companion object {
+        fun newInstance(description: String) = PostDescriptionFragment().apply {
+            arguments = Bundle().apply {
+                putString("description", description)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,13 +33,5 @@ class PostDescriptionFragment : Fragment() {
         textView.text = arguments?.getString("description") ?: getString(R.string.no_description)
 
         return textView
-    }
-
-    companion object {
-        fun newInstance(description: String) = PostDescriptionFragment().apply {
-            arguments = Bundle().apply {
-                putString("description", description)
-            }
-        }
     }
 }

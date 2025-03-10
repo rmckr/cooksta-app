@@ -30,11 +30,7 @@ abstract class RecyclerViewFragment<T: RecyclerView.Adapter<*>> : Fragment() {
 
     open fun onRecyclerViewCreated(recyclerView: RecyclerView) {}
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         recyclerView = RecyclerView(requireContext())
         recyclerView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
