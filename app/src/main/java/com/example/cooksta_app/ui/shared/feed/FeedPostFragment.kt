@@ -267,6 +267,12 @@ class FeedPostFragment : Fragment() {
         }
 
         lifecycleScope.launch {
+            viewModel.likes.collect { likes ->
+                binding.like.text = likes.toString()
+            }
+        }
+
+        lifecycleScope.launch {
             viewModel.isLiked.collect { liked ->
                 binding.postLikeButton.isChecked = liked
                 binding.bottomSheetLikeButton.isChecked = liked

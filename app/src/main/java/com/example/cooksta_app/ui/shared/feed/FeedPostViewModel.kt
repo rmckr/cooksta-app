@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class FeedPostViewModel : ViewModel() {
+    private val _likes = MutableStateFlow((50..500).random())
+    val likes: StateFlow<Int> = _likes
     private val _isLiked = MutableStateFlow(false)
     val isLiked: StateFlow<Boolean> = _isLiked
     private val _isSaved = MutableStateFlow(false)
@@ -23,6 +25,12 @@ class FeedPostViewModel : ViewModel() {
 
     fun toggleLike() {
         _isLiked.value = !_isLiked.value
+        if (_isLiked.value) {
+            _likes.value++
+        } else {
+            _likes.value--
+        }
+
         // TODO: Not implemented in API
 //        if (_recipe.value != null) {
 //            viewModelScope.launch {
