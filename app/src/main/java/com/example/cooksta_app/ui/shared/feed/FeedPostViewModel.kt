@@ -3,6 +3,7 @@ package com.example.cooksta_app.ui.shared.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cooksta_app.model.Recipe
+import com.example.cooksta_app.model.User
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,9 @@ class FeedPostViewModel : ViewModel() {
 
     private val _recipe = MutableStateFlow<Recipe?>(null)
     val recipe: StateFlow<Recipe?> = _recipe
+
+    private val _creator = MutableStateFlow<User?>(null)
+    val creator: StateFlow<User?> = _creator
 
     fun toggleLike() {
         _isLiked.value = !_isLiked.value
@@ -50,6 +54,15 @@ class FeedPostViewModel : ViewModel() {
             val response = RetrofitClient.apiService.getRecipe(recipeId)
             if (response.isSuccessful) {
                 _recipe.value = response.body()
+            }
+        }
+    }
+
+    fun loadCreator(userId: String) {
+        viewModelScope.launch {
+            val userResponse = RetrofitClient.apiService.getUser(userId)
+            if (userResponse.isSuccessful) {
+                _creator.value = userResponse.body()
             }
         }
     }
