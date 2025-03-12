@@ -8,15 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
-import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.ui.shared.skeleton.SkeletonImageView
 import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.textview.MaterialTextView
@@ -34,7 +33,14 @@ class PostsGridFragment : RecyclerViewFragment<PostsGridFragment.Adapter>() {
         arguments?.getStringArrayList(ARG_RECIPE_IDS) ?: throw IllegalStateException("$ARG_RECIPE_IDS argument is missing")
     }
 
-    private val spanCount = 3
+    val spanCount by lazy {
+        if (resources.displayMetrics.widthPixels / resources.displayMetrics.density >= 820) {
+            6
+        } else {
+            3
+        }
+    }
+
     private val spacing = 4
 
     companion object {
