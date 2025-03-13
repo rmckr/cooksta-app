@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
+import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.DialogAddToShoppingListBinding
 import com.example.cooksta_app.databinding.FragmentPostBinding
@@ -29,6 +30,7 @@ import com.example.cooksta_app.model.Ingredient
 import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.network.RetrofitClient
+import com.example.cooksta_app.ui.profile.ProfileFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
 import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -203,6 +205,29 @@ class FeedPostFragment : Fragment() {
             }
         }.attach()
 
+        viewModel.loadCreator(recipe.creatorId)
+        lifecycleScope.launch {
+            viewModel.creator.collect { user ->
+                if (user != null) {
+                    binding.usernameBottomSheet.load(user.username)
+                    val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
+                    Glide.with(requireActivity()).load(imageUrl).placeholder(R.drawable.ic_launcher).into(binding.profileImageBottomSheet)
+                } else {
+                    binding.usernameBottomSheet.unload()
+                    Glide.with(requireActivity()).load(R.drawable.ic_launcher).into(binding.profileImageBottomSheet)
+                }
+            }
+        }
+
+        binding.bottomSheetProfile.setOnClickListener {
+            findNavController().navigate(
+                R.id.navigation_profile,
+                Bundle().apply {
+                    putString(ProfileFragment.ARG_USER_ID, recipe.creatorId)
+                }
+            )
+        }
+
         binding.commentButton.setOnCheckedChangeListener { _, _ ->
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             binding.bottomSheetViewPager.currentItem = binding.bottomSheetViewPager.adapter!!.itemCount - 1
@@ -225,6 +250,12 @@ class FeedPostFragment : Fragment() {
                 if (it != null) {
                     setupBottomSheet(it)
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.likes.collect { likes ->
+                binding.like.text = likes.toString()
             }
         }
 
@@ -280,8 +311,11 @@ class FeedPostFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         exoPlayer?.play()
     }
+
 
     override fun onPause() {
         super.onPause()

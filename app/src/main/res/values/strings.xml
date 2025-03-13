@@ -83,6 +83,7 @@
     <string name="toast_unavailable_media">Media is unavailable</string>
     <string name="no_description">No description available</string>
     <string name="error_add_shoppingList">Fehler beim Hinzufügen des Rezepts</string>
+    <string name="profileName">Profilname</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>
