@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
-import com.example.cooksta_app.network.RetrofitClient
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -35,17 +34,21 @@ class CreateFragment : Fragment() {
     private var selectedImageUri: Uri? = null
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
+        selectedVideoUri = null
         uri?.let {
             Glide.with(requireActivity()).load(uri).into(binding.imagePreview)
         }
+        Glide.with(requireActivity()).clear(binding.videoPreview)
     }
 
     private var selectedVideoUri: Uri? = null
     private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedVideoUri = uri
+        selectedImageUri = null
         uri?.let {
             Glide.with(requireActivity()).asBitmap().load(uri).into(binding.videoPreview)
         }
+        Glide.with(requireActivity()).clear(binding.imagePreview)
     }
 
     private fun triggerRippleEffect(view: View) {
