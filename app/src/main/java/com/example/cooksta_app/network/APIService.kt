@@ -1,13 +1,15 @@
 package com.example.cooksta_app.network
 
-import com.example.cooksta_app.model.StateResponse
+import com.example.cooksta_app.model.Ingredient
 import com.example.cooksta_app.model.LoginRequest
+import com.example.cooksta_app.model.PartialRecipe
 import com.example.cooksta_app.model.PartialUser
-import com.example.cooksta_app.model.TokenResponse
-import com.example.cooksta_app.model.User
 import com.example.cooksta_app.model.Recipe
 import com.example.cooksta_app.model.RefreshTokenRequest
-import com.example.cooksta_app.model.ShoppingListResponse
+import com.example.cooksta_app.model.ShoppingListItem
+import com.example.cooksta_app.model.ShoppingListItemBody
+import com.example.cooksta_app.model.TokenResponse
+import com.example.cooksta_app.model.User
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -31,37 +33,45 @@ interface APIService {
     @POST("/refresh")
     suspend fun refresh(@Body request: RefreshTokenRequest): Response<TokenResponse>
 
-    @GET("users/{userId}/shopping-list")
-    suspend fun getShoppingList(@Path("userId") userId: String): Response<ShoppingListResponse>
+    @Multipart
+    @PUT("users/me/avatar")
+    suspend fun putAvatar(@Part avatar: MultipartBody.Part): Response<Void>
+
+    @GET("users/me/shopping-list")
+    suspend fun getShoppingList(): Response<List<ShoppingListItem>>
+    @POST("users/me/shopping-list/items")
+    suspend fun postShoppingListItem(@Body item: ShoppingListItemBody): Response<List<ShoppingListItem>>
+    @DELETE("users/me/shopping-list/items/{recipeId}")
+    suspend fun deleteShoppingListItem(@Path("recipeId") recipeId: String): Response<List<ShoppingListItem>>
+    @DELETE("users/me/shopping-list")
+    suspend fun deleteShoppingList(): Response<Void>
+    @GET("users/me/shopping-list/ingredients")
+    suspend fun getShoppingListIngredients(): Response<List<Ingredient>>
+
     @GET("users/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<User>
     @PATCH("users/{userId}")
     suspend fun patchUser(@Path("userId") userId: String, @Body user: PartialUser): Response<User>
     @GET("users/{userId}/recipes")
     suspend fun getUserRecipes(@Path("userId") userId: String): Response<List<Recipe>>
-    @Multipart
-    @PUT("users/{userId}/avatar")
-    suspend fun putAvatar(@Path("userId") userId: String, @Part avatar: MultipartBody.Part): Response<Void>
 
-    @GET("recipes/{recipeId}")
-    suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>
+    @GET("recipes/search")
+    suspend fun searchRecipes(@Query("q") query: String, @Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
     @Streaming
     @GET("recipes/{recipeId}/media")
     suspend fun getRecipeMedia(@Path("recipeId") recipeId: String): Response<ResponseBody>
+    @Multipart
+    @PUT("recipes/{recipeId}/media")
+    suspend fun putRecipeMedia(@Path("recipeId") recipeId: String, @Part media: MultipartBody.Part): Response<Void>
     @GET("recipes/feed")
     suspend fun getRecipeFeed(@Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
-    @GET("recipes/search")
-    suspend fun searchRecipes(@Query("q") query: String, @Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
 
     @POST("recipes")
-    suspend fun postRecipe(): Response<Recipe>
-
-    @POST("recipes/{recipeId}/like")
-    suspend fun postRecipeLike(@Path("recipeId") recipeId: String): Response<StateResponse>
-    @DELETE("recipes/{recipeId}/like")
-    suspend fun deleteRecipeLike(@Path("recipeId") recipeId: String): Response<StateResponse>
-    @POST("recipes/{recipeId}/save")
-    suspend fun postRecipeSave(@Path("recipeId") recipeId: String): Response<StateResponse>
-    @DELETE("recipes/{recipeId}/save")
-    suspend fun deleteRecipeSave(@Path("recipeId") recipeId: String): Response<StateResponse>
+    suspend fun postRecipe(@Body recipe: Recipe): Response<Recipe>
+    @GET("recipes/{recipeId}")
+    suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>
+    @PATCH("recipes/{recipeId}")
+    suspend fun patchRecipe(@Path("recipeId") recipeId: String, @Body recipe: PartialRecipe): Response<Recipe>
+    @DELETE("recipes/{recipeId}")
+    suspend fun deleteRecipe(@Path("recipeId") recipeId: String): Response<Void>
 }

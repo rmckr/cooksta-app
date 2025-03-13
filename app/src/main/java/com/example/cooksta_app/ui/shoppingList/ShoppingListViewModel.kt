@@ -3,8 +3,8 @@ package com.example.cooksta_app.ui.shoppingList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cooksta_app.model.Ingredient
-import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.model.ShoppingListItem
+import com.example.cooksta_app.model.ShoppingListItemBody
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,40 +17,50 @@ class ShoppingListViewModel : ViewModel() {
     private val _ingredients = MutableStateFlow<List<Ingredient>?>(null)
     val ingredients: StateFlow<List<Ingredient>?> get() = _ingredients
 
-    private fun sendUpdateAndReload() {
-        viewModelScope.launch {
-            val patchResponse = RetrofitClient.apiService.patchUser("me", PartialUser(
-                shoppingList = recipes.value?.associate { recipe -> recipe.id to recipe.portions }
-            ))
-            if (patchResponse.isSuccessful) {
-                loadShoppingList()
-            }
-        }
-    }
+    // TODO: Toasts for request errors
 
     fun loadShoppingList() {
         viewModelScope.launch {
-            val shoppingListResponse = RetrofitClient.apiService.getShoppingList("me")
+            val shoppingListResponse = RetrofitClient.apiService.getShoppingList()
             if (shoppingListResponse.isSuccessful) {
-                _recipes.value = shoppingListResponse.body()?.shoppingList ?: emptyList()
-                _ingredients.value = shoppingListResponse.body()?.ingredients ?: emptyList()
+                _recipes.value = shoppingListResponse.body() ?: emptyList()
+            }
+        }
+    }
+    fun loadIngredients() {
+        viewModelScope.launch {
+            val ingredientsResponse = RetrofitClient.apiService.getShoppingListIngredients()
+            if (ingredientsResponse.isSuccessful) {
+                _ingredients.value = ingredientsResponse.body() ?: emptyList()
             }
         }
     }
 
     fun clear() {
-        _recipes.value = emptyList()
-        _ingredients.value = emptyList()
-        sendUpdateAndReload()
-    }
-    fun removeRecipe(id: String) {
-        _recipes.value = _recipes.value?.filter { it.id != id }
-        sendUpdateAndReload()
-    }
-    fun setRecipePortions(id: String, portions: Int) {
-        _recipes.value = _recipes.value?.map {
-            if (it.id == id) it.copy(portions = portions.coerceAtLeast(1).coerceAtMost(999)) else it
+        viewModelScope.launch {
+            val deleteResponse = RetrofitClient.apiService.deleteShoppingList()
+            if (deleteResponse.isSuccessful) {
+                _recipes.value = emptyList()
+                _ingredients.value = emptyList()
+            }
         }
-        sendUpdateAndReload()
+    }
+
+    fun removeRecipe(recipeId: String) {
+        viewModelScope.launch {
+            val deleteResponse = RetrofitClient.apiService.deleteShoppingListItem(recipeId)
+            if (deleteResponse.isSuccessful) {
+                _recipes.value = deleteResponse.body() ?: emptyList()
+            }
+        }
+    }
+
+    fun setRecipePortions(recipeId: String, portions: Int) {
+        viewModelScope.launch {
+            val postResponse = RetrofitClient.apiService.postShoppingListItem(ShoppingListItemBody(recipeId, portions))
+            if (postResponse.isSuccessful) {
+                _recipes.value = postResponse.body() ?: emptyList()
+            }
+        }
     }
 }

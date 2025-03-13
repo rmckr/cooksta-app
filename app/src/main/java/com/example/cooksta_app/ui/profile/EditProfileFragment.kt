@@ -17,7 +17,6 @@ import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentEditProfileBinding
 import com.example.cooksta_app.model.PartialUser
-import com.example.cooksta_app.model.User
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -62,7 +61,7 @@ class EditProfileFragment : Fragment() {
                     bytes.toRequestBody("image/*".toMediaTypeOrNull(), 0, bytes.size)
                 }
                 val part = MultipartBody.Part.createFormData("avatar", "avatar", requestBody)
-                uploadResponse = RetrofitClient.apiService.putAvatar("me", part)
+                uploadResponse = RetrofitClient.apiService.putAvatar(part)
             }
 
             if (patchResponse.isSuccessful && uploadResponse?.isSuccessful == true) {
@@ -87,7 +86,7 @@ class EditProfileFragment : Fragment() {
             viewModel.user.collect { user ->
                 binding.editUsernameInput.setText(user?.username)
                 binding.editBiographyInput.setText(user?.biography)
-                binding.editPasswordInput.setText("........")
+                binding.editPasswordInput.setText(if (user != null) "........" else null)
 
                 if (user !== null) {
                     val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"

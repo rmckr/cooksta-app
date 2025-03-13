@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class IngredientsListFragment : RecyclerViewFragment<IngredientsListFragment.IngredientsAdapter>() {
 
-    private val ingredients = MutableStateFlow<List<Ingredient>>(emptyList())
+    private val ingredients = MutableStateFlow<List<Ingredient>?>(null)
 
     private val hideCheckboxes: Boolean by lazy {
         arguments?.getBoolean(ARG_HIDE_CHECKBOXES) ?: false
@@ -49,7 +49,7 @@ class IngredientsListFragment : RecyclerViewFragment<IngredientsListFragment.Ing
         }
     }
 
-    fun submitIngredients(ingredients: List<Ingredient>) {
+    fun submitIngredients(ingredients: List<Ingredient>?) {
         this.ingredients.value = ingredients
     }
 

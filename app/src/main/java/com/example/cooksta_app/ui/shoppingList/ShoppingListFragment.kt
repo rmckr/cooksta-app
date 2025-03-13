@@ -1,7 +1,6 @@
 package com.example.cooksta_app.ui.shoppingList
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import com.example.cooksta_app.databinding.FragmentShoppingListBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -36,9 +36,11 @@ class ShoppingListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.loadShoppingList()
+        viewModel.loadIngredients()
         lifecycleScope.launch {
-            viewModel.recipes.collect {
-                Log.d("TEST", "onViewCreated: collected: $it")
+            combine(viewModel.recipes, viewModel.ingredients) { recipes, ingredients ->
+                listOf(recipes, ingredients)
+            }.collect {
                 handleVisibility()
             }
         }
@@ -60,7 +62,6 @@ class ShoppingListFragment : Fragment() {
             }
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 viewModel.clear()
-                handleVisibility()
             }
 
         binding.floatingActionButton.setOnClickListener {
@@ -69,14 +70,13 @@ class ShoppingListFragment : Fragment() {
     }
 
     private fun handleVisibility() {
-        Log.d("TEST", "handleVisibility: ${viewModel.recipes.value} ${viewModel.ingredients.value}")
-        if (viewModel.recipes.value == null && viewModel.ingredients.value == null) {
+        if (viewModel.recipes.value == null || viewModel.ingredients.value == null) {
             binding.loadingSpinnerLayout.visibility = View.VISIBLE
             binding.emptyLayout.visibility = View.GONE
             binding.viewPager.visibility = View.GONE
             binding.floatingActionButton.visibility = View.GONE
             binding.shoppingListAppBarLayout.setExpanded(true, true)
-        } else if (viewModel.recipes.value!!.isEmpty() && viewModel.ingredients.value!!.isEmpty()) {
+        } else if (viewModel.recipes.value!!.isEmpty() || viewModel.ingredients.value!!.isEmpty()) {
             binding.loadingSpinnerLayout.visibility = View.GONE
             binding.emptyLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
@@ -116,10 +116,8 @@ class ShoppingListFragment : Fragment() {
         val ingredientsListFragment = IngredientsListFragment()
 
         lifecycleScope.launch {
-            viewModel.ingredients.collect { ingredients ->
-                if (ingredients != null) {
-                    ingredientsListFragment.submitIngredients(ingredients)
-                }
+            viewModel.ingredients.collect {
+                ingredientsListFragment.submitIngredients(it)
             }
         }
 

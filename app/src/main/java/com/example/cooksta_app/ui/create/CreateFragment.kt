@@ -227,7 +227,7 @@ class CreateFragment : Fragment() {
         binding.recipeSaveButton.setOnClickListener {
             lifecycleScope.launch {
                 if (validateInputs()) {
-                    RetrofitClient.apiService.postRecipe()
+//                    RetrofitClient.apiService.postRecipe()
                     findNavController().navigate(R.id.navigation_profile)
                 }
             }

@@ -21,19 +21,19 @@ data class StateResponse(
     val state: Boolean
 )
 
+data class ShoppingListItemBody(
+    val id: String,
+    val portions: Int
+)
 data class ShoppingListItem(
     val id: String,
     val title: String,
     val portions: Int
 )
+
 @Parcelize
 data class Ingredient(
     val name: String,
     val amount: Number?,
     var isChecked: Boolean = false
 ) : Parcelable
-
-data class ShoppingListResponse(
-    val shoppingList: List<ShoppingListItem>,
-    val ingredients: List<Ingredient>
-)

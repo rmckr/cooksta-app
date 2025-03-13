@@ -16,6 +16,17 @@ data class Recipe(
     val isPrivate: Boolean
 ) : Parcelable
 
+data class PartialRecipe(
+    val id: String?,
+    val creatorId: String?,
+    val title: String?,
+    val description: String?,
+    val ingredients: Map<String, Number?>?,
+    val portions: Int?,
+    val categories: List<Category>?,
+    val isPrivate: Boolean?
+)
+
 enum class Category {
     @SerializedName("asian") ASIAN,
     @SerializedName("baking") BAKING,
