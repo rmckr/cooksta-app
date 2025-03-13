@@ -3,10 +3,8 @@ package com.example.cooksta_app.ui.shared.feed
 import android.animation.ArgbEvaluator
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.SurfaceTexture
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -70,6 +68,10 @@ class FeedPostFragment : Fragment() {
         MediaCacheManager(requireActivity())
     }
     private var exoPlayer: ExoPlayer? = null
+
+    private val bottomSheetBehavior by lazy {
+        BottomSheetBehavior.from(binding.bottomSheet)
+    }
 
     private fun loadImage(file: File) {
         binding.postPlayerView.visibility = View.GONE
@@ -174,9 +176,8 @@ class FeedPostFragment : Fragment() {
         }
         binding.bottomSheetLayout.setBackgroundColor(Color.BLACK)
         binding.bottomSheetLayout.background.alpha = (minBottomSheetAlpha * 255).toInt()
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
+
         bottomSheetBehavior.addBottomSheetCallback(BottomSheetTouchBehavior())
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         class FragmentAdapter(private val fragments: List<Fragment>) :
             FragmentStateAdapter(this@FeedPostFragment) {
@@ -286,6 +287,7 @@ class FeedPostFragment : Fragment() {
                 .setView(dialogBinding.root)
                 .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(getString(R.string.add)) { _, _ ->
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     fun showErrorToast() {
                         Toast.makeText(requireContext(), getString(R.string.error_add_shoppingList), Toast.LENGTH_LONG).show()
                     }

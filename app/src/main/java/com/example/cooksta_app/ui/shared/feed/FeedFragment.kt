@@ -12,7 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentFeedBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class FeedFragment : Fragment() {
 
@@ -67,6 +69,7 @@ class FeedFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 activity?.finish()
             }
+            requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).menu.findItem(R.id.navigation_home).isChecked = true
         } else {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().popBackStack()
