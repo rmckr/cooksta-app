@@ -70,7 +70,7 @@ class FeedPostFragment : Fragment() {
     private var exoPlayer: ExoPlayer? = null
 
     private fun loadImage(file: File) {
-        binding.postVideoTexture.visibility = View.GONE
+        binding.postPlayerView.visibility = View.GONE
         binding.postImage.visibility = View.VISIBLE
         binding.postImageBackdrop.visibility = View.VISIBLE
 
@@ -90,7 +90,7 @@ class FeedPostFragment : Fragment() {
     }
 
     private fun loadVideo(file: File) {
-        binding.postVideoTexture.visibility = View.VISIBLE
+        binding.postPlayerView.visibility = View.VISIBLE
         binding.postImage.visibility = View.GONE
         binding.postImageBackdrop.visibility = View.GONE
 
@@ -100,21 +100,8 @@ class FeedPostFragment : Fragment() {
             prepare()
         }
 
-        binding.postVideoTexture.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-                exoPlayer?.setVideoTextureView(binding.postVideoTexture)
-            }
-
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-                exoPlayer?.setVideoTextureView(null)
-                return true
-            }
-
-            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
-        }
-
-        binding.postVideoTexture.setOnClickListener {
+        binding.postPlayerView.player = exoPlayer
+        binding.postPlayerView.setOnClickListener {
             exoPlayer!!.playWhenReady = !exoPlayer!!.isPlaying
         }
         exoPlayer!!.addListener(object : Player.Listener {

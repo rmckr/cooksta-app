@@ -11,11 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextureView
-            android:id="@+id/postVideoTexture"
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/postPlayerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:resize_mode="fixed_height"
+            app:show_buffering="when_playing"
+            app:use_controller="false" />
 
         <ImageView
             android:id="@+id/postImageBackdrop"
