@@ -89,9 +89,9 @@
         style="@style/Widget.Material3.BottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:maxWidth="999999dp"
         app:behavior_hideable="false"
         app:behavior_peekHeight="80dp"
-        android:maxWidth="999999dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:shapeAppearance="@null">
 
@@ -141,49 +141,63 @@
                     android:layout_marginTop="-48dp"
                     android:alpha="0" />
 
-                <LinearLayout
-                    android:id="@+id/bottomSheetProfile"
+                <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16dp">
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="16dp" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/profileImageViewBottomSheet"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        app:cardCornerRadius="999dp"
-                        app:cardElevation="2dp">
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/bottomSheetProfile"
+                    style="@style/Widget.Material3.CardView.Filled"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    app:cardBackgroundColor="@color/md_theme_secondaryContainer"
+                    app:contentPadding="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/profileImageViewBottomSheet"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            app:cardCornerRadius="999dp"
+                            app:cardElevation="2dp">
+
+                            <ImageView
+                                android:id="@+id/profileImageBottomSheet"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/userImage"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_launcher" />
+                        </androidx.cardview.widget.CardView>
+
+                        <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
+                            android:id="@+id/usernameBottomSheet"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_weight="1"
+                            style="@style/TextAppearance.Material3.TitleSmall"
+                            android:hint="@string/profileName" />
 
                         <ImageView
-                            android:id="@+id/profileImageBottomSheet"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/userImage"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_launcher" />
-                    </androidx.cardview.widget.CardView>
-
-                    <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
-                        android:id="@+id/usernameBottomSheet"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginHorizontal="16dp"
-                        android:layout_weight="1"
-                        style="@style/TextAppearance.Material3.TitleSmall"
-                        android:hint="@string/profileName" />
-
-                    <ImageView
-                        android:id="@+id/imageButtonArrowRight"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_gravity="center"
-                        android:backgroundTint="@android:color/transparent"
-                        android:rotation="90"
-                        android:scaleType="center"
-                        android:src="@drawable/ic_arrow_up" />
-                </LinearLayout>
+                            android:id="@+id/imageButtonArrowRight"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:backgroundTint="@android:color/transparent"
+                            android:rotation="90"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_arrow_up" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"

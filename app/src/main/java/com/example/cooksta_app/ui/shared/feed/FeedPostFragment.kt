@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -69,9 +70,7 @@ class FeedPostFragment : Fragment() {
     }
     private var exoPlayer: ExoPlayer? = null
 
-    private val bottomSheetBehavior by lazy {
-        BottomSheetBehavior.from(binding.bottomSheet)
-    }
+    private var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>? = null
 
     private fun loadImage(file: File) {
         binding.postPlayerView.visibility = View.GONE
@@ -176,8 +175,8 @@ class FeedPostFragment : Fragment() {
         }
         binding.bottomSheetLayout.setBackgroundColor(Color.BLACK)
         binding.bottomSheetLayout.background.alpha = (minBottomSheetAlpha * 255).toInt()
-
-        bottomSheetBehavior.addBottomSheetCallback(BottomSheetTouchBehavior())
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
+        bottomSheetBehavior!!.addBottomSheetCallback(BottomSheetTouchBehavior())
 
         class FragmentAdapter(private val fragments: List<Fragment>) :
             FragmentStateAdapter(this@FeedPostFragment) {
@@ -230,7 +229,7 @@ class FeedPostFragment : Fragment() {
         }
 
         binding.commentButton.setOnCheckedChangeListener { _, _ ->
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
             binding.bottomSheetViewPager.currentItem = binding.bottomSheetViewPager.adapter!!.itemCount - 1
         }
     }
@@ -287,7 +286,7 @@ class FeedPostFragment : Fragment() {
                 .setView(dialogBinding.root)
                 .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setPositiveButton(getString(R.string.add)) { _, _ ->
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
                     fun showErrorToast() {
                         Toast.makeText(requireContext(), getString(R.string.error_add_shoppingList), Toast.LENGTH_LONG).show()
                     }
