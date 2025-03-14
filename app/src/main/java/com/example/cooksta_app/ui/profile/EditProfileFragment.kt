@@ -56,15 +56,16 @@ class EditProfileFragment : Fragment() {
             var uploadResponse: Response<Void>? = null
             if (selectedImageUri !== null) {
                 val inputStream = requireContext().contentResolver.openInputStream(selectedImageUri!!)!!
+                val mimeType = requireContext().contentResolver.getType(selectedImageUri!!) ?: "image/*"
                 val requestBody = inputStream.use { stream ->
                     val bytes = stream.readBytes()
-                    bytes.toRequestBody("image/*".toMediaTypeOrNull(), 0, bytes.size)
+                    bytes.toRequestBody(mimeType.toMediaTypeOrNull(), 0, bytes.size)
                 }
                 val part = MultipartBody.Part.createFormData("avatar", "avatar", requestBody)
                 uploadResponse = RetrofitClient.apiService.putAvatar(part)
             }
 
-            if (patchResponse.isSuccessful && uploadResponse?.isSuccessful == true) {
+            if (patchResponse.isSuccessful && uploadResponse?.isSuccessful != false) {
                 findNavController().popBackStack()
             } else {
                 Toast.makeText(context, "Fehler beim Speichern", Toast.LENGTH_LONG).show()
