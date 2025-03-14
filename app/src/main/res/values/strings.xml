@@ -26,7 +26,7 @@
     <string name="visibility">Sichtbarkeit</string>
     <string name="isPublic">Öffentlich</string>
     <string name="limitCategory">Kategorien (max. 3)</string>
-    <string name="media">Medien (min. 1)</string>
+    <string name="media">Medien (max. 1)</string>
     <string name="choose_image">Bild wählen</string>
     <string name="choose_video">Video wählen</string>
     <string name="save">Speichern</string>
@@ -61,7 +61,7 @@
     <string name="error_title_required">Bitte gib einen Titel ein.</string>
     <string name="error_description_required">Bitte gib eine Beschreibung ein.</string>
     <string name="error_category_required">Bitte wähle mindestens eine Kategorie aus.</string>
-    <string name="error_media_required">Bitte wähle mindestens ein Bild oder Video aus.</string>
+    <string name="error_media_required">Bitte wähle ein Bild oder Video aus.</string>
     <string name="error_ingredients_required">Füge mindestens eine Zutat hinzu!</string>
     <string name="error_indicate_amount">Bitte gib eine Menge an.</string>
     <string name="error_choose_ingredient">Bitte wähle eine Zutat aus.</string>

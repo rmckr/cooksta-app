@@ -2,6 +2,10 @@ package com.example.cooksta_app.ui.create
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,6 +98,7 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
         private val availableIngredients: List<String>,
         private val interactionListener: IngredientSelectionInteractionListener
     ) : ListAdapter<IngredientSelectionItem, Adapter.IngredientViewHolder>(IngredientSelectionDiffCallback()) {
+        private val currentIngredientNames get() = currentList.map { it.name }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): IngredientViewHolder {
             val binding = ItemIngredientSelectionIngredientBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -123,8 +128,6 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
 
         inner class IngredientViewHolder(private val binding: ItemIngredientSelectionIngredientBinding) : RecyclerView.ViewHolder(binding.root) {
 
-            private val currentIngredientNames get() = currentList.map { it.name }
-
             val ingredientNameLayout get() = binding.ingredientNameLayout
 
             fun updateIngredientName(name: String?) {
@@ -134,8 +137,10 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
             }
 
             fun updateIngredientAmount(amount: Double?) {
-                if (binding.ingredientAmount.text.toString() != amount.toString()) {
-                    binding.ingredientAmount.setText(String.format(Locale.getDefault(), "%f", amount))
+                if (amount == null) {
+                    binding.ingredientAmount.text = null
+                } else if (binding.ingredientAmount.text.toString() != amount.toString()) {
+                    binding.ingredientAmount.setText(String.format(Locale.getDefault(), "%.2f", amount))
                 }
             }
 
@@ -154,17 +159,50 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
                     binding.ingredientAmountLayout.suffixText = parsedUnit
                 }
 
-                binding.ingredientName.setOnItemClickListener { _, _, _, _ ->
-                    binding.ingredientAmountLayout.requestFocus()
-                    submitIngredientName()
-                }
-                binding.ingredientName.setOnEditorActionListener { view, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                        view.clearFocus()
-                        submitIngredientName()
+                val handler = Handler(Looper.getMainLooper())
+                var workRunnableName: Runnable? = null
+                var workRunnableAmount: Runnable? = null
+
+                binding.ingredientName.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        workRunnableName?.let { handler.removeCallbacks(it) }
+                        workRunnableName = Runnable {
+                            val name = s.toString().trim()
+                            if (name.isNotEmpty()) {
+                                submitIngredientName()
+
+                                if (!binding.ingredientAmount.text.isNullOrEmpty()) {
+                                    binding.ingredientAmount.requestFocus()
+                                }
+                            }
+                        }
+                        handler.postDelayed(workRunnableName!!, 1500)
                     }
-                    false
-                }
+
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                })
+
+                binding.ingredientAmount.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        workRunnableAmount?.let { handler.removeCallbacks(it) }
+                        workRunnableAmount = Runnable {
+                            val amount = s.toString().trim().toDoubleOrNull()
+                            if (amount != null) {
+                                submitIngredientAmount()
+
+                                binding.ingredientAmount.clearFocus()
+
+                                val imm = binding.root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                imm.hideSoftInputFromWindow(binding.ingredientAmount.windowToken, 0)
+                            }
+                        }
+                        handler.postDelayed(workRunnableAmount!!, 1500)
+                    }
+
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                })
 
                 binding.ingredientAmount.setOnEditorActionListener { view, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -205,10 +243,6 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
                     binding.ingredientNameLayout.error = "Format: \"Zutat (Einheit)\""
                     return
                 }
-                if (currentIngredientNames.contains(name)) {
-                    binding.ingredientNameLayout.error = "Zutat bereits vorhanden"
-                    return
-                }
 
                 interactionListener.onIngredientChanged(adapterPosition, name, null)
                 updateIngredientName(name)
@@ -237,12 +271,12 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
             return oldItem.name == newItem.name && oldItem.amount == newItem.amount
         }
 
-        override fun getChangePayload(oldItem: IngredientSelectionItem, newItem: IngredientSelectionItem): Any? {
-            val payloads = mutableListOf<Payload.IngredientChangePayload>()
-            if (oldItem.name != newItem.name) payloads.add(Payload.IngredientChangePayload("name"))
-            if (oldItem.amount != newItem.amount) payloads.add(Payload.IngredientChangePayload("amount"))
-            return payloads.ifEmpty { null }
-        }
+//        override fun getChangePayload(oldItem: IngredientSelectionItem, newItem: IngredientSelectionItem): Any? {
+//            val payloads = mutableListOf<Payload.IngredientChangePayload>()
+//            if (oldItem.name != newItem.name) payloads.add(Payload.IngredientChangePayload("name"))
+//            if (oldItem.amount != newItem.amount) payloads.add(Payload.IngredientChangePayload("amount"))
+//            return payloads.ifEmpty { null }
+//        }
     }
 }
 

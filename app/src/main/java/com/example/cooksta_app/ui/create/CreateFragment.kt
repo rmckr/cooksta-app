@@ -126,6 +126,7 @@ class CreateFragment : Fragment() {
             with(ingredientSelectionListFragment) {
                 var firstInvalidTextLayout: View? = null
                 var hasNullIngredient = false
+                val ingredientNames = mutableSetOf<String>()
 
                 for (i in 0 until adapter.itemCount) {
                     val ingredient = adapter.currentList[i]
@@ -134,10 +135,13 @@ class CreateFragment : Fragment() {
                     val amount = ingredient.amount
 
                     val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? IngredientSelectionListFragment.Adapter.IngredientViewHolder
-
                     if (name.isNullOrBlank()) {
                         isValid = false
                         viewHolder?.ingredientNameLayout?.error = getString(R.string.error_choose_ingredient)
+                        if (firstInvalidTextLayout === null) firstInvalidTextLayout = viewHolder?.ingredientNameLayout
+                    } else if (!ingredientNames.add(name)) {
+                        isValid = false
+                        viewHolder?.ingredientNameLayout?.error = getString(R.string.error_ingredients)
                         if (firstInvalidTextLayout === null) firstInvalidTextLayout = viewHolder?.ingredientNameLayout
                     } else {
                         viewHolder?.ingredientNameLayout?.error = null
