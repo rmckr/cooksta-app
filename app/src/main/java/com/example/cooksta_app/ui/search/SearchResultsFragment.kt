@@ -105,7 +105,7 @@ class SearchResultsFragment : RecyclerViewFragment<SearchResultsFragment.Adapter
                         R.id.action_navigation_search_to_navigation_feed,
                         Bundle().apply {
                             putStringArray(FeedFragment.ARG_RECIPE_IDS, recipes.map { it.id }.toTypedArray())
-                            putInt(FeedFragment.ARG_POSITION, adapterPosition)
+                            putInt(FeedFragment.ARG_POSITION, bindingAdapterPosition)
                         }
                     )
                 }

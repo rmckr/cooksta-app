@@ -84,6 +84,7 @@
     <string name="no_description">No description available</string>
     <string name="error_add_shoppingList">Fehler beim Hinzufügen des Rezepts</string>
     <string name="profileName">Profilname</string>
+    <string name="back">Zurück</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>

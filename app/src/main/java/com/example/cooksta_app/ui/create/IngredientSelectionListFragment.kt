@@ -221,7 +221,7 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
                 }
 
                 binding.ingredientDeleteButton.setOnClickListener {
-                    interactionListener.onIngredientDeleted(adapterPosition, false)
+                    interactionListener.onIngredientDeleted(bindingAdapterPosition, false)
                 }
             }
 
@@ -244,7 +244,7 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
                     return
                 }
 
-                interactionListener.onIngredientChanged(adapterPosition, name, null)
+                interactionListener.onIngredientChanged(bindingAdapterPosition, name, null)
                 updateIngredientName(name)
             }
 
@@ -252,11 +252,11 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
                 val amount = binding.ingredientAmount.text.toString().toDoubleOrNull()
 
                 if (amount == 0.0) {
-                    interactionListener.onIngredientDeleted(adapterPosition, true)
+                    interactionListener.onIngredientDeleted(bindingAdapterPosition, true)
                     return
                 }
 
-                interactionListener.onIngredientChanged(adapterPosition, null, amount)
+                interactionListener.onIngredientChanged(bindingAdapterPosition, null, amount)
                 updateIngredientAmount(amount)
             }
         }

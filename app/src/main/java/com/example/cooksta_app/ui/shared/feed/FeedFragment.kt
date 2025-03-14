@@ -74,8 +74,8 @@ class FeedFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().popBackStack()
             }
-            binding.feedAppBarLayout.visibility = View.VISIBLE
-            binding.feedAppBar.setNavigationOnClickListener {
+            binding.feedBackButton.visibility = View.VISIBLE
+            binding.feedBackButton.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
