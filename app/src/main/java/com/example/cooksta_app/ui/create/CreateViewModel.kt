@@ -22,7 +22,7 @@ class CreateViewModel : ViewModel() {
     fun createIngredient() {
         _ingredientSelection.value = _ingredientSelection.value.toMutableList().apply {
             add(IngredientSelectionItem(id = UUID.randomUUID().toString(), name = null, amount = null))
-        }
+        }.toList()
     }
     fun updateIngredient(position: Int, name: String? = null, amount: Double? = null) {
         _ingredientSelection.value = _ingredientSelection.value.mapIndexed { index, item ->
@@ -32,9 +32,7 @@ class CreateViewModel : ViewModel() {
         }
     }
     fun deleteIngredient(position: Int) {
-        _ingredientSelection.value = _ingredientSelection.value.toMutableList().apply {
-            removeAt(position)
-        }
+        _ingredientSelection.value = _ingredientSelection.value.filterIndexed { index, _ -> index != position }
     }
     fun clearIngredients() {
         _ingredientSelection.value = emptyList()
