@@ -23,6 +23,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import android.animation.ObjectAnimator
 
 class EditProfileFragment : Fragment() {
 
@@ -38,6 +39,43 @@ class EditProfileFragment : Fragment() {
         uri?.let {
             Glide.with(requireActivity()).load(uri).into(binding.editProfileImage)
             selectedImageUri = uri
+        }
+    }
+
+    private fun triggerRippleEffect(view: View) {
+        view.isPressed = true
+        view.invalidate()
+        view.postDelayed({
+            view.isPressed = false
+            view.invalidate()
+        }, 300)
+    }
+
+    private fun shakeView(view: View) {
+        ObjectAnimator.ofFloat(view, "translationX", 0f, 10f, -10f, 5f, -5f, 0f).apply {
+            duration = 300
+            start()
+        }
+    }
+
+    private fun validatePasswords(): Boolean {
+        val password = binding.editPasswordInput.text.toString().trim()
+        val confirmPassword = binding.editPasswordInputCheck.text.toString().trim()
+
+        return if (password.isNotEmpty() && password == confirmPassword) {
+            binding.editPasswordLayout.error = null
+            binding.editPasswordCheckLayout.error = null
+            true
+        } else {
+            binding.editPasswordLayout.error = getString(R.string.error_password_mismatch)
+            binding.editPasswordCheckLayout.error = getString(R.string.error_password_mismatch)
+
+            shakeView(binding.editPasswordInput)
+            shakeView(binding.editPasswordInputCheck)
+            triggerRippleEffect(binding.editPasswordInput)
+            triggerRippleEffect(binding.editPasswordInputCheck)
+
+            false
         }
     }
 
@@ -68,7 +106,7 @@ class EditProfileFragment : Fragment() {
             if (patchResponse.isSuccessful && uploadResponse?.isSuccessful != false) {
                 findNavController().popBackStack()
             } else {
-                Toast.makeText(context, "Fehler beim Speichern", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getString(R.string.error_save), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -116,8 +154,30 @@ class EditProfileFragment : Fragment() {
             }
         }
         binding.saveProfileButton.setOnClickListener {
-            saveProfileData()
+            if (validatePasswords()) {
+                saveProfileData()
+            }
         }
+
+        binding.editPasswordInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                binding.editPasswordLayout.error = null
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.editPasswordInputCheck.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                binding.editPasswordCheckLayout.error = null
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
     }
 
     override fun onDestroyView() {

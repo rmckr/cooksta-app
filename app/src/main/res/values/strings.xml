@@ -66,6 +66,8 @@
     <string name="error_indicate_amount">Bitte gib eine Menge an.</string>
     <string name="error_choose_ingredient">Bitte wähle eine Zutat aus.</string>
     <string name="error_ingredients">Zutat bereits vorhanden</string>
+    <string name="error_password_mismatch">Passwörter stimmen nicht überein</string>
+    <string name="error_save">Fehler beim Speichern</string>
     <string name="cancel">Abbrechen</string>
     <string name="add">Hinzufügen</string>
     <string name="ok">OK</string>
