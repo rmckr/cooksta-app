@@ -174,8 +174,8 @@ class RecipeListFragment : RecyclerViewFragment<RecipeListFragment.RecipesAdapte
 
             fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> {
                 return object : ItemDetailsLookup.ItemDetails<String>() {
-                    override fun getPosition(): Int = adapterPosition
-                    override fun getSelectionKey(): String = getItem(adapterPosition).id
+                    override fun getPosition(): Int = bindingAdapterPosition
+                    override fun getSelectionKey(): String = getItem(bindingAdapterPosition).id
                 }
             }
 
