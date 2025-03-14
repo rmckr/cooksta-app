@@ -15,6 +15,7 @@
             android:id="@+id/postPlayerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@android:color/black"
             android:visibility="gone"
             app:resize_mode="fixed_height"
             app:show_buffering="when_playing"
