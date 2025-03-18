@@ -116,9 +116,7 @@ class RecipeListFragment : RecyclerViewFragment<RecipeListFragment.RecipesAdapte
     private fun deleteSelectedItems() {
         val selectedRecipeIds = tracker.selection.toList()
         tracker.clearSelection()
-        selectedRecipeIds.forEach { id ->
-            viewModel.removeRecipe(id)
-        }
+        viewModel.removeMultipleRecipes(selectedRecipeIds)
     }
 
     override fun onSetPortions(id: String, portions: Int) {

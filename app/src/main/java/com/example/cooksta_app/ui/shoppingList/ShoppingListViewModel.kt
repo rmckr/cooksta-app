@@ -55,6 +55,17 @@ class ShoppingListViewModel : ViewModel() {
         }
     }
 
+    fun removeMultipleRecipes(recipeIds: List<String>) {
+        viewModelScope.launch {
+            recipeIds.forEach { recipeId ->
+                val deleteResponse = RetrofitClient.apiService.deleteShoppingListItem(recipeId)
+                if (deleteResponse.isSuccessful) {
+                    _recipes.value = deleteResponse.body() ?: emptyList()
+                }
+            }
+        }
+    }
+
     fun setRecipePortions(recipeId: String, portions: Int) {
         viewModelScope.launch {
             val postResponse = RetrofitClient.apiService.postShoppingListItem(ShoppingListItemBody(recipeId, portions))
