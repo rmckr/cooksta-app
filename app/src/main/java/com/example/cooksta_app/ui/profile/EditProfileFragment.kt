@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.cooksta_app.BuildConfig
@@ -80,16 +81,21 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun saveProfileData() {
-        val username = binding.editUsernameInput.text.toString()
-        val biography = binding.editBiographyInput.text.toString()
-        val password = binding.editPasswordInput.text.toString()
+        val originalDrawable = binding.saveProfileButton.icon
+        binding.saveProfileButton.icon = CircularProgressDrawable(requireContext()).apply {
+            strokeWidth = 4f
+            start()
+        }
+        val username = binding.editUsernameInput.text?.toString()
+        val biography = binding.editBiographyInput.text?.toString()
+        val password = binding.editPasswordInput.text?.toString()
 
         lifecycleScope.launch {
             val patchResponse = RetrofitClient.apiService.patchUser("me", PartialUser(
                 username = username,
                 biography = biography,
-                password = if (password != "........") password else null)
-            )
+                password = password
+            ))
 
             var uploadResponse: Response<Void>? = null
             if (selectedImageUri !== null) {
@@ -108,6 +114,7 @@ class EditProfileFragment : Fragment() {
             } else {
                 Toast.makeText(context, getString(R.string.error_save), Toast.LENGTH_LONG).show()
             }
+            binding.saveProfileButton.icon = originalDrawable
         }
     }
 
@@ -125,7 +132,6 @@ class EditProfileFragment : Fragment() {
             viewModel.user.collect { user ->
                 binding.editUsernameInput.setText(user?.username)
                 binding.editBiographyInput.setText(user?.biography)
-                binding.editPasswordInput.setText(if (user != null) "........" else null)
 
                 if (user !== null) {
                     val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
