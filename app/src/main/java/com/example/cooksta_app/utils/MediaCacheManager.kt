@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.util.Log
+import androidx.core.graphics.scale
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,6 +19,7 @@ class MediaCacheManager(private val context: Context) {
 
     private val supportedTypes = mapOf(
         "image/png" to "png",
+        "image/jpeg" to "jpg",
         "video/mp4" to "mp4"
     )
 
@@ -85,15 +86,15 @@ class MediaCacheManager(private val context: Context) {
     }
 
     private fun createThumbnailFromBitmap(bitmap: Bitmap): Bitmap {
-        val size = 128
         with(bitmap) {
-            val scale = if (height > width) size.toFloat() / width else size.toFloat() / height
-            val scaledWidth = (width * scale).toInt()
-            val scaledHeight = (height * scale).toInt()
-            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+            val size = 128
+            val scale = maxOf(size.toFloat() / width, size.toFloat() / height)
+            val scaledWidth = ((width * scale).toInt()).coerceAtLeast(size)
+            val scaledHeight = ((height * scale).toInt()).coerceAtLeast(size)
+            val scaledBitmap = bitmap.scale(scaledWidth, scaledHeight)
 
-            val x = (scaledWidth - size) / 2
-            val y = (scaledHeight - size) / 2
+            val x = ((scaledWidth - size) / 2).coerceAtLeast(0)
+            val y = ((scaledHeight - size) / 2).coerceAtLeast(0)
             return Bitmap.createBitmap(scaledBitmap, x, y, size, size)
         }
     }

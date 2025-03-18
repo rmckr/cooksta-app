@@ -129,6 +129,7 @@ class FeedPostFragment : Fragment() {
             }
             when (file.extension) {
                 "png" -> loadImage(file)
+                "jpg" -> loadImage(file)
                 "mp4" -> loadVideo(file)
                 else -> Toast.makeText(requireContext(), getString(R.string.toast_unsupported_media), Toast.LENGTH_SHORT).show()
             }
