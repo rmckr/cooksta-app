@@ -46,8 +46,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/usernameHint"
-        >
+            android:hint="@string/usernameHint">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextUsername"
                 android:layout_width="match_parent"
@@ -59,7 +59,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/passwordHint"
-        >
+            app:endIconMode="password_toggle"
+            app:endIconCheckable="false">
+            
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
