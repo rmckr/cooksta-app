@@ -71,6 +71,43 @@ class FeedPostFragment : Fragment() {
     private var exoPlayer: ExoPlayer? = null
 
     private var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>? = null
+    private val bottomSheetCallback: BottomSheetTouchBehavior by lazy {
+        BottomSheetTouchBehavior()
+    }
+
+    inner class BottomSheetTouchBehavior(private val minAlpha: Float = 0.25f) : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            when (newState) {
+                BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_EXPANDED -> {
+                    (requireParentFragment() as FeedFragment).setViewPagerInput(false)
+                }
+
+                else -> {
+                    (requireParentFragment() as FeedFragment).setViewPagerInput(true)
+                }
+            }
+        }
+
+        private val evaluator = ArgbEvaluator()
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            val interpolatedBackground = evaluator.evaluate(
+                slideOffset.coerceIn(0f, 1f),
+                Color.BLACK,
+                ContextCompat.getColor(requireContext(), R.color.md_theme_surface)
+            ) as Int
+            binding.bottomSheetLayout.setBackgroundColor(interpolatedBackground)
+            binding.bottomSheetLayout.background.alpha =
+                (slideOffset.coerceIn(minAlpha, 1f) * 255).toInt()
+            val interpolatedColor = evaluator.evaluate(
+                slideOffset.coerceIn(0f, 1f),
+                Color.WHITE,
+                ContextCompat.getColor(requireContext(), R.color.md_theme_onSurface)
+            ) as Int
+            binding.bottomSheetTitle.setTextColor(interpolatedColor)
+            binding.bottomSheetArrow.imageTintList = ColorStateList.valueOf(interpolatedColor)
+            binding.bottomSheetArrow.rotation = slideOffset * 180f
+        }
+    }
 
     private fun loadImage(file: File) {
         binding.postPlayerView.visibility = View.GONE
@@ -141,43 +178,10 @@ class FeedPostFragment : Fragment() {
 
         val minBottomSheetAlpha = 0.25f
 
-        class BottomSheetTouchBehavior : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_DRAGGING, BottomSheetBehavior.STATE_EXPANDED -> {
-                        (requireParentFragment() as FeedFragment).setViewPagerInput(false)
-                    }
-
-                    else -> {
-                        (requireParentFragment() as FeedFragment).setViewPagerInput(true)
-                    }
-                }
-            }
-
-            val evaluator = ArgbEvaluator()
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                val interpolatedBackground = evaluator.evaluate(
-                    slideOffset.coerceIn(0f, 1f),
-                    Color.BLACK,
-                    ContextCompat.getColor(requireContext(), R.color.md_theme_surface)
-                ) as Int
-                binding.bottomSheetLayout.setBackgroundColor(interpolatedBackground)
-                binding.bottomSheetLayout.background.alpha =
-                    (slideOffset.coerceIn(minBottomSheetAlpha, 1f) * 255).toInt()
-                val interpolatedColor = evaluator.evaluate(
-                    slideOffset.coerceIn(0f, 1f),
-                    Color.WHITE,
-                    ContextCompat.getColor(requireContext(), R.color.md_theme_onSurface)
-                ) as Int
-                binding.bottomSheetTitle.setTextColor(interpolatedColor)
-                binding.bottomSheetArrow.imageTintList = ColorStateList.valueOf(interpolatedColor)
-                binding.bottomSheetArrow.rotation = slideOffset * 180f
-            }
-        }
         binding.bottomSheetLayout.setBackgroundColor(Color.BLACK)
         binding.bottomSheetLayout.background.alpha = (minBottomSheetAlpha * 255).toInt()
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
-        bottomSheetBehavior!!.addBottomSheetCallback(BottomSheetTouchBehavior())
+        bottomSheetBehavior!!.addBottomSheetCallback(bottomSheetCallback)
 
         class FragmentAdapter(private val fragments: List<Fragment>) :
             FragmentStateAdapter(this@FeedPostFragment) {
@@ -328,6 +332,7 @@ class FeedPostFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        bottomSheetBehavior?.removeBottomSheetCallback(bottomSheetCallback)
         exoPlayer?.release()
         exoPlayer = null
         _binding = null
