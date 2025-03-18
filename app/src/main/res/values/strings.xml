@@ -48,6 +48,7 @@
     <string name="logout">Abmelden</string>
     <string name="login">Anmelden</string>
     <string name="passwordHint">Passwort</string>
+    <string name="passwordRepeatHint">Passwort wiederholen</string>
     <string name="usernameHint">Benutzername</string>
     <string name="biography">Biographie</string>
     <string name="register">Registrieren</string>
