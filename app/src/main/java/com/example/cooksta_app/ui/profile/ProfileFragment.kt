@@ -22,6 +22,7 @@ import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentProfileBinding
 import com.example.cooksta_app.network.RetrofitClient
 import com.example.cooksta_app.ui.shared.LoadingFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -36,11 +37,16 @@ class ProfileFragment : Fragment() {
     }
 
     private val userId: String by lazy {
-        arguments?.getString(ARG_USER_ID) ?: throw IllegalStateException("$ARG_USER_ID argument is missing")
+        arguments?.getString(ARG_USER_ID) ?: "me"
+    }
+
+    private val recipeId: String? by lazy {
+        arguments?.getString(ARG_RECIPE_ID)
     }
 
     companion object {
         const val ARG_USER_ID = "userId"
+        const val ARG_RECIPE_ID = "recipeId"
 
         fun newInstance(userId: String): ProfileFragment {
             val args = Bundle()
@@ -108,14 +114,27 @@ class ProfileFragment : Fragment() {
             combine(viewModel.user, viewModel.userRecipes) { user, userRecipes ->
                 listOf(userRecipes?.map { it.id }, user?.favorites)
             }.collect { recipeLists ->
-                binding.profileViewPager.adapter = PagerAdapter(this@ProfileFragment, recipeLists)
-                TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
-                    tab.text = when (position) {
-                        0 -> getString(R.string.own_recipes)
-                        1 -> if (userId == "me") getString(R.string.saved) else null
-                        else -> null
+                if (recipeId != null && recipeLists[0]?.isEmpty() == false) {
+                    val index = recipeLists[0]!!.indexOf(recipeId)
+                    if (index != -1) {
+                        findNavController().navigate(
+                            R.id.navigation_feed,
+                            Bundle().apply {
+                                putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeLists[0]!!.toTypedArray())
+                                putInt(FeedFragment.ARG_POSITION, index)
+                            }
+                        )
                     }
-                }.attach()
+                } else {
+                    binding.profileViewPager.adapter = PagerAdapter(this@ProfileFragment, recipeLists)
+                    TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
+                        tab.text = when (position) {
+                            0 -> getString(R.string.own_recipes)
+                            1 -> if (userId == "me") getString(R.string.saved) else null
+                            else -> null
+                        }
+                    }.attach()
+                }
             }
         }
 

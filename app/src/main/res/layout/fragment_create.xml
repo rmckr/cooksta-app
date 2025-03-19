@@ -167,7 +167,7 @@
                     </FrameLayout>
 
                     <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/materialSwitch"
+                        android:id="@+id/isPublicSwitch"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -199,7 +199,7 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip2"
+                        android:id="@+id/categoryChipAsian"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -208,7 +208,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip9"
+                        android:id="@+id/categoryChipBaking"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -217,7 +217,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip6"
+                        android:id="@+id/categoryChipDessert"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -226,7 +226,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip8"
+                        android:id="@+id/categoryChipDrink"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip3"
+                        android:id="@+id/categoryChipMain"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip1"
+                        android:id="@+id/categoryChipItalian"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                         app:closeIconVisible="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip4"
+                        android:id="@+id/categoryChipQuick"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -262,7 +262,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip7"
+                        android:id="@+id/categoryChipSoup"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                         app:closeIconEnabled="false" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip5"
+                        android:id="@+id/categoryChipVegetarian"
                         style="@style/Widget.Material3.Chip.Input.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -44,7 +44,7 @@ object RetrofitClient {
         }
     }
 
-    val isLoggedIn get() = this.tokenStore.refreshToken?.isNotEmpty() ?: false
+    val isLoggedIn get() = this.tokenStore.refreshToken?.isNotEmpty() == true
 
     suspend fun login(username: String, password: String): Boolean {
         val response = apiService.login(LoginRequest(username, password))

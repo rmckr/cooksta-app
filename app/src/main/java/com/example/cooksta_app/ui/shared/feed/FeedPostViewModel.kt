@@ -22,6 +22,8 @@ class FeedPostViewModel : ViewModel() {
 
     private val _creator = MutableStateFlow<User?>(null)
     val creator: StateFlow<User?> = _creator
+    private val _me = MutableStateFlow<User?>(null)
+    val me: StateFlow<User?> = _me
 
     fun toggleLike() {
         _isLiked.value = !_isLiked.value
@@ -71,6 +73,15 @@ class FeedPostViewModel : ViewModel() {
             val userResponse = RetrofitClient.apiService.getUser(userId)
             if (userResponse.isSuccessful) {
                 _creator.value = userResponse.body()
+            }
+        }
+    }
+
+    fun loadMe() {
+        viewModelScope.launch {
+            val userResponse = RetrofitClient.apiService.getUser("me")
+            if (userResponse.isSuccessful) {
+                _me.value = userResponse.body()
             }
         }
     }

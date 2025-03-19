@@ -75,7 +75,7 @@
     <string name="delete">Ja, löschen</string>
     <string name="no">Nein</string>
     <string name="message_dialog_delete_shoppingList">Die Einkaufsliste löschen bedeutet, dass alle hinugefügten Rezepte gelöscht werden.</string>
-    <string name="title_dialog_delete">Bist du sicher?</string>
+    <string name="title_dialog_delete">Wirklich löschen?</string>
     <string name="message_option_no1">Wenn du die Menge einer Zutat auf "0" setzt, wird sie gelöscht.</string>
     <string name="message_option_no2">Durch das Löschen einer Zutat wird diese aus der Liste entfernt.</string>
     <string name="title_dialog_shoppingList">Rezept hinzufügen?</string>
@@ -88,6 +88,7 @@
     <string name="error_add_shoppingList">Fehler beim Hinzufügen des Rezepts</string>
     <string name="profileName">Profilname</string>
     <string name="back">Zurück</string>
+    <string name="message_dialog_delete">Das Rezept kann nach dem Löschen nicht wiederhergestellt werden!</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>

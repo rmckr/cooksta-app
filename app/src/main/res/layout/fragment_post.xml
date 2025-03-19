@@ -180,12 +180,12 @@
 
                         <com.example.cooksta_app.ui.shared.skeleton.SkeletonTextView
                             android:id="@+id/usernameBottomSheet"
+                            style="@style/TextAppearance.Material3.TitleSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_marginHorizontal="16dp"
                             android:layout_weight="1"
-                            style="@style/TextAppearance.Material3.TitleSmall"
                             android:hint="@string/profileName" />
 
                         <ImageView
@@ -201,6 +201,33 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
+                    android:id="@+id/bottomSheetCreatorButtons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bottomSheetEditButton"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        android:text="Bearbeiten"
+                        app:icon="@drawable/ic_edit" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bottomSheetDeleteButton"
+                        style="@style/Widget.Material3.Button.Icon"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:text="Löschen"
+                        app:icon="@drawable/ic_delete" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -208,38 +235,31 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bottomSheetLikeButton"
-                        style="@style/Widget.Material3.Button.TonalButton.Icon"
-                        android:layout_width="0dp"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="4dp"
-                        android:layout_weight="1"
                         android:checkable="true"
-                        android:text="@string/like"
-                        app:icon="@drawable/ic_heart"
-                        app:iconGravity="textStart" />
+                        app:icon="@drawable/ic_heart" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/bottomSheetSaveButton"
-                        style="@style/Widget.Material3.Button.TonalButton.Icon"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:checkable="true"
+                        app:icon="@drawable/ic_bookmark" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/shoppingListButton"
+                        style="@style/Widget.Material3.Button.Icon"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
                         android:layout_weight="1"
-                        android:checkable="true"
-                        android:text="@string/save"
-                        app:icon="@drawable/ic_bookmark"
+                        android:text="@string/text_add_to_shoppingList"
+                        app:icon="@drawable/ic_cart_add"
                         app:iconGravity="textStart" />
                 </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/shoppingListButton"
-                    style="@style/Widget.Material3.Button.TonalButton.Icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/text_add_to_shoppingList"
-                    app:icon="@drawable/ic_cart_add"
-                    app:iconGravity="textStart" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"

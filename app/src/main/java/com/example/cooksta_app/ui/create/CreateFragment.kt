@@ -6,23 +6,44 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.FragmentCreateBinding
+import com.example.cooksta_app.model.Category
+import com.example.cooksta_app.model.RecipeBody
+import com.example.cooksta_app.network.RetrofitClient
+import com.example.cooksta_app.ui.profile.ProfileFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class CreateFragment : Fragment() {
+
+    private val categoryChipMap = mapOf(
+        R.id.categoryChipAsian to Category.ASIAN,
+        R.id.categoryChipBaking to Category.BAKING,
+        R.id.categoryChipDessert to Category.DESSERT,
+        R.id.categoryChipDrink to Category.DRINK,
+        R.id.categoryChipMain to Category.MAIN,
+        R.id.categoryChipItalian to Category.ITALIAN,
+        R.id.categoryChipQuick to Category.QUICK,
+        R.id.categoryChipSoup to Category.SOUP,
+        R.id.categoryChipVegetarian to Category.VEGETARIAN,
+    )
 
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
@@ -232,11 +253,49 @@ class CreateFragment : Fragment() {
         }
 
         binding.recipeSaveButton.setOnClickListener {
+            val originalDrawable = binding.recipeSaveButton.icon
+            binding.recipeSaveButton.icon = CircularProgressDrawable(requireContext()).apply {
+                strokeWidth = 4f
+                start()
+            }
             lifecycleScope.launch {
                 if (validateInputs()) {
-//                    RetrofitClient.apiService.postRecipe()
-                    findNavController().navigate(R.id.navigation_profile)
+                    val postResponse = RetrofitClient.apiService.postRecipe(
+                        RecipeBody(
+                            title = binding.recipeTitleInput.text.toString(),
+                            description = binding.recipeDescriptionInput.text.toString(),
+                            portions = viewModel.portions.value,
+                            categories = binding.chipGroup.checkedChipIds.mapNotNull { categoryChipMap[it] },
+                            ingredients = viewModel.ingredientSelection.value.associate { it.name!! to it.amount },
+                            isPrivate = !binding.isPublicSwitch.isChecked,
+                        )
+                    )
+                    if (postResponse.isSuccessful && postResponse.body()?.id != null) {
+                        val uri = selectedVideoUri ?: selectedImageUri ?: throw IllegalStateException("No media selected")
+                        val mediaType = if (selectedVideoUri != null) "video" else "image"
+                        val inputStream = requireContext().contentResolver.openInputStream(uri)!!
+                        val mimeType = requireContext().contentResolver.getType(uri) ?: "$mediaType/*"
+                        val requestBody = inputStream.use { stream ->
+                            val bytes = stream.readBytes()
+                            bytes.toRequestBody(mimeType.toMediaTypeOrNull(), 0, bytes.size)
+                        }
+                        val part = MultipartBody.Part.createFormData(mediaType, mediaType, requestBody)
+                        val mediaResponse = RetrofitClient.apiService.putRecipeMedia(postResponse.body()!!.id, part)
+                        if (mediaResponse.isSuccessful) {
+                            findNavController().navigate(
+                                R.id.navigation_profile,
+                                Bundle().apply {
+                                    putString(ProfileFragment.ARG_RECIPE_ID, postResponse.body()!!.id)
+                                }
+                            )
+                        } else {
+                            Toast.makeText(requireContext(), "Fehler beim Hochladen der Datei", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Fehler beim Erstellen des Rezepts", Toast.LENGTH_LONG).show()
+                    }
                 }
+                binding.recipeSaveButton.icon = originalDrawable
             }
         }
 

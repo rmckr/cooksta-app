@@ -1,6 +1,7 @@
 package com.example.cooksta_app.ui.shared.feed
 
 import android.animation.ArgbEvaluator
+import android.app.AlertDialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
@@ -33,10 +35,12 @@ import com.example.cooksta_app.ui.profile.ProfileFragment
 import com.example.cooksta_app.ui.shoppingList.IngredientsListFragment
 import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.gpu.BrightnessFilterTransformation
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -224,6 +228,21 @@ class FeedPostFragment : Fragment() {
             }
         }
 
+        viewModel.loadMe()
+        lifecycleScope.launch {
+            combine(viewModel.me, viewModel.creator) {
+                me, creator -> me?.id != null && creator?.id != null && me.id == creator.id
+            }.collect { isCreator ->
+                if (isCreator) {
+                    binding.bottomSheetCreatorButtons.visibility = View.VISIBLE
+                    binding.bottomSheetProfile.visibility = View.GONE
+                } else {
+                    binding.bottomSheetCreatorButtons.visibility = View.GONE
+                    binding.bottomSheetProfile.visibility = View.VISIBLE
+                }
+            }
+        }
+
         binding.bottomSheetProfile.setOnClickListener {
             findNavController().navigate(
                 R.id.navigation_profile,
@@ -231,6 +250,53 @@ class FeedPostFragment : Fragment() {
                     putString(ProfileFragment.ARG_USER_ID, recipe.creatorId)
                 }
             )
+        }
+
+        binding.bottomSheetEditButton.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Fehler")
+                .setMessage("Diese Funktion wird aktuell nicht unterstützt.")
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+        binding.bottomSheetDeleteButton.setOnClickListener {
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.title_dialog_delete))
+                .setMessage(getString(R.string.message_dialog_delete))
+                .setPositiveButton(getString(R.string.ok), null)
+                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+            dialog.setOnShowListener {
+                val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
+                val cancelButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+                okButton.setOnClickListener { button ->
+                    val progressDrawable = CircularProgressDrawable(requireContext()).apply {
+                        strokeWidth = 4f
+                        start()
+                    }
+                    okButton.icon = progressDrawable
+
+                    okButton.isEnabled = false
+                    cancelButton.isEnabled = false
+
+                    lifecycleScope.launch {
+                        val response = RetrofitClient.apiService.deleteRecipe(recipeId)
+                        if (response.isSuccessful) {
+                            Toast.makeText(requireContext(), "Rezept gelöscht", Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(R.id.navigation_profile)
+                        } else {
+                            Toast.makeText(requireContext(), "Fehler beim Löschen des Rezepts", Toast.LENGTH_SHORT).show()
+                        }
+                        dialog.dismiss()
+                    }
+                }
+            }
+            dialog.show()
         }
 
         binding.commentButton.setOnCheckedChangeListener { _, _ ->

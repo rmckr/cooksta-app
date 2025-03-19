@@ -5,6 +5,7 @@ import com.example.cooksta_app.model.LoginRequest
 import com.example.cooksta_app.model.PartialRecipe
 import com.example.cooksta_app.model.PartialUser
 import com.example.cooksta_app.model.Recipe
+import com.example.cooksta_app.model.RecipeBody
 import com.example.cooksta_app.model.RefreshTokenRequest
 import com.example.cooksta_app.model.ShoppingListItem
 import com.example.cooksta_app.model.ShoppingListItemBody
@@ -67,7 +68,7 @@ interface APIService {
     suspend fun getRecipeFeed(@Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
 
     @POST("recipes")
-    suspend fun postRecipe(@Body recipe: Recipe): Response<Recipe>
+    suspend fun postRecipe(@Body recipe: RecipeBody): Response<Recipe>
     @GET("recipes/{recipeId}")
     suspend fun getRecipe(@Path("recipeId") recipeId: String): Response<Recipe>
     @PATCH("recipes/{recipeId}")
