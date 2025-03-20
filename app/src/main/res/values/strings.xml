@@ -88,7 +88,12 @@
     <string name="error_add_shoppingList">Fehler beim Hinzufügen des Rezepts</string>
     <string name="profileName">Profilname</string>
     <string name="back">Zurück</string>
+    <string name="no_results">Keine Ergebnisse</string>
+    <string name="title_dialog_profile">Fehler</string>
+    <string name="message_dialog_profile">Diese Funktion wird aktuell nicht unterstützt.</string>
     <string name="message_dialog_delete">Das Rezept kann nach dem Löschen nicht wiederhergestellt werden!</string>
+    <string name="delete_recipe">Rezept gelöscht</string>
+    <string name="error_delete_recipe">Fehler beim Löschen des Rezepts</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>

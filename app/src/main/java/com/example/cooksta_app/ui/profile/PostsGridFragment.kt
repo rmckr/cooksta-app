@@ -62,7 +62,7 @@ class PostsGridFragment : RecyclerViewFragment<PostsGridFragment.Adapter>() {
     ): View {
         if (recipes.isEmpty()) {
             val emptyView = MaterialTextView(requireContext()).apply {
-                text = "Keine Ergebnisse"
+                text = getString(R.string.no_results)
                 gravity = Gravity.CENTER
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

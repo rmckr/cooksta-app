@@ -254,8 +254,8 @@ class FeedPostFragment : Fragment() {
 
         binding.bottomSheetEditButton.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Fehler")
-                .setMessage("Diese Funktion wird aktuell nicht unterstützt.")
+                .setTitle(getString(R.string.title_dialog_profile))
+                .setMessage(getString(R.string.message_dialog_profile))
                 .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     dialog.dismiss()
                 }
@@ -287,10 +287,10 @@ class FeedPostFragment : Fragment() {
                     lifecycleScope.launch {
                         val response = RetrofitClient.apiService.deleteRecipe(recipeId)
                         if (response.isSuccessful) {
-                            Toast.makeText(requireContext(), "Rezept gelöscht", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.delete_recipe), Toast.LENGTH_SHORT).show()
                             findNavController().navigate(R.id.navigation_profile)
                         } else {
-                            Toast.makeText(requireContext(), "Fehler beim Löschen des Rezepts", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.error_delete_recipe), Toast.LENGTH_SHORT).show()
                         }
                         dialog.dismiss()
                     }
