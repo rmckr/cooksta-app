@@ -271,12 +271,12 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
             return oldItem.name == newItem.name && oldItem.amount == newItem.amount
         }
 
-//        override fun getChangePayload(oldItem: IngredientSelectionItem, newItem: IngredientSelectionItem): Any? {
-//            val payloads = mutableListOf<Payload.IngredientChangePayload>()
-//            if (oldItem.name != newItem.name) payloads.add(Payload.IngredientChangePayload("name"))
-//            if (oldItem.amount != newItem.amount) payloads.add(Payload.IngredientChangePayload("amount"))
-//            return payloads.ifEmpty { null }
-//        }
+        override fun getChangePayload(oldItem: IngredientSelectionItem, newItem: IngredientSelectionItem): Any? {
+            val payloads = mutableListOf<Payload.IngredientChangePayload>()
+            if (oldItem.name != newItem.name) payloads.add(Payload.IngredientChangePayload("name"))
+            if (oldItem.amount != newItem.amount) payloads.add(Payload.IngredientChangePayload("amount"))
+            return payloads.ifEmpty { null }
+        }
     }
 }
 
