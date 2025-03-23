@@ -11,26 +11,44 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
 
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user
+    sealed class UserState {
+        object Loading : UserState()
+        data class Success(val data: User) : UserState()
+        data class Error(val message: String) : UserState()
+    }
 
-    private val _userRecipes = MutableStateFlow<List<Recipe>?>(null)
-    val userRecipes: StateFlow<List<Recipe>?> = _userRecipes
+    private val _userState = MutableStateFlow<UserState>(UserState.Loading)
+    val userState: StateFlow<UserState> = _userState
+
+    sealed class UserRecipesState {
+        object Loading : UserRecipesState()
+        data class Success(val data: List<Recipe>) : UserRecipesState()
+        data class Error(val message: String) : UserRecipesState()
+    }
+
+    private val _userRecipesState = MutableStateFlow<UserRecipesState>(UserRecipesState.Loading)
+    val userRecipesState: StateFlow<UserRecipesState> = _userRecipesState
 
     fun loadUser(userId: String) {
+        _userState.value = UserState.Loading
         viewModelScope.launch {
             val userResponse = RetrofitClient.apiService.getUser(userId)
             if (userResponse.isSuccessful) {
-                _user.value = userResponse.body()
+                _userState.value = UserState.Success(userResponse.body()!!)
+            } else {
+                _userState.value = UserState.Error("Fehler beim Laden des Benutzers")
             }
         }
     }
 
     fun loadUserRecipes(userId: String) {
+        _userRecipesState.value = UserRecipesState.Loading
         viewModelScope.launch {
             val recipesResponse = RetrofitClient.apiService.getUserRecipes(userId)
             if (recipesResponse.isSuccessful) {
-                _userRecipes.value = recipesResponse.body()
+                _userRecipesState.value = UserRecipesState.Success(recipesResponse.body()!!)
+            } else {
+                _userRecipesState.value = UserRecipesState.Error("Fehler beim Laden der Rezepte")
             }
         }
     }

@@ -6,7 +6,9 @@ import com.example.cooksta_app.model.LoginRequest
 import com.example.cooksta_app.model.RefreshTokenRequest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -18,13 +20,7 @@ object RetrofitClient {
 
     private lateinit var okHttpClient: OkHttpClient
 
-    private val retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL + "/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-            .build()
-    }
+    private lateinit var retrofit: Retrofit
 
     val apiService: APIService by lazy {
         retrofit.create(APIService::class.java)
@@ -36,15 +32,33 @@ object RetrofitClient {
         }
         if (!::okHttpClient.isInitialized) {
             this.okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(LogInterceptor())
+                .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
                 .addInterceptor(NetworkInterceptor(context.applicationContext))
                 .addInterceptor(AuthInterceptor(tokenStore))
                 .authenticator(TokenRefreshAuthenticator())
                 .build()
         }
+        if (!::retrofit.isInitialized) {
+            this.retrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.API_BASE_URL + "/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build()
+        }
     }
 
     val isLoggedIn get() = this.tokenStore.refreshToken?.isNotEmpty() == true
+
+    fun useMockServerUrl(url: HttpUrl) {
+        this.okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+            .build()
+        this.retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+    }
 
     suspend fun login(username: String, password: String): Boolean {
         val response = apiService.login(LoginRequest(username, password))

@@ -92,48 +92,74 @@ class ProfileFragment : Fragment() {
         viewModel.loadUserData(userId)
 
         lifecycleScope.launch {
-            viewModel.user.collect { user ->
-                if (user !== null) {
-                    binding.username.load(user.username)
-                    binding.biography.load(user.biography)
-                    val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
-                    Glide.with(requireActivity())
-                        .load(imageUrl)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .placeholder(R.drawable.ic_launcher)
-                        .into(binding.profileImage)
-                } else {
-                    binding.username.unload()
-                    binding.biography.unload()
-                    Glide.with(requireActivity()).load(R.drawable.ic_launcher).into(binding.profileImage)
+            viewModel.userState.collect { userState ->
+                when (userState) {
+                    is ProfileViewModel.UserState.Success -> {
+                        binding.username.load(userState.data.username)
+                        binding.biography.load(userState.data.biography)
+                        val imageUrl = "${BuildConfig.API_BASE_URL}/users/${userState.data.id}/avatar"
+                        Glide.with(requireActivity())
+                            .load(imageUrl)
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .placeholder(R.drawable.ic_launcher)
+                            .into(binding.profileImage)
+                    }
+                    is ProfileViewModel.UserState.Error -> {
+                        Toast.makeText(requireContext(), userState.message, Toast.LENGTH_SHORT).show()
+                        binding.username.unload()
+                        binding.biography.unload()
+                        Glide.with(requireActivity()).load(R.drawable.ic_launcher).into(binding.profileImage)
+                    }
+                    else -> {
+                        binding.username.unload()
+                        binding.biography.unload()
+                        Glide.with(requireActivity()).load(R.drawable.ic_launcher).into(binding.profileImage)
+                    }
                 }
             }
         }
         lifecycleScope.launch {
-            combine(viewModel.user, viewModel.userRecipes) { user, userRecipes ->
-                listOf(userRecipes?.map { it.id }, user?.favorites)
-            }.collect { recipeLists ->
-                if (recipeId != null && recipeLists[0]?.isEmpty() == false) {
-                    val index = recipeLists[0]!!.indexOf(recipeId)
-                    if (index != -1) {
-                        findNavController().navigate(
-                            R.id.navigation_feed,
-                            Bundle().apply {
-                                putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeLists[0]!!.toTypedArray())
-                                putInt(FeedFragment.ARG_POSITION, index)
-                            }
-                        )
+            combine(viewModel.userState, viewModel.userRecipesState) { userState, userRecipesState ->
+                when {
+                    userState is ProfileViewModel.UserState.Success && userRecipesState is ProfileViewModel.UserRecipesState.Success -> {
+                        listOf(userRecipesState.data.map { it.id }, userState.data.favorites)
                     }
-                } else {
-                    binding.profileViewPager.adapter = PagerAdapter(this@ProfileFragment, recipeLists)
-                    TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
-                        tab.text = when (position) {
-                            0 -> getString(R.string.own_recipes)
-                            1 -> if (userId == "me") getString(R.string.saved) else null
-                            else -> null
+                    userState is ProfileViewModel.UserState.Error -> {
+                        Toast.makeText(requireContext(), userState.message, Toast.LENGTH_SHORT).show()
+                        null
+                    }
+                    userRecipesState is ProfileViewModel.UserRecipesState.Error -> {
+                        Toast.makeText(requireContext(), userRecipesState.message, Toast.LENGTH_SHORT).show()
+                        null
+                    }
+                    else -> {
+                        null
+                    }
+                }
+            }.collect { recipeLists ->
+                if (recipeLists != null) {
+                    if (recipeId != null && recipeLists[0].isEmpty() == false) {
+                        val index = recipeLists[0].indexOf(recipeId)
+                        if (index != -1) {
+                            findNavController().navigate(
+                                R.id.navigation_feed,
+                                Bundle().apply {
+                                    putStringArray(FeedFragment.ARG_RECIPE_IDS, recipeLists[0].toTypedArray())
+                                    putInt(FeedFragment.ARG_POSITION, index)
+                                }
+                            )
                         }
-                    }.attach()
+                    } else {
+                        binding.profileViewPager.adapter = PagerAdapter(this@ProfileFragment, recipeLists)
+                        TabLayoutMediator(binding.postsTabLayout, binding.profileViewPager) { tab, position ->
+                            tab.text = when (position) {
+                                0 -> getString(R.string.own_recipes)
+                                1 -> if (userId == "me") getString(R.string.saved) else null
+                                else -> null
+                            }
+                        }.attach()
+                    }
                 }
             }
         }

@@ -129,18 +129,24 @@ class EditProfileFragment : Fragment() {
         viewModel.loadUser("me")
 
         lifecycleScope.launch {
-            viewModel.user.collect { user ->
-                binding.editUsernameInput.setText(user?.username)
-                binding.editBiographyInput.setText(user?.biography)
+            viewModel.userState.collect { userState ->
+                when (userState) {
+                    is ProfileViewModel.UserState.Success -> {
+                        binding.editUsernameInput.setText(userState.data.username)
+                        binding.editBiographyInput.setText(userState.data.biography)
 
-                if (user !== null) {
-                    val imageUrl = "${BuildConfig.API_BASE_URL}/users/${user.id}/avatar"
-                    Glide.with(requireActivity())
-                        .load(imageUrl)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .placeholder(R.drawable.ic_launcher)
-                        .into(binding.editProfileImage)
+                        val imageUrl = "${BuildConfig.API_BASE_URL}/users/${userState.data.id}/avatar"
+                        Glide.with(requireActivity())
+                            .load(imageUrl)
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .placeholder(R.drawable.ic_launcher)
+                            .into(binding.editProfileImage)
+                    }
+                    is ProfileViewModel.UserState.Error -> {
+                        Toast.makeText(context, userState.message, Toast.LENGTH_LONG).show()
+                    }
+                    else -> {}
                 }
             }
         }
