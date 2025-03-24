@@ -22,13 +22,14 @@ class ShoppingListFragment : Fragment() {
     private var _binding: FragmentShoppingListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
-    }
+    private lateinit var viewModel: ShoppingListViewModel
     private var deleteDialog: MaterialAlertDialogBuilder? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(requireActivity())[ShoppingListViewModel::class.java]
+
         return binding.root
     }
 
