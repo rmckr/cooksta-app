@@ -49,14 +49,11 @@ class CreateFragment : Fragment() {
     private var _binding: FragmentCreateBinding? = null
     private val binding get() = _binding!!
 
-    @VisibleForTesting
-    fun setTestPrivateBinding(binding: FragmentCreateBinding) { _binding = binding }
-
     private val viewModel: CreateViewModel by lazy {
         ViewModelProvider(requireActivity())[CreateViewModel::class.java]
     }
 
-    internal var selectedImageUri: Uri? = null
+    private var selectedImageUri: Uri? = null
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
         selectedVideoUri = null
@@ -66,7 +63,13 @@ class CreateFragment : Fragment() {
         Glide.with(requireActivity()).clear(binding.videoPreview)
     }
 
-    internal var selectedVideoUri: Uri? = null
+    @VisibleForTesting
+    fun setSelectedImageUri(uri: Uri?) {
+        selectedImageUri = uri
+        Glide.with(requireActivity()).load(uri).into(binding.imagePreview)
+    }
+
+    private var selectedVideoUri: Uri? = null
     private val pickVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedVideoUri = uri
         selectedImageUri = null
@@ -109,7 +112,7 @@ class CreateFragment : Fragment() {
         }
     }
 
-    internal suspend fun validateInputs(): Boolean {
+    private suspend fun validateInputs(): Boolean {
         var isValid = true
 
         // Title
