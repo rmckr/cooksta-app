@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cooksta_app.R
 import com.example.cooksta_app.databinding.ItemSearchResultBinding
 import com.example.cooksta_app.model.Recipe
-import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.ui.shared.RecyclerViewFragment
+import com.example.cooksta_app.ui.shared.feed.FeedFragment
 import com.example.cooksta_app.utils.MediaCacheManager
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers

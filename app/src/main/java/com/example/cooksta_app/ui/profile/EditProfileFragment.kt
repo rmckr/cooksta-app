@@ -1,5 +1,6 @@
 package com.example.cooksta_app.ui.profile
 
+import android.animation.ObjectAnimator
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,7 +25,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
-import android.animation.ObjectAnimator
 
 class EditProfileFragment : Fragment() {
 

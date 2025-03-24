@@ -274,7 +274,7 @@ class FeedPostFragment : Fragment() {
                 val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as MaterialButton
                 val cancelButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
 
-                okButton.setOnClickListener { button ->
+                okButton.setOnClickListener { _ ->
                     val progressDrawable = CircularProgressDrawable(requireContext()).apply {
                         strokeWidth = 4f
                         start()
