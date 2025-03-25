@@ -52,7 +52,7 @@ class ShoppingListDialogTest {
 
         onView(ViewMatchers.withId(R.id.deleteShoppingList)).perform(click())
 
-        onView(ViewMatchers.withText(R.string.delete))
+        onView(ViewMatchers.withText(R.string.yes_delete))
             .inRoot(isDialog())
             .perform(click())
 

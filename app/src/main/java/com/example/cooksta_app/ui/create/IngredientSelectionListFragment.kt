@@ -69,7 +69,7 @@ class IngredientSelectionListFragment : RecyclerViewFragment<IngredientSelection
             .setTitle(getString(R.string.title_dialog_delete))
             .setMessage(message)
             .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.cancel() }
-            .setPositiveButton(getString(R.string.delete)) { _, _ -> viewModel.deleteIngredient(position) }
+            .setPositiveButton(getString(R.string.yes_delete)) { _, _ -> viewModel.deleteIngredient(position) }
             .show()
     }
 

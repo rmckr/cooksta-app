@@ -61,7 +61,7 @@ class ShoppingListFragment : Fragment() {
             .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                 dialog.cancel()
             }
-            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+            .setPositiveButton(getString(R.string.yes_delete)) { _, _ ->
                 viewModel.clear()
             }
 

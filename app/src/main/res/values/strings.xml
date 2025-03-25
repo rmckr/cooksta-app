@@ -72,7 +72,8 @@
     <string name="cancel">Abbrechen</string>
     <string name="add">Hinzufügen</string>
     <string name="ok">OK</string>
-    <string name="delete">Ja, löschen</string>
+    <string name="yes_delete">Ja, löschen</string>
+    <string name="delete">Löschen</string>
     <string name="no">Nein</string>
     <string name="message_dialog_delete_shoppingList">Die Einkaufsliste löschen bedeutet, dass alle hinugefügten Rezepte gelöscht werden.</string>
     <string name="title_dialog_delete">Wirklich löschen?</string>
