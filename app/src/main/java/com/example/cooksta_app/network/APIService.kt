@@ -44,7 +44,7 @@ interface APIService {
     suspend fun postShoppingListItem(@Body item: ShoppingListItemBody): Response<List<ShoppingListItem>>
     @DELETE("users/me/shopping-list/items/{recipeId}")
     suspend fun deleteShoppingListItem(@Path("recipeId") recipeId: String): Response<List<ShoppingListItem>>
-    @DELETE("users/me/shopping-list")
+    @DELETE("users/me/shopping-list/items")
     suspend fun deleteShoppingList(): Response<Void>
     @GET("users/me/shopping-list/ingredients")
     suspend fun getShoppingListIngredients(): Response<List<Ingredient>>
