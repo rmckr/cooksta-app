@@ -7,6 +7,7 @@ import com.example.cooksta_app.model.User
 import com.example.cooksta_app.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class FeedPostViewModel : ViewModel() {
@@ -24,6 +25,16 @@ class FeedPostViewModel : ViewModel() {
     val creator: StateFlow<User?> = _creator
     private val _me = MutableStateFlow<User?>(null)
     val me: StateFlow<User?> = _me
+
+    init {
+        viewModelScope.launch {
+            combine(me, recipe) {
+                    me, recipe -> me?.favorites?.contains(recipe?.id) == true
+            }.collect { isSaved ->
+                _isSaved.value = isSaved
+            }
+        }
+    }
 
     fun toggleLike() {
         _isLiked.value = !_isLiked.value
@@ -47,16 +58,16 @@ class FeedPostViewModel : ViewModel() {
 
     fun toggleSave() {
         _isSaved.value = !_isSaved.value
-        // TODO: Not implemented in API
-//        if (_recipe.value != null) {
-//            viewModelScope.launch {
-//                if (_isSaved.value) {
-//                    RetrofitClient.apiService.postRecipeSave(_recipe.value!!.id)
-//                } else {
-//                    RetrofitClient.apiService.postRecipeLike(_recipe.value!!.id)
-//                }
-//            }
-//        }
+
+        if (_recipe.value != null) {
+            viewModelScope.launch {
+                if (_isSaved.value) {
+                    RetrofitClient.apiService.postRecipeSave(_recipe.value!!.id)
+                } else {
+                    RetrofitClient.apiService.deleteRecipeSave(_recipe.value!!.id)
+                }
+            }
+        }
     }
 
     fun loadRecipe(recipeId: String) {

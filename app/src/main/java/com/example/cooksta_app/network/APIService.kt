@@ -55,6 +55,10 @@ interface APIService {
     suspend fun patchUser(@Path("userId") userId: String, @Body user: PartialUser): Response<User>
     @GET("users/{userId}/recipes")
     suspend fun getUserRecipes(@Path("userId") userId: String): Response<List<Recipe>>
+    @POST("users/me/saved/{recipeId}")
+    suspend fun postRecipeSave(@Path("recipeId") recipeId: String): Response<List<String>>
+    @DELETE("users/me/saved/{recipeId}")
+    suspend fun deleteRecipeSave(@Path("recipeId") recipeId: String): Response<List<String>>
 
     @GET("recipes/search")
     suspend fun searchRecipes(@Query("q") query: String, @Query("limit") limit: Int? = null, @Query("page") page: Int? = null): Response<List<Recipe>>
