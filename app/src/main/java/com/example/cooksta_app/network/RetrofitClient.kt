@@ -1,6 +1,7 @@
 package com.example.cooksta_app.network
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.example.cooksta_app.BuildConfig
 import com.example.cooksta_app.model.LoginRequest
 import com.example.cooksta_app.model.RefreshTokenRequest
@@ -14,13 +15,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private val mutex = Mutex()
-
     private lateinit var tokenStore: TokenStore
 
     private lateinit var okHttpClient: OkHttpClient
 
     private lateinit var retrofit: Retrofit
+
+    private val mutex = Mutex()
 
     val apiService: APIService by lazy {
         retrofit.create(APIService::class.java)
@@ -28,18 +29,18 @@ object RetrofitClient {
 
     fun initialize(context: Context) {
         if (!::tokenStore.isInitialized) {
-            this.tokenStore = TokenStore(context.applicationContext)
+            tokenStore = TokenStore(context.applicationContext)
         }
         if (!::okHttpClient.isInitialized) {
-            this.okHttpClient = OkHttpClient.Builder()
+            okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
                 .addInterceptor(NetworkInterceptor(context.applicationContext))
                 .addInterceptor(AuthInterceptor(tokenStore))
-                .authenticator(TokenRefreshAuthenticator())
+                .authenticator(TokenRefreshAuthenticator(context.applicationContext))
                 .build()
         }
         if (!::retrofit.isInitialized) {
-            this.retrofit = Retrofit.Builder()
+            retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.API_BASE_URL + "/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
@@ -47,8 +48,10 @@ object RetrofitClient {
         }
     }
 
-    val isLoggedIn get() = this.tokenStore.refreshToken?.isNotEmpty() == true
+    val isLoggedIn get() = tokenStore.refreshToken?.isNotEmpty() == true
 
+    @Suppress("unused")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun useMockServerUrl(url: HttpUrl) {
         this.okHttpClient = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
@@ -71,28 +74,24 @@ object RetrofitClient {
         return false
     }
 
-    suspend fun logout(): Boolean {
-        val refreshToken = this.tokenStore.refreshToken ?: return false
-        val response = apiService.logout(RefreshTokenRequest(refreshToken))
-        if (response.isSuccessful) {
-            tokenStore.clearTokens()
-            return true
-        } else {
-            return false
+    suspend fun logout() {
+        val refreshToken = tokenStore.refreshToken
+        tokenStore.clearTokens()
+        refreshToken?.let {
+            apiService.logout(RefreshTokenRequest(it))
         }
     }
 
     suspend fun refreshToken(): String? {
         return mutex.withLock {
-            val refreshToken = this.tokenStore.refreshToken ?: return null
+            val refreshToken = tokenStore.refreshToken ?: return null
             val response = apiService.refresh(RefreshTokenRequest(refreshToken))
             if (response.isSuccessful) {
                 response.body()?.let {
-                    this.tokenStore.saveTokens(it.accessToken, it.refreshToken)
+                    tokenStore.saveTokens(it.accessToken, it.refreshToken)
                     it.accessToken
                 }
             } else {
-                this.tokenStore.clearTokens() // Clear tokens if refresh fails
                 null
             }
         }

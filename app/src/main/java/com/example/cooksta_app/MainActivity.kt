@@ -1,5 +1,6 @@
 package com.example.cooksta_app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
 
         if (screenWidthDp < 600) {
+            @SuppressLint("SourceLockedOrientationActivity")
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
 

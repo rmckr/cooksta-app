@@ -59,14 +59,10 @@ class ProfileFragment : Fragment() {
 
     private fun handleLogout() {
         lifecycleScope.launch {
-            val logoutSuccessful = RetrofitClient.logout()
-            if (logoutSuccessful) {
-                val intent = Intent(requireActivity(), LoginActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
-            } else {
-                Toast.makeText(requireContext(), "Logout failed", Toast.LENGTH_SHORT).show()
-            }
+            RetrofitClient.logout()
+            val intent = Intent(requireActivity(), LoginActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
         }
     }
 
