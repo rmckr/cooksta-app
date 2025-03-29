@@ -95,6 +95,10 @@
     <string name="message_dialog_delete">Das Rezept kann nach dem Löschen nicht wiederhergestellt werden!</string>
     <string name="delete_recipe">Rezept gelöscht</string>
     <string name="error_delete_recipe">Fehler beim Löschen des Rezepts</string>
+    <string name="error_login">Falsche Zugangsdaten</string>
+    <string name="error_register">Momentan nicht verfügbar</string>
+    <string name="error_loadUser">Fehler beim Laden des Benutzers</string>
+    <string name="error_loadRecipe">Fehler beim Laden der Rezepte</string>
     <plurals name="selected_recipes_count">
         <item quantity="one">%d Rezept ausgewählt</item>
         <item quantity="other">%d Rezepte ausgewählt</item>

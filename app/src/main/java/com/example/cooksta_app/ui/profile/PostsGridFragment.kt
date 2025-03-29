@@ -34,7 +34,7 @@ class PostsGridFragment : RecyclerViewFragment<PostsGridFragment.Adapter>() {
     }
 
     val spanCount by lazy {
-        if (resources.displayMetrics.widthPixels / resources.displayMetrics.density >= 820) {
+        if (resources.displayMetrics.widthPixels / resources.displayMetrics.density >= 600) {
             6
         } else {
             3

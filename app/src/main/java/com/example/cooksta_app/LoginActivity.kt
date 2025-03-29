@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
                 binding.editTextUsername.setText("")
                 binding.editTextPassword.setText("")
 
-                Toast.makeText(this@LoginActivity, "Falsche Zugangsdaten", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.error_login), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -35,10 +35,14 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.button.setOnClickListener {
+        binding.login.setOnClickListener {
             val username = binding.editTextUsername.text.toString()
             val password = binding.editTextPassword.text.toString()
             handleLogin(username, password)
+        }
+
+        binding.register.setOnClickListener {
+            Toast.makeText(this@LoginActivity, getString(R.string.error_register), Toast.LENGTH_LONG).show()
         }
     }
 }
