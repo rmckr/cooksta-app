@@ -6,10 +6,10 @@ A platform for sharing delicious recipes with a social-media-like feed and smart
 
 Clone this repository:
 ```shell
-git clone https://gitlab.dit.htwk-leipzig.de/cooksta/cooksta-app.git
+git clone https://github.com/rmckr/cooksta-app.git
 cd cooksta-app
 ```
-Alternatively, use SSH to clone: `git@gitlab.dit.htwk-leipzig.de:cooksta/cooksta-app.git`.
+Alternatively, use SSH to clone: `git@github.com:rmckr/cooksta-app.git`.
 
 
 ### Installing
@@ -36,7 +36,7 @@ The app will automatically connect to the public server instance.
 
 Run the app using the `debug` build variant.
 
-Make sure to build and run the backend according to the [cooksta-api README](https://gitlab.dit.htwk-leipzig.de/cooksta/cooksta-api#cooksta-api).
+Make sure to build and run the backend according to the [cooksta-api README](https://github.com/rmckr/cooksta-api#cooksta-api).
 
 To allow the app to communicate with the backend, you need to forward TCP port 3000 to your device/emulator:
 
